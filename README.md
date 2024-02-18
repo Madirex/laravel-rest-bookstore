@@ -13,11 +13,12 @@ Hay que crear un archivo .env en la raíz del proyecto con las configuraciones.
 
 ## Diagrama UML
 <p align="center">
-  <img src="https://i.imgur.com/RnDvxES.png"/>
+  <img src="https://i.imgur.com/HbmhQMF.png"/>
 </p>
 
+## Diagrama de casos de uso
 <p align="center">
-  <img src="https://i.imgur.com/9srUBwU.png"/>
+  <img src="https://i.imgur.com/EaeNSxz.png"/>
 </p>
 
 # NULLERS BOOKS API
