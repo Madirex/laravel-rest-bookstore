@@ -52,9 +52,14 @@ class CategoryController extends Controller
         } catch (\Exception $e) {
             return response()->json(['message' => 'Categoría no encontrada'], 404);
         }
-        $request->validate([
-            'name' => 'required|string|unique:categories,name,' . $category->id . '|max:255'
-        ]);
+
+        try {
+            $request->validate([
+                'name' => 'required|string|unique:categories,name,' . $category->id . '|max:255'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error al crear la categoría: debe ser única, tener máximo 255 caracteres y no debe estar vacía'], 400);
+        }
 
         $category->name = $request->input('name');
         $category->save();
