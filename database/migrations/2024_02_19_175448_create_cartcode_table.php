@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('cart_codes', function (Blueprint $table) {
-            $table->id();
-            $table->string('code');
+            $table->uuid('id')->primary();
+            $table->string('code')->unique();
             $table->decimal('percent_discount', 5, 2);
             $table->decimal('fixed_discount', 8, 2);
             $table->integer('available_uses');

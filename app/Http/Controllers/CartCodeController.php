@@ -24,7 +24,8 @@ class CartCodeController extends Controller
 
     public function store(Request $request): \Illuminate\Http\JsonResponse
     {
-        $this->validateCartCode($request);
+        //si no es nulo, retornar
+        if ($errorResponse = $this->validateCartCode($request)) {return $errorResponse;}
         $cartcode = new CartCode();
         $cartcode->code = $request->input('code');
         $cartcode->percent_discount = $request->input('percent_discount');
@@ -66,7 +67,7 @@ class CartCodeController extends Controller
             return response()->json(['message' => 'CartCode no encontrado'], 404);
         }
 
-        $this->validateCartCode($request, $cartcode);
+        if ($errorResponse = $this->validateCartCode($request)) {return $errorResponse;}
 
         $cartcode->code = $request->input('code');
         $cartcode->percent_discount = $request->input('percent_discount');
@@ -94,32 +95,45 @@ class CartCodeController extends Controller
         return response()->json(null, 204);
     }
 
-    public function validateCartCode(Request $request, $cartcode = null): \Illuminate\Http\JsonResponse | null
+    public function validateCartCode(Request $request, $cartcodeid = null): \Illuminate\Http\JsonResponse | null
     {
-        $cartcodeadd = '';
-        if ($cartcode != null){
-            $cartcodeadd = ',' . $cartcode->id;
-        }
+            $cartcodeadd = '';
+            if ($cartcodeid != null){
+                $cartcodeadd = ',' . $cartcodeid->id;
+            }
 
-        $validator = Validator::make($request->all(), [
-            'code' => 'required|string|unique:cartcode,code' . $cartcodeadd . '|max:255',
-            'percent_discount' => 'required|numeric',
-            'fixed_discount' => 'required|numeric',
-            'available_uses' => 'required|integer',
-            'expiration_date' => 'required|date',
-        ]);
+            try{
+                $validator = Validator::make($request->all(), [
+                    'code' => 'required|string|unique:cart_codes,code' . $cartcodeadd . '|max:255',
+                    'percent_discount' => 'required|numeric|min:0|max:999.99|regex:/^\d{1,3}(\.\d{1,2})?$/',
+                    'fixed_discount' => 'required|numeric|min:0|max:999999.99|regex:/^\d{1,6}(\.\d{1,2})?$/',
+                    'available_uses' => 'required|integer|min:0|max:1000000000',
+                    'expiration_date' => 'required|date',
+                ]);
 
-        // Convertir los valores a números flotantes
-        $cartcode->percent_discount = (float) $cartcode->percent_discount;
-        $cartcode->fixed_discount = (float) $cartcode->fixed_discount;
+                if ($validator->fails()) {
+                    $errors = $validator->errors()->all();
+                    return response()->json(['errors' => $errors], 400);
+                }
+            } catch (\Brick\Math\Exception\NumberFormatException $e) {
+                return response()->json(['message' => 'Error al procesar una propiedad por no tener un número válido.
+                Evita que exceda del tamaño límite.'], 400);
+            }
+
+            // Convertir los valores a números flotantes
+            $request->percent_discount = (float) $request->percent_discount;
+            $request->fixed_discount = (float) $request->fixed_discount;
+
+            // Forzar a que el descuento no pueda tener más de 100% de descuento
+            if ($request->percent_discount > 100){
+                return response()->json(['message' => 'El descuento por porcentaje no puede ser mayor a 100%'], 400);
+            }
 
 
-        if ($validator->fails()) {
-            return response()->json(['message' => $validator->errors()->first()], 400);
-        }else{
-            return null;
-        }
+            if ($validator->fails()) {
+                return response()->json(['message' => $validator->errors()->first()], 400);
+            }else{
+                return null;
+            }
     }
-
-
 }
