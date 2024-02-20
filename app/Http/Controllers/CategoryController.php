@@ -3,23 +3,39 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Rules\CategoryNameExists;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
 
-    public function index(): \Illuminate\Http\JsonResponse
+    public function index(Request $request)
     {
         $categories = Category::all();
-        return response()->json($categories);
+
+        if ($request->expectsJson()) {
+            return response()->json($categories);
+        }
+
+        return view('categories.index', compact('categories'));
+    }
+
+    public function show(string $id)
+    {
+        try {
+            $category = Category::findOrFail($id);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Categoría no encontrada'], 404);
+        }
+        return response()->json($category);
     }
 
 
-    public function store(Request $request): \Illuminate\Http\JsonResponse
+    public function store(Request $request)
     {
         try {
             $request->validate([
-                'name' => 'required|string|unique:categories,name|max:255'
+                'name' => ['required', 'string', new CategoryNameExists, 'max:255']
             ]);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error al crear la categoría: debe ser única, tener máximo 255 caracteres y no debe estar vacía'], 400);
@@ -29,23 +45,10 @@ class CategoryController extends Controller
 
         $category->save();
 
-
         return response()->json($category, 201);
     }
 
-
-    public function show(string $id): \Illuminate\Http\JsonResponse
-    {
-        try {
-            $category = Category::findOrFail($id);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Categoría no encontrada'], 404);
-        }
-        return response()->json($category);
-    }
-
-
-    public function update(Request $request, string $id): \Illuminate\Http\JsonResponse
+    public function update(Request $request, string $id)
     {
         try {
             $category = Category::findOrFail($id);
@@ -54,8 +57,13 @@ class CategoryController extends Controller
         }
 
         try {
+            $rulesToAdd = '';
+            if (strtolower($request->name) != strtolower($category->name)) {
+                $rulesToAdd = new CategoryNameExists;
+            }
+
             $request->validate([
-                'name' => 'required|string|unique:categories,name,' . $category->id . '|max:255'
+                'name' => ['required', 'string', $rulesToAdd, 'max:255']
             ]);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error al crear la categoría: debe ser única, tener máximo 255 caracteres y no debe estar vacía'], 400);
@@ -67,7 +75,7 @@ class CategoryController extends Controller
         return response()->json($category);
     }
 
-    public function destroy(string $id): \Illuminate\Http\JsonResponse
+    public function destroy(string $id)
     {
         try {
             $category = Category::findOrFail($id);

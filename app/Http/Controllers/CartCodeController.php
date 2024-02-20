@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CartCode;
+use App\Rules\CartCodeCodeExists;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -67,7 +68,7 @@ class CartCodeController extends Controller
             return response()->json(['message' => 'CartCode no encontrado'], 404);
         }
 
-        if ($errorResponse = $this->validateCartCode($request)) {return $errorResponse;}
+        if ($errorResponse = $this->validateCartCode($request, $cartcode->code)) {return $errorResponse;}
 
         $cartcode->code = $request->input('code');
         $cartcode->percent_discount = $request->input('percent_discount');
@@ -95,16 +96,20 @@ class CartCodeController extends Controller
         return response()->json(null, 204);
     }
 
-    public function validateCartCode(Request $request, $cartcodeid = null): \Illuminate\Http\JsonResponse | null
+    public function validateCartCode(Request $request, $codestr = null): \Illuminate\Http\JsonResponse | null
     {
-            $cartcodeadd = '';
-            if ($cartcodeid != null){
-                $cartcodeadd = ',' . $cartcodeid->id;
+            $rulesToAdd = '';
+            if ($codestr != null){
+                if (strtolower($request->code) != strtolower($codestr)){
+                    $rulesToAdd = new CartCodeCodeExists;
+                }
+            }else{
+                $rulesToAdd = new CartCodeCodeExists;
             }
 
             try{
                 $validator = Validator::make($request->all(), [
-                    'code' => 'required|string|unique:cart_codes,code' . $cartcodeadd . '|max:255',
+                    'code' => ['required', 'string', $rulesToAdd, 'max:255'],
                     'percent_discount' => 'required|numeric|min:0|max:999.99|regex:/^\d{1,3}(\.\d{1,2})?$/',
                     'fixed_discount' => 'required|numeric|min:0|max:999999.99|regex:/^\d{1,6}(\.\d{1,2})?$/',
                     'available_uses' => 'required|integer|min:0|max:1000000000',
@@ -116,8 +121,7 @@ class CartCodeController extends Controller
                     return response()->json(['errors' => $errors], 400);
                 }
             } catch (\Brick\Math\Exception\NumberFormatException $e) {
-                return response()->json(['message' => 'Error al procesar una propiedad por no tener un número válido.
-                Evita que exceda del tamaño límite.'], 400);
+                return response()->json(['message' => 'Error al procesar una propiedad por no tener un número válido. Evita que exceda del tamaño límite.'], 400);
             }
 
             // Convertir los valores a números flotantes
