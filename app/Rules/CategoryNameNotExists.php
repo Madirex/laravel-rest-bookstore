@@ -18,6 +18,7 @@ class CategoryNameNotExists implements Rule
      */
     public function passes($attribute, $value)
     {
+        $value = trim(strtolower($value));
         return Category::where('name', 'ILIKE', $value)->exists();
     }
 

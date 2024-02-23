@@ -58,7 +58,7 @@ class CategoryController extends Controller
 
         try {
             $rulesToAdd = '';
-            if (strtolower($request->name) != strtolower($category->name)) {
+            if (trim(strtolower($request->name)) != trim(strtolower($category->name))) {
                 $rulesToAdd = new CategoryNameExists;
             }
 

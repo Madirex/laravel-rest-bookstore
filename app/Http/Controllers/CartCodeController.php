@@ -100,7 +100,7 @@ class CartCodeController extends Controller
     {
             $rulesToAdd = '';
             if ($codestr != null){
-                if (strtolower($request->code) != strtolower($codestr)){
+                if ($request->code != $codestr){
                     $rulesToAdd = new CartCodeCodeExists;
                 }
             }else{

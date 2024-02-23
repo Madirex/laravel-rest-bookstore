@@ -18,6 +18,7 @@ class CartCodeCodeExists implements Rule
      */
     public function passes($attribute, $value)
     {
+        $value = trim(strtolower($value));
         return !CartCode::where('code', 'ILIKE', $value)->exists();
     }
 
