@@ -13,11 +13,11 @@ class CategoriesTableSeeder extends Seeder
     public function run(): void
     {
         DB::table('categories')->insert([
-            ['name' => 'Superheros', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'Movies', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'TV Series', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'Videogames', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'Animals', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Misterio', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Desarrollo personal', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Manga', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Terror', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Drama', 'created_at' => now(), 'updated_at' => now()],
         ]);
     }
 }
