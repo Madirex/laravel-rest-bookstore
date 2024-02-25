@@ -27,8 +27,7 @@
                         <p class="book-isbn"><i class="fas fa-barcode"></i> {{ $book->isbn }}</p>
                         <p class="book-author"><i class="fas fa-user"></i> {{ $book->author }}</p>
                         <p class="book-publisher"><i class="fas fa-building"></i> {{ $book->publisher }}</p>
-                        <p class="book-description">{{ $book->description }}</p>
-                        <p class="book-price"><i class="fas fa-tag"></i> {{ $book->price }}</p>
+                        <p class="book-description">{{ Illuminate\Support\Str::limit($book->description, 100, '...') }}</p>                        <p class="book-price"><i class="fas fa-tag"></i> {{ $book->price }}</p>
                         <p class="book-stock"><i class="fas fa-box-open"></i> {{ $book->stock }}</p>
                         <p class="book-category">Categoría: {{ $book->category_name }}</p>
                         <div class="book-actions">
