@@ -1,7 +1,7 @@
 <header>
     <nav class="navbar navbar-expand-lg navbar-dark">
         <a class="navbar-brand" href="{{ url('/') }}">
-            <img alt="Logo" class="d-inline-block align-text-top" height="30" src="/favicon.ico" width="30">
+            <img class="d-inline-block align-text-top" height="30" src="/favicon.ico" width="30">
             BookStore
         </a>
         <button aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler"
