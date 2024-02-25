@@ -19,5 +19,9 @@ class DatabaseSeeder extends Seeder
         $this->call([
             CartCodesTableSeeder::class,
         ]);
+
+        $this->call([
+            BooksTableSeeder::class,
+        ]);
     }
 }

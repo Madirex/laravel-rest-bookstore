@@ -1392,7 +1392,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"name\": \"Funko IrOn MAN\",\r\n    \"description\": \"test\",\r\n    \"isbn\": \"979-8354235865\",\r\n    \"author\": \"Madirex\",\r\n    \"publisher\": \"Madirex\",\r\n    \"price\": 3.33,\r\n    \"stock\": 34,\r\n    \"category_name\": \"TERROR\"\r\n}",
+									"raw": "{\r\n    \"name\": \"BookTest\",\r\n    \"description\": \"test\",\r\n    \"isbn\": \"979-8354235865\",\r\n    \"author\": \"Madirex\",\r\n    \"publisher\": \"Madirex\",\r\n    \"price\": 3.33,\r\n    \"stock\": 34,\r\n    \"category_name\": \"TERROR\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1662,7 +1662,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"name\": \"Funko IrOn MAN\",\r\n    \"description\": \"test\",\r\n    \"isbn\": \"979-8354235865\",\r\n    \"author\": \"Madirex\",\r\n    \"publisher\": \"Madirex\",\r\n    \"price\": 3.33,\r\n    \"stock\": 34,\r\n    \"category_name\": \"TERROR\"\r\n}",
+									"raw": "{\r\n    \"name\": \"BookTest\",\r\n    \"description\": \"test\",\r\n    \"isbn\": \"979-8354235865\",\r\n    \"author\": \"Madirex\",\r\n    \"publisher\": \"Madirex\",\r\n    \"price\": 3.33,\r\n    \"stock\": 34,\r\n    \"category_name\": \"TERROR\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"

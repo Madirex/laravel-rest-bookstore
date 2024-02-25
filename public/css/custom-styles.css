@@ -78,14 +78,14 @@ body{
 
 /* INDEX MAIN */
 
-.funko-container {
+.book-container {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     margin: 0 auto;
 }
 
-.funko-card {
+.book-card {
     width: 100%;
     margin: 20px;
     padding: 20px;
@@ -96,25 +96,25 @@ body{
 }
 
 @media (min-width: 768px) {
-    .funko-card {
+    .book-card {
         width: 45%;
     }
 }
 
 @media (min-width: 992px) {
-    .funko-card {
+    .book-card {
         width: 30%;
     }
 }
 
 @media (min-width: 1200px) {
-    .funko-card {
+    .book-card {
         width: 20%;
     }
 }
 
 
-.funko-image {
+.book-image {
     width: 100%;
     height: 200px;
     object-fit: cover;
@@ -122,20 +122,20 @@ body{
     height: auto;
 }
 
-.funko-name {
+.book-name {
     font-size: 20px;
     font-weight: bold;
 }
 
-.funko-description {
+.book-description {
     font-size: 16px;
 }
 
-.funko-price, .funko-stock, .funko-category {
+.book-price, .book-stock, .book-category {
     font-size: 14px;
 }
 
-.funko-actions {
+.book-actions {
     display: flex;
     justify-content: space-between;
     margin-top: 20px;
@@ -168,17 +168,17 @@ div.nav-username{
     padding-top: 10px;
 }
 
-.funko-link {
+.book-link {
     text-decoration: none;
     color: inherit;
 }
 
-.funko-link:hover {
+.book-link:hover {
     text-decoration: none;
     color: inherit;
 }
 
-.funko-card {
+.book-card {
     color: #333;
 }
 
