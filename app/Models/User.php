@@ -25,6 +25,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        //TODO: surname, username, isDeleted, phone, address, image, cart, orders
     ];
 
     /**

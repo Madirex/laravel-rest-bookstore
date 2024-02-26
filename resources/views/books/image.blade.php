@@ -4,6 +4,17 @@
 
 @section('content')
     <h1><i class="bi bi-pencil-square"></i> Editar imagen de Book</h1>
+    @if ($errors->any())
+        <div class="alert alert-danger alert-dismissible">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        <br/>
+    @endif
     <div class="card">
         <div class="card-body">
             <h5 class="card-title"><i class="fas fa-tag"></i> {{ $book->name }}</h5>
