@@ -79,3 +79,9 @@ div.nav-username{
 .hide-banner {
     animation: slideOut 0.5s ease-in;
 }
+
+/* dropdown */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}

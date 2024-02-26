@@ -13,22 +13,27 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url('/') }}">Libros</a>
                 </li>
-                @if (auth()->check() && auth()->user()->hasRole('admin'))
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('books.create') }}">Nuevo libro</a>
-                    </li>
-                @endif
             </ul>
             <ul class="navbar-nav">
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('categories.index') }}">Categorías</a>
                 </li>
-                @if (auth()->check() && auth()->user()->hasRole('admin'))
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('categories.create') }}">Nueva categoría</a>
-                </li>
-                @endif
             </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    @if (auth()->check() && auth()->user()->hasRole('admin'))
+                        <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Administrar
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="adminDropdown">
+                            <a class="dropdown-item" href="{{ route('cartcodes.index') }}">Gestionar códigos de tienda</a>
+                            <!-- Agrega más enlaces de administración aquí -->
+                        </div>
+                    @endif
+                </li>
+            </ul>
+
+
             <ul class="navbar-nav ml-auto" style="flex-direction: column;">
                 <li class="nav-item">
                     @guest
@@ -43,7 +48,7 @@
                     @else
                         <form id="logout-form" action="{{ route('logout') }}" method="POST">
                             @csrf
-                            <button type="submit" class="nav-link" style="background: none; border: none; cursor: pointer;">Logout</button>
+                            <button type="submit" class="nav-link" style="background: none; border: none; cursor: pointer; display:block; margin:auto">Logout</button>
                         </form>
                     @endguest
                 </li>
