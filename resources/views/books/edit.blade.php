@@ -25,6 +25,18 @@
             <input class="form-control" id="name" name="name" type="text" required value="{{$book->name}}">
         </div>
         <div class="form-group">
+            <label for="isbn">ISBN:</label>
+            <input class="form-control" id="isbn" name="isbn" type="text" required value="{{$book->isbn}}">
+        </div>
+        <div class="form-group">
+            <label for="author">Autor:</label>
+            <input class="form-control" id="author" name="author" type="text" required value="{{$book->author}}">
+        </div>
+        <div class="form-group">
+            <label for="publisher">Editorial:</label>
+            <input class="form-control" id="publisher" name="publisher" type="text" required value="{{$book->publisher}}">
+        </div>
+        <div class="form-group">
             <label for="description">Descripción:</label>
             <textarea class="form-control" id="description" name="description" required>{{$book->description}}
             </textarea>

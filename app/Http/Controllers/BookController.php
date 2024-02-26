@@ -149,7 +149,7 @@ class BookController extends Controller
             return response()->json(null, 204);
         }
 
-        flash('Libro ' . $book->name . '  eliminado con éxito.')->error()->important();
+        flash('Libro ' . $book->name . '  eliminado con éxito.')->success()->important();
         return redirect()->route('books.index');
     }
 

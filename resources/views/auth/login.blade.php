@@ -55,11 +55,17 @@
                             </label>
                         </div>
                     </div>
-
                     <div class="custom-button-group">
                         <button type="submit" class="custom-button">
                             {{ __('Login') }}
                         </button>
+                    </div>
+                    <div class="custom-button-group">
+                        @if (Route::has('password.request'))
+                            <a class="btn btn-link" href="{{ route('password.request') }}">
+                                {{ __('Olvíde mi contraseña') }}
+                            </a>
+                        @endif
                     </div>
                 </form>
             </div>
