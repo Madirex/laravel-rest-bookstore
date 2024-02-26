@@ -22,13 +22,16 @@
             @foreach ($books as $book)
                 <a href="{{ route('books.show', $book->id) }}" class="book-link">
                     <div class="book-card">
-                        <img class="book-image" src="{{ $book->image != Book::$IMAGE_DEFAULT ? asset('storage/' . $book->image) : Book::$IMAGE_DEFAULT }}" alt="Imagen del Book" onerror="this.onerror=null; this.src='http://localhost/images/books.bmp';">
+                        <p class="book-price"><i class="fas fa-dollar-sign"></i> {{ $book->price }}</p>
+                        <div class="book-header">
+                            <img class="book-image" src="{{ $book->image != Book::$IMAGE_DEFAULT ? asset('storage/' . $book->image) : Book::$IMAGE_DEFAULT }}" alt="Imagen del Book" onerror="this.onerror=null; this.src='http://localhost/images/books.bmp';">
+                            <p class="book-stock"><i class="fas fa-box-open"></i> {{ $book->stock }}</p>
+                        </div>
                         <h2 class="book-name">{{ $book->name }}</h2>
                         <p class="book-isbn"><i class="fas fa-barcode"></i> {{ $book->isbn }}</p>
                         <p class="book-author"><i class="fas fa-user"></i> {{ $book->author }}</p>
                         <p class="book-publisher"><i class="fas fa-building"></i> {{ $book->publisher }}</p>
-                        <p class="book-description">{{ Illuminate\Support\Str::limit($book->description, 100, '...') }}</p>                        <p class="book-price"><i class="fas fa-tag"></i> {{ $book->price }}</p>
-                        <p class="book-stock"><i class="fas fa-box-open"></i> {{ $book->stock }}</p>
+                        <p class="book-description">{{ Illuminate\Support\Str::limit($book->description, 100, '...') }}</p>
                         <p class="book-category">Categoría: {{ $book->category_name }}</p>
                         <div class="book-actions">
                             <a class="btn btn-primary btn-sm" href="{{ route('books.show', $book->id) }}"><i class="fas fa-info-circle"></i></a>
