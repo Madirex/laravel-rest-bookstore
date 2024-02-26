@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
 use App\Models\Book;
+use App\Models\Category;
 use App\Rules\CategoryNameNotExists;
 use App\Rules\ISBNNameExists;
 use Illuminate\Http\Request;
@@ -221,15 +221,28 @@ class BookController extends Controller
 
             if ($validator->fails()) {
                 $errors = $validator->errors()->all();
-                $errorsString = implode(' ', $errors);
-                return $errorsString;
+
+                if ($request->expectsJson()) {
+                    return response()->json(['errors' => $errors], 400);
+                }
+
+                return implode(' ', $errors);
             }
         } catch (\Brick\Math\Exception\NumberFormatException $e) {
-            return response()->json(['message' => 'Error al procesar una propiedad por no tener un número válido. Evita que exceda del tamaño límite.'], 400);
+
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Error al procesar una propiedad por no tener un número válido. Evita que exceda del tamaño límite.'], 400);
+            }
+
+            return 'Error al procesar una propiedad por no tener un número válido. Evita que exceda del tamaño límite.';
         }
 
         if ($validator->fails()) {
-            return response()->json(['message' => $validator->errors()->first()], 400);
+
+            if ($request->expectsJson()) {
+                return response()->json(['message' => $validator->errors()->first()], 400);
+            }
+            return $validator->errors()->first();
         } else {
             return null;
         }
