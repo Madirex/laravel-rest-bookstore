@@ -84,6 +84,14 @@ class CartCodeController extends Controller
         $cartcode->available_uses = $request->input('available_uses');
         $cartcode->expiration_date = $request->input('expiration_date');
 
+        if ($cartcode->percent_discount == 0 && $cartcode->fixed_discount == 0) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Debe de haber un descuento'], 400);
+            }
+            flash('Debe de haber un descuento')->error()->important();
+            return redirect()->back();
+        }
+
         $cartcode->save();
 
         // Convertir los valores a números flotantes
@@ -128,6 +136,16 @@ class CartCodeController extends Controller
         $cartcode->fixed_discount = $request->input('fixed_discount');
         $cartcode->available_uses = $request->input('available_uses');
         $cartcode->expiration_date = $request->input('expiration_date');
+
+
+        if ($cartcode->percent_discount == 0 && $cartcode->fixed_discount == 0) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Debe de haber un descuento'], 400);
+            }
+            flash('Debe de haber un descuento')->error()->important();
+            return redirect()->back();
+        }
+
         $cartcode->save();
 
         // Convertir los valores a números flotantes
