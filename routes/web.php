@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\CartCodeController;
 use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,6 +30,16 @@ Route::group(['prefix' => 'books'], function () {
     Route::delete('/{book}', [BookController::class, 'destroy'])->name('books.destroy')->middleware(['auth', 'admin']);
     Route::get('/{book}/edit-image', [BookController::class, 'editImage'])->name('books.editImage')->middleware(['auth', 'admin']);
     Route::patch('/{book}/edit-image', [BookController::class, 'updateImage'])->name('books.updateImage')->middleware(['auth', 'admin']);
+});
+
+Route::group(['prefix' => 'cartcodes'], function () {
+    Route::get('/', [CartCodeController::class, 'index'])->name('cartcodes.index')->middleware(['auth', 'admin']);
+    Route::get('/create', [CartCodeController::class, 'create'])->name('cartcodes.create')->middleware(['auth', 'admin']);
+    Route::post('/', [CartCodeController::class, 'store'])->name('cartcodes.store')->middleware(['auth', 'admin']);
+    Route::get('/{cartcode}', [CartCodeController::class, 'show'])->name('cartcodes.show');
+    Route::get('/{cartcode}/edit', [CartCodeController::class, 'edit'])->name('cartcodes.edit')->middleware(['auth', 'admin']);
+    Route::put('/{cartcode}', [CartCodeController::class, 'update'])->name('cartcodes.update')->middleware(['auth', 'admin']);
+    Route::delete('/{cartcode}', [CartCodeController::class, 'destroy'])->name('cartcodes.destroy')->middleware(['auth', 'admin']);
 });
 
 Route::group(['prefix' => 'categories'], function () {
