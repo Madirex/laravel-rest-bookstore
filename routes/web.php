@@ -3,6 +3,7 @@
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CartCodeController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -51,5 +52,10 @@ Route::group(['prefix' => 'categories'], function () {
     Route::put('/{category}', [CategoryController::class, 'update'])->name('categories.update')->middleware(['auth', 'admin']);
     Route::delete('/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy')->middleware(['auth', 'admin']);
 });
+
+Route::group(['prefix' => 'users'], function () {
+    Route::get('/profile', [UserController::class, 'show'])->name('users.profile')->middleware('auth');
+});
+
 
 Auth::routes();

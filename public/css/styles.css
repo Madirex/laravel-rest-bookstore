@@ -85,3 +85,15 @@ div.nav-username{
     position: relative;
     display: inline-block;
 }
+
+
+/* Estilo para los enlaces */
+.nav-username a {
+    color: #417eff;
+    text-decoration: none;
+}
+
+/* Estilo para cuando se pasa el ratón sobre el enlace */
+.nav-username a:hover {
+    color: #d7d7d7;
+}

@@ -18,6 +18,14 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->enum('role', ['admin', 'user'])->default('user');
+            $table->string('surname');
+            $table->string('username')->unique();
+            $table->boolean('isDeleted')->default(false);
+            $table->string('phone');
+            $table->string('address'); //TODO: cambiar por address_id
+            $table->string('image');
+            $table->string('cart');
+            $table->json('orders');
             $table->rememberToken();
             $table->timestamps();
         });
