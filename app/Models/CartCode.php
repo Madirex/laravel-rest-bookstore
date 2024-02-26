@@ -28,4 +28,15 @@ class CartCode extends Model
         });
     }
 
+    /**
+     * Busca por nombre de CartCode
+     * @param $query mixed consulta
+     * @param $search string búsqueda
+     * @return mixed mixed
+     */
+    public function scopeSearch($query, $search)
+    {
+        return $query->whereRaw('LOWER(code) LIKE ?', ["%" . strtolower($search) . "%"]);
+    }
+
 }
