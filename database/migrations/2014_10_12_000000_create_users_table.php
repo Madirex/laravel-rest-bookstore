@@ -21,9 +21,9 @@ return new class extends Migration
             $table->string('surname');
             $table->string('username')->unique();
             $table->boolean('isDeleted')->default(false);
-            $table->string('phone');
-            $table->string('address'); //TODO: cambiar por address_id
-            $table->string('image');
+            $table->string('phone')->default('');
+            $table->string('address')->default('');; //TODO: cambiar por address_id
+            $table->string('image')->default('/images/book.png');
             $table->string('cart');
             $table->json('orders');
             $table->rememberToken();

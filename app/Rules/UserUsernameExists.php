@@ -2,13 +2,13 @@
 
 namespace App\Rules;
 
-use App\Models\CartCode;
+use App\Models\User;
 use Illuminate\Contracts\Validation\Rule;
 
 /**
- * Class CartCodeCodeExists
+ * Class UserUsernameExists
  */
-class CartCodeCodeExists implements Rule
+class UserUsernameExists implements Rule
 {
     /**
      * Determine if the validation rule passes.
@@ -19,7 +19,7 @@ class CartCodeCodeExists implements Rule
     public function passes($attribute, $value)
     {
         $value = trim(strtolower($value));
-        return !CartCode::where('code', 'ILIKE', $value)->exists();
+        return !User::where('username', 'ILIKE', $value)->exists();
     }
 
     /**
@@ -28,6 +28,6 @@ class CartCodeCodeExists implements Rule
      */
     public function message()
     {
-        return 'El CartCode ya existe.';
+        return 'El nombre de usuario (username) ya existe.';
     }
 }

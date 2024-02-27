@@ -6,7 +6,7 @@ use App\Models\Category;
 use Illuminate\Contracts\Validation\Rule;
 
 /**
- * Class CategoryNameNotExists
+ * Class CategoryNameExists
  */
 class CategoryNameExists implements Rule
 {

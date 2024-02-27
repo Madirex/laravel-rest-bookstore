@@ -39,7 +39,7 @@
                     @guest
                         <a class="nav-link" href="{{ route('register') }}">Registro</a>
                     @else
-                        <div class="nav-username"><a href="{{ route('users.profile') }}">{{ auth()->user()->name }}</a></div>
+                        <div class="nav-username"><a href="{{ route('users.profile') }}">{{ auth()->user()->username }}</a></div>
                     @endguest
                 </li>
                 <li class="nav-item">
