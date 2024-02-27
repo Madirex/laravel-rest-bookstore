@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Rules\CheckCorrectPassword;
 use App\Rules\UserUsernameExists;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 /**
  * The UserController class.
@@ -61,10 +63,9 @@ class UserController extends Controller
     public function update(Request $request)
     {
         $user = Auth::user();
-        $request->validate(rules());
+        $request->validate($this->rules());
         $user->name = $request->name;
         $user->email = $request->email;
-        $user->password = $request->password;
         $user->username = $request->username;
         $user->surname = $request->surname;
         $user->phone = $request->phone;
@@ -72,7 +73,7 @@ class UserController extends Controller
         $user->save();
 
         flash('Detalles de la cuenta actualizados con éxito')->success()->important();
-        return redirect()->route('user.show');
+        return redirect()->route('users.profile');
     }
 
     /**
@@ -82,11 +83,13 @@ class UserController extends Controller
      */
     public function rules()
     {
+        $user = Auth::user();
+
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'username' => ['required', 'string', 'max:255', new UserUsernameExists],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'password' => ['required', new CheckCorrectPassword],
+            'username' => ['required', 'string', 'max:255', 'unique:users,username,' . $user->id],
             'surname' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:255'],
             'address' => ['required', 'string', 'max:255'],

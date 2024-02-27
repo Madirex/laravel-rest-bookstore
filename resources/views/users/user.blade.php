@@ -18,10 +18,12 @@
         </div>
     </div>
 
-    <!-- TODO: MODIFICAR PERFIL -->
     <!-- TODO: VER ORDERS (facturas) -->
 
     <br/>
+
+    <a href="{{ route('user.edit', $user) }}" class="btn btn-primary">Editar perfil</a>
+
     <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">
         Eliminar cuenta
     </button>
@@ -38,8 +40,10 @@
                 <div class="modal-body">
                     ¿Estás seguro de que quieres eliminar tu cuenta? Esta acción no se puede deshacer.
                 </div>
+
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+
                     <form method="POST" action="/user">
                         @csrf
                         @method('DELETE')
