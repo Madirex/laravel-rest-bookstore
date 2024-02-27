@@ -23,6 +23,18 @@
         <div class="custom-card">
             <div class="card-header">{{ __('Login') }}</div>
 
+            <!-- errors -->
+            @if ($errors->any())
+                <div class="alert alert-danger alert-dismissible">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                <br/>
+            @endif
+
             <div class="card-body">
                 <form method="POST" action="{{ route('login') }}" class="custom-form">
                     @csrf
