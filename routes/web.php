@@ -57,5 +57,6 @@ Route::group(['prefix' => 'users'], function () {
     Route::get('/profile', [UserController::class, 'show'])->name('users.profile')->middleware('auth');
 });
 
+Route::delete('/user', [UserController::class, 'delete'])->middleware('auth');
 
 Auth::routes();

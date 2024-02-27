@@ -20,4 +20,24 @@ class UserController extends Controller
         return view('users.user')->with('user', $user);
     }
 
+    /**
+     * Delete the authenticated user.
+     *
+     * @return \Illuminate\Http\RedirectResponse Redirect to the home page.
+     */
+    public function delete()
+    {
+        $user = Auth::user();
+        Auth::logout();
+
+        if ($user->delete()) {
+            //mensaje
+            flash('Cuenta eliminada')->success()->important();
+            return redirect()->route('books.index');
+        }
+
+        flash('No se pudo eliminar la cuenta')->error()->important();
+        return redirect()->back();
+    }
+
 }
