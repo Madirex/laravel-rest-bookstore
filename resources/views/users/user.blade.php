@@ -1,3 +1,5 @@
+@php use App\Models\User; @endphp
+
 @extends('main')
 @section('title', 'Detalles del usuario')
 @section('content')
@@ -6,6 +8,11 @@
     <div class="card">
         <div class="card-body">
             <h5 class="card-title"><i class="fas fa-user"></i> {{ $user->username }}</h5>
+            @if($user->image != User::$IMAGE_DEFAULT)
+                <img alt="Imagen de la cuenta" class="rounded float-left" width="150" height="150" style="margin: 15px" src="{{ asset('storage/' . $user->image) }}">
+            @else
+                <img alt="Imagen por defecto" class="rounded float-left" width="150" height="150" style="margin: 15px" src="{{ '/' . User::$IMAGE_DEFAULT }}">
+            @endif
             <br/>
             <p class="card-text"><i class="fas fa-id-card"></i> Nombre: {{ $user->name }} {{ $user->surname }}</p>
             <p class="card-text"><i class="fas fa-envelope"></i> Email: {{ $user->email }}</p>
@@ -14,7 +21,6 @@
             <p class="card-text"><i class="fas fa-user-tag"></i> Rol: {{ $user->role }}</p>
             <p class="card-text"><i class="fas fa-calendar-alt"></i> Fecha de creación: {{ $user->created_at }}</p>
             <p class="card-text"><i class="fas fa-sync-alt"></i> Fecha de actualización: {{ $user->updated_at }}</p>
-            <!-- TODO: IMAGE -->
         </div>
     </div>
 
@@ -23,6 +29,8 @@
     <br/>
 
     <a href="{{ route('user.edit', $user) }}" class="btn btn-primary">Editar perfil</a>
+    <a href="{{ route('password.request') }}" class="btn btn-secondary">Cambiar contraseña</a>
+    <a href="{{ route('users.editImage') }}" class="btn btn-info">Cambiar imagen</a>
 
     <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">
         Eliminar cuenta

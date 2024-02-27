@@ -61,5 +61,10 @@ Route::put('/user/{user}', [UserController::class, 'update'])->name('user.update
 
 Route::delete('/user', [UserController::class, 'delete'])->middleware('auth');
 Route::get('/user/{user}/edit', [UserController::class, 'edit'])->name('user.edit');
+Route::get('/users/edit-image', [UserController::class, 'editImage'])->name('users.editImage')->middleware('auth');
+Route::post('/users/edit-image', [UserController::class, 'updateImage'])->name('users.updateImage')->middleware('auth');
+
+Route::get('/user/password', [UserController::class, 'showChangePasswordForm'])->name('user.password');
+Route::post('/user/password', [UserController::class, 'changePassword'])->name('user.password.update');
 
 Auth::routes();

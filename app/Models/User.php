@@ -15,6 +15,8 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    public static $IMAGE_DEFAULT = 'images/user.png';
+
     /**
      * The attributes that are mass assignable.
      *

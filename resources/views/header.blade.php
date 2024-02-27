@@ -1,3 +1,5 @@
+@php use App\Models\User; @endphp
+
 <header>
     <nav class="navbar navbar-expand-lg navbar-dark">
         <a class="navbar-brand" href="{{ url('/') }}">
@@ -39,8 +41,16 @@
                     @guest
                         <a class="nav-link" href="{{ route('register') }}">Registro</a>
                     @else
-                        <div class="nav-username"><a href="{{ route('users.profile') }}">{{ auth()->user()->username }}</a></div>
-                    @endguest
+                        <div class="nav-username">
+                            <a href="{{ route('users.profile') }}">
+                                @if(auth()->user()->image != User::$IMAGE_DEFAULT)
+                                    <img src="{{ asset('storage/' . auth()->user()->image) }}" class="rounded" width="30" height="30">
+                                @else
+                                    <img src="{{ '/' . User::$IMAGE_DEFAULT }}" class="rounded" width="30" height="30">
+                                @endif
+                                {{ ucfirst(strtolower(auth()->user()->username)) }}
+                            </a>
+                        </div>                    @endguest
                 </li>
                 <li class="nav-item">
                     @guest

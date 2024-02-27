@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Rules\CheckCorrectPassword;
-use App\Rules\UserUsernameExists;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use App\Models\User;
 
 /**
  * The UserController class.
@@ -31,16 +32,59 @@ class UserController extends Controller
     public function delete()
     {
         $user = Auth::user();
+        $this->removeUserImage($user);
         Auth::logout();
+        $user->isDeleted = true;
+        $user->save();
+        flash('Cuenta eliminada')->success()->important();
+        return redirect()->route('books.index');
+    }
 
-        if ($user->delete()) {
-            //mensaje
-            flash('Cuenta eliminada')->success()->important();
-            return redirect()->route('books.index');
+    /**
+     * Edit the authenticated user's image.
+     *
+     * @return \Illuminate\View\View The edit image view.
+     */
+    public function editImage()
+    {
+        $user = Auth::user();
+        return view('users.image')->with('user', $user);
+    }
+
+    /**
+     * Update the authenticated user's image.
+     *
+     * @param \Illuminate\Http\Request $request The request
+     * @return \Illuminate\Http\RedirectResponse Redirect to the user details page.
+     */
+    public function updateImage(Request $request)
+    {
+        $user = Auth::user();
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+        $this->removeUserImage($user);
+        $image = $request->file('image');
+        $extension = $image->getClientOriginalExtension();
+        $fileToSave = $user->id . '.' . $extension;
+        $user->image = $image->storeAs('users', $fileToSave, 'public');
+        $user->save();
+
+        flash('Imagen del usuario actualizada con éxito')->success()->important();
+        return redirect()->route('users.profile');
+    }
+
+    /**
+     * Remove the authenticated user's image.
+     *
+     * @param $user User
+     * @return void
+     */
+    public function removeUserImage($user): void
+    {
+        if ($user->image != User::$IMAGE_DEFAULT && Storage::exists('public/' . $user->image)) {
+            Storage::delete('public/' . $user->image);
         }
-
-        flash('No se pudo eliminar la cuenta')->error()->important();
-        return redirect()->back();
     }
 
     /**
@@ -95,5 +139,4 @@ class UserController extends Controller
             'address' => ['required', 'string', 'max:255'],
         ];
     }
-
 }

@@ -23,7 +23,7 @@ return new class extends Migration
             $table->boolean('isDeleted')->default(false);
             $table->string('phone')->default('');
             $table->string('address')->default('');; //TODO: cambiar por address_id
-            $table->string('image')->default('/images/book.png');
+            $table->string('image')->default('images/user.png');
             $table->string('cart');
             $table->json('orders');
             $table->rememberToken();

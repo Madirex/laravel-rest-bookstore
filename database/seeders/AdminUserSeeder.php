@@ -23,7 +23,7 @@ class AdminUserSeeder extends Seeder
                 'isDeleted' => false,
                 'phone' => '123456789',
                 'address' => 'Calle Admin, 1',
-                'image' => '/images/book.png',
+                'image' => '/images/nullers.png',
                 'cart' => '',
                 'orders' => '[]',
                 'created_at' => now(),
