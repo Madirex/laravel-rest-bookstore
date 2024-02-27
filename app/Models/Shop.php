@@ -31,9 +31,9 @@ class Shop extends Model
      * Relación con la tabla libros
      * @return mixed mixed
      */
-    public function book()
+    public function books()
     {
-        return $this->belongsTo(Category::class);
+        return $this->hasMany(Book::class);
     }
 
     /**
