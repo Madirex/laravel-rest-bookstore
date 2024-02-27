@@ -28,9 +28,9 @@
                     @csrf
 
                     <div class="custom-input-group">
-                        <label for="email" class="custom-label">{{ __('Email') }}</label>
-                        <input id="email" type="email" class="custom-input @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
-                        @error('email')
+                        <label for="login" class="custom-label">{{ __('Email o Nombre de Usuario') }}</label>
+                        <input id="login" type="text" class="custom-input @error('login') is-invalid @enderror" name="login" value="{{ old('login') }}" required autocomplete="login" autofocus>
+                        @error('login')
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>
                         </span>
