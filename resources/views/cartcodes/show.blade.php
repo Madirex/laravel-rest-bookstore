@@ -10,7 +10,7 @@
                 <p class="card-text"><i class="fas fa-percent"></i> Descuento en porcentaje: {{ $cartcode->percent_discount }}%</p>
             @endif
             @if($cartcode->fixed_discount > 0)
-                <p class="card-text"><i class="fas fa-dollar-sign"></i> Descuento fijo: {{ $cartcode->fixed_discount }}</p>
+                <p class="card-text"><i class="fas fa-euro-sign"></i> Descuento fijo: {{ $cartcode->fixed_discount }}</p>
             @endif
             <p class="card-text"><i class="fas fa-box-open"></i> Usos disponibles: {{ $cartcode->available_uses }}</p>
             <p class="card-text"><i class="fas fa-calendar-alt"></i> Fecha de expiración: {{ $cartcode->expiration_date }}</p>
