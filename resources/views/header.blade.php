@@ -30,6 +30,7 @@
                         <div class="dropdown-menu" aria-labelledby="adminDropdown">
                             <a class="dropdown-item" href="{{ route('cartcodes.index') }}">Gestionar códigos de tienda</a>
                             <a class="dropdown-item" href="{{ route('users.admin.index') }}">Gestionar usuarios</a>
+                            <a class="dropdown-item" href="{{ route('addresses.index') }}">Gestionar direcciones</a>
                         </div>
                     @endif
                 </li>
