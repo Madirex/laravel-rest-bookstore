@@ -3,6 +3,7 @@
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CartCodeController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -36,7 +37,6 @@ if (env('DEVELOP_MODE') == 'true') {
         Route::put('users/{id}', [UserController::class, 'updateUser']);
         Route::post('users/{id}/update-image', [UserController::class, 'updateImageUser']);
         Route::apiResource('users', UserController::class);
-
         Route::apiResource('addresses', AddressController::class);
     });
 }

@@ -13,21 +13,11 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             CategoriesTableSeeder::class,
-        ]);
-
-        $this->call([
             CartCodesTableSeeder::class,
-        ]);
-
-        $this->call([
             BooksTableSeeder::class,
-        ]);
-
-        $this->call([
             UserSeeder::class,
-        ]);
-
-        $this->call([
+            AdminUserSeeder::class,
+            CartSeeder::class,
             AddressTableSeeder::class,
         ]);
     }
