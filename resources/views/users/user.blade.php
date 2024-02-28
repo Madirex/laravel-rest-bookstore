@@ -36,7 +36,48 @@
                     <p class="card-text"><i class="fas fa-globe"></i> País: {{ $user->address->country }}</p>
                     <p class="card-text"><i class="fas fa-mail-bulk"></i> Código
                         postal: {{ $user->address->postal_code }}</p>
+                    <a class="btn btn-secondary" href="{{route('users.address.edit', $user) }}"><i class="fas fa-edit"></i> Editar dirección</a>
+                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteAddressModal">
+                        Eliminar dirección
+                    </button>
                 </div>
+            </div>
+
+            <div class="modal fade" id="deleteAddressModal" tabindex="-1" role="dialog" aria-labelledby="deleteAddressModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteAddressModalLabel">Eliminar dirección</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            ¿Estás seguro de que quieres eliminar tu dirección? Esta acción no se puede deshacer.
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+
+                            <form method="POST" action="{{ route('user.address.delete', $user->address->id) }}">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger">Eliminar</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    @else
+        <br/>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-map-marker-alt"></i> Dirección</h5>
+                <p class="card-text">No tienes una dirección registrada.</p>
+                <a href="{{ route('users.address.create', $user) }}" class="btn btn-primary">Crear dirección</a>
             </div>
         </div>
     @endif
