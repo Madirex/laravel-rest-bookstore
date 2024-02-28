@@ -31,11 +31,19 @@ class User extends Authenticatable
         'username',
         'isDeleted',
         'phone',
-        'address',
         'image',
         'cart',
-        'orders'
+        'orders',
     ];
+
+    /**
+     * Relación con la tabla Address
+     * @return mixed mixed
+     */
+    public function address()
+    {
+        return $this->morphOne(Address::class, 'addressable');
+    }
 
     /**
      * The attributes that should be hidden for serialization.
