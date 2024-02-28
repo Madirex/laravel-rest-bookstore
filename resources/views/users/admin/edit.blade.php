@@ -40,10 +40,6 @@
             <label for="phone">Teléfono:</label>
             <input class="form-control" id="phone" name="phone" type="text" required value="{{$user->phone}}">
         </div>
-        <div class="form-group">
-            <label for="address">Dirección:</label>
-            <input class="form-control" id="address" name="address" type="text" required value="{{$user->address}}">
-        </div>
         <button class="btn btn-primary" type="submit">Guardar cambios</button>
         <a class="btn btn-secondary mx-2" href="{{ route('users.admin.index') }}">Volver</a>
     </form>

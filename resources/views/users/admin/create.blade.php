@@ -41,10 +41,6 @@
             <input class="form-control" id="phone" name="phone" type="text" required>
         </div>
         <div class="form-group">
-            <label for="address">Dirección:</label>
-            <input class="form-control" id="address" name="address" type="text" required>
-        </div>
-        <div class="form-group">
             <label for="password">Contraseña:</label>
             <input class="form-control" id="password" name="password" type="password" required>
         </div>

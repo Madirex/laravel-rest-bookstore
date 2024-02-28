@@ -18,8 +18,6 @@
             <p class="card-text"><i class="fas fa-phone"></i> Teléfono: {{ $user->phone }}</p>
             <p class="card-text"><i class="fas fa-map-marker-alt"></i> Dirección: {{ $user->address }}</p>
             <p class="card-text"><i class="fas fa-user-tag"></i> Rol: {{ $user->role }}</p>
-            <p class="card-text"><i class="fas fa-calendar-alt"></i> Fecha de creación: {{ $user->created_at }}</p>
-            <p class="card-text"><i class="fas fa-sync-alt"></i> Fecha de actualización: {{ $user->updated_at }}</p>
         </div>
     </div>
 
