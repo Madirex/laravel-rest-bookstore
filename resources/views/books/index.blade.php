@@ -24,7 +24,10 @@
                     <div class="book-card">
                         <p class="book-price"><i class="fas fa-euro-sign"></i> {{ $book->price }}</p>
                         <div class="book-header">
-                            <img class="book-image" src="{{ $book->image != Book::$IMAGE_DEFAULT ? asset('storage/' . $book->image) : Book::$IMAGE_DEFAULT }}" alt="Imagen del Book" onerror="this.onerror=null; this.src='http://localhost/images/books.bmp';">
+                            <img class="book-image"
+                                 src="{{ $book->image != Book::$IMAGE_DEFAULT ? asset('storage/' . $book->image) : Book::$IMAGE_DEFAULT }}"
+                                 alt="Imagen del Book"
+                                 onerror="this.onerror=null; this.src='http://localhost/images/books.bmp';">
                             <p class="book-stock"><i class="fas fa-box-open"></i> {{ $book->stock }}</p>
                         </div>
                         <h2 class="book-name">{{ $book->name }}</h2>
@@ -34,23 +37,31 @@
                         <p class="book-description">{{ Illuminate\Support\Str::limit($book->description, 100, '...') }}</p>
                         <p class="book-category">Categoría: {{ $book->category_name }}</p>
                         <div class="book-actions">
-                            <a class="btn btn-primary btn-sm" href="{{ route('books.show', $book->id) }}"><i class="fas fa-info-circle"></i></a>
+                            <a class="btn btn-primary btn-sm" href="{{ route('books.show', $book->id) }}"><i
+                                    class="fas fa-info-circle"></i></a>
                             @if(auth()->check() && auth()->user()->hasRole('admin'))
-                                <a class="btn btn-secondary btn-sm" href="{{ route('books.edit', $book->id) }}"><i class="fas fa-edit"></i></a>
-                                <a class="btn btn-info btn-sm" href="{{ route('books.editImage', $book->id) }}"><i class="fas fa-image"></i></a>
-                                <a class="btn btn-danger btn-sm delete-btn" data-toggle="modal" data-target="#confirmDeleteModal{{ $book->id }}"><i class="fas fa-trash-alt"></i></a>
+                                <a class="btn btn-secondary btn-sm" href="{{ route('books.edit', $book->id) }}"><i
+                                        class="fas fa-edit"></i></a>
+                                <a class="btn btn-info btn-sm" href="{{ route('books.editImage', $book->id) }}"><i
+                                        class="fas fa-image"></i></a>
+                                <a class="btn btn-danger btn-sm delete-btn" data-toggle="modal"
+                                   data-target="#confirmDeleteModal{{ $book->id }}"><i class="fas fa-trash-alt"></i></a>
                             @endif
-                            <form action="{{ route('cart.add') }}" method="POST" style="display:inline;">
-                                @csrf
-                                <input type="hidden" name="book_id" value="{{ $book->id }}">
-                                <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-cart-plus"></i></button>
-                            </form>
+                            @if(auth()->check())
+                                <form action="{{ route('cart.add') }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    <input type="hidden" name="book_id" value="{{ $book->id }}">
+                                    <button type="submit" class="btn btn-success btn-sm"><i
+                                            class="fas fa-cart-plus"></i></button>
+                                </form>
+                            @endif
                         </div>
                     </div>
                 </a>
 
                 <!-- Modal de Confirmación de eliminación -->
-                <div class="modal fade" id="confirmDeleteModal{{ $book->id }}" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+                <div class="modal fade" id="confirmDeleteModal{{ $book->id }}" tabindex="-1" role="dialog"
+                     aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -66,7 +77,8 @@
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
 
                                 <!-- Formulario para eliminar el elemento -->
-                                <form action="{{ route('books.destroy', $book->id) }}" method="POST" style="display: inline;">
+                                <form action="{{ route('books.destroy', $book->id) }}" method="POST"
+                                      style="display: inline;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger">Borrar</button>

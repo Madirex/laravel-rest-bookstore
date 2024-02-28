@@ -35,7 +35,16 @@ class AddressController extends Controller
      */
     public function show($id, Request $request)
     {
-        $address = Address::find($id);
+        try {
+            $address = Address::findOrFail($id);
+        } catch (\Exception $e) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Dirección no encontrada'], 404);
+            }
+
+            flash('Dirección no encontrada')->error();
+            return redirect()->back();
+        }
 
         if (!$address) {
             if ($request->expectsJson()) {
@@ -83,7 +92,16 @@ class AddressController extends Controller
      */
     public function update($id, Request $request)
     {
-        $address = Address::find($id);
+        try {
+            $address = Address::findOrFail($id);
+        } catch (\Exception $e) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Dirección no encontrada'], 404);
+            }
+
+            flash('Dirección no encontrada')->error();
+            return redirect()->back();
+        }
 
         if (!$address) {
             if ($request->expectsJson()) {
@@ -117,7 +135,16 @@ class AddressController extends Controller
      */
     public function destroy($id, Request $request)
     {
-        $address = Address::find($id);
+        try {
+            $address = Address::findOrFail($id);
+        } catch (\Exception $e) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Dirección no encontrada'], 404);
+            }
+
+            flash('Dirección no encontrada')->error();
+            return redirect()->back();
+        }
 
         if (!$address) {
             if ($request->expectsJson()) {
@@ -170,12 +197,12 @@ class AddressController extends Controller
     public function validateAddress(Request $request)
     {
         $request->validate([
-            'street' => 'required',
-            'number' => 'required',
-            'city' => 'required',
-            'province' => 'required',
-            'country' => 'required',
-            'postal_code' => 'required',
+            'street' => ['required', 'max:255'],
+            'number' => ['required', 'max:255'],
+            'city' => ['required', 'max:255'],
+            'province' => ['required', 'max:255'],
+            'country' => ['required', 'max:255'],
+            'postal_code' => ['required', 'max:255'],
             'addressable_id' => 'required',
             'addressable_type' => 'required',
         ]);
@@ -193,4 +220,97 @@ class AddressController extends Controller
         }
         return null;
     }
+
+
+    /** ** ** ** ** ** ** ** **
+     * USUARIOS AUTENTICADOS *
+     * ** ** ** ** ** ** ** ** */
+    /**
+     * @param User $user
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function editUserAddress(User $user)
+    {
+        if ($user->address) {
+            return view('users.address.edit', ['address' => $user->address]);
+        } else {
+            return redirect()->route('users.address.create', ['user' => $user]);
+        }
+    }
+
+    /**
+     * @param User $user
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function createUserAddress(User $user)
+    {
+        return view('users.address.create', ['user' => $user]);
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function storeUserAddress(Request $request)
+    {
+        $data = $request->all();
+        $data['addressable_id'] = auth()->user()->id;
+        $data['addressable_type'] = User::class;
+
+        $validation_bad = $this->validateAddress(new Request($data));
+        if ($validation_bad) {
+            return $validation_bad;
+        }
+
+        $address = new Address($request->all());
+        auth()->user()->address()->save($address);
+
+        flash('Dirección creada correctamente')->success();
+        return redirect()->route('users.profile');
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function updateUserAddress(Request $request)
+    {
+        $data = $request->all();
+        $data['addressable_id'] = auth()->user()->id;
+        $data['addressable_type'] = User::class;
+
+        $validation_bad = $this->validateAddress(new Request($data));
+        if ($validation_bad) {
+            return $validation_bad;
+        }
+
+        $address = auth()->user()->address;
+        $address->fill($request->all());
+        $address->save();
+
+        flash('Dirección actualizada correctamente')->success();
+        return redirect()->route('users.profile');
+    }
+
+    /**
+     * @param Request $request
+     * @param $addressId
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function deleteUserAddress(Request $request, $addressId)
+    {
+        $address = Address::find($addressId);
+
+        if (!$address || $address->addressable_id != auth()->user()->id) {
+            flash('Dirección no encontrada o no pertenece al usuario autenticado')->error();
+            return redirect()->back();
+        }
+
+        $address->delete();
+
+        flash('Dirección eliminada correctamente')->success();
+        return redirect()->route('users.profile');
+    }
+
+
 }

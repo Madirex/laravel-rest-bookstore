@@ -47,7 +47,7 @@
                                 @if(auth()->user()->image != User::$IMAGE_DEFAULT)
                                     <img src="{{ asset('storage/' . auth()->user()->image) }}" class="rounded" width="30" height="30">
                                 @else
-                                    <img src="{{ '/' . User::$IMAGE_DEFAULT }}" class="rounded" width="30" height="30">
+                                    <img src="{{ '/' . User::$IMAGE_DEFAULT }}" style="border: 2px solid black; background-color: white;" class="rounded" width="30" height="30">
                                 @endif
                                 {{ ucfirst(strtolower(auth()->user()->username)) }}
                             </a>
