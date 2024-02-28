@@ -28,7 +28,7 @@
 
     <br/>
 
-    <a href="{{ route('user.edit', $user) }}" class="btn btn-primary">Editar perfil</a>
+    <a href="{{ route('users.edit', $user) }}" class="btn btn-primary">Editar perfil</a>
     <a href="{{ route('password.request') }}" class="btn btn-secondary">Cambiar contraseña</a>
     <a href="{{ route('users.editImage') }}" class="btn btn-info">Cambiar imagen</a>
 

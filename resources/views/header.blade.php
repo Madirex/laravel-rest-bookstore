@@ -29,7 +29,7 @@
                         </a>
                         <div class="dropdown-menu" aria-labelledby="adminDropdown">
                             <a class="dropdown-item" href="{{ route('cartcodes.index') }}">Gestionar códigos de tienda</a>
-                            <!-- Agrega más enlaces de administración aquí -->
+                            <a class="dropdown-item" href="{{ route('users.admin.index') }}">Gestionar usuarios</a>
                         </div>
                     @endif
                 </li>

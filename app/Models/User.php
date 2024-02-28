@@ -66,4 +66,16 @@ class User extends Authenticatable
     {
         return $this->role === $role;
     }
+
+    /**
+     * Busca por username/email de User
+     * @param $query mixed consulta
+     * @param $search string búsqueda
+     * @return mixed mixed
+     */
+    public function scopeSearch($query, $search)
+    {
+        return $query->whereRaw('LOWER(username) LIKE ?', ["%" . strtolower($search) . "%"])
+            ->orWhereRaw('LOWER(email) LIKE ?', ["%" . strtolower($search) . "%"]);
+    }
 }

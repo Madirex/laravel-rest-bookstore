@@ -57,10 +57,22 @@ Route::group(['prefix' => 'users'], function () {
     Route::get('/profile', [UserController::class, 'show'])->name('users.profile')->middleware('auth');
 });
 
+Route::group(['prefix' => 'users', 'middleware' => ['auth', 'admin']], function () {
+    Route::get('/', [UserController::class, 'index'])->name('users.admin.index');
+    Route::get('/users/create', [UserController::class, 'create'])->name('users.admin.create');
+    Route::get('/users/{user}', [UserController::class, 'showUser'])->name('users.admin.show');
+    Route::delete('/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+    Route::get('/{user}/edit', [UserController::class, 'editUser'])->name('users.admin.edit');
+    Route::put('/{user}', [UserController::class, 'updateUser'])->name('users.update');
+    Route::get('/{user}/edit-image', [UserController::class, 'editImageUser'])->name('users.admin.image');
+    Route::post('/{user}/edit-image', [UserController::class, 'updateImageUser'])->name('users.updateImage');
+    Route::post('/users', [UserController::class, 'store'])->name('users.admin.store');
+});
+
 Route::put('/user/{user}', [UserController::class, 'update'])->name('user.update');
 
 Route::delete('/user', [UserController::class, 'delete'])->middleware('auth');
-Route::get('/user/{user}/edit', [UserController::class, 'edit'])->name('user.edit');
+Route::get('/user/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
 Route::get('/users/edit-image', [UserController::class, 'editImage'])->name('users.editImage')->middleware('auth');
 Route::post('/users/edit-image', [UserController::class, 'updateImage'])->name('users.updateImage')->middleware('auth');
 

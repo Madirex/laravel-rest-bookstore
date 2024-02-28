@@ -211,6 +211,34 @@ div.nav-username {
     color: #333;
 }
 
+/* users */
+.user-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.user-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.user-actions {
+    display: flex;
+    gap: 10px;
+}
+
 /* categories */
 .category-container {
     display: flex;
