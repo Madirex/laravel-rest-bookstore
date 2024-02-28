@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AddressController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CartCodeController;
 use App\Http\Controllers\CategoryController;
@@ -25,22 +26,17 @@ if (env('DEVELOP_MODE') == 'true') {
 
     Route::prefix('v1')->group(function () {
         Route::apiResource('categories', CategoryController::class);
-    });
 
-    Route::prefix('v1')->group(function () {
         Route::apiResource('cartcodes', CartCodeController::class);
-    });
 
-    Route::prefix('v1')->group(function () {
         Route::apiResource('books', BookController::class);
-    });
+        Route::post('books/{id}/update-image', [BookController::class, 'updateImage']);
 
-    Route::post('v1/books/{id}/update-image', [BookController::class, 'updateImage']);
-
-    Route::prefix('v1')->group(function () {
         Route::get('users/{id}', [UserController::class, 'showUser']);
         Route::put('users/{id}', [UserController::class, 'updateUser']);
         Route::post('users/{id}/update-image', [UserController::class, 'updateImageUser']);
         Route::apiResource('users', UserController::class);
+
+        Route::apiResource('addresses', AddressController::class);
     });
 }

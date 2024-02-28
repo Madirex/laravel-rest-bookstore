@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AddressController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CartCodeController;
 use App\Http\Controllers\CategoryController;
@@ -78,5 +79,16 @@ Route::post('/users/edit-image', [UserController::class, 'updateImage'])->name('
 
 Route::get('/user/password', [UserController::class, 'showChangePasswordForm'])->name('user.password');
 Route::post('/user/password', [UserController::class, 'changePassword'])->name('user.password.update');
+
+Route::group(['prefix' => 'addresses'], function () {
+    Route::get('/', [AddressController::class, 'index'])->name('addresses.index');
+    Route::get('/create', [AddressController::class, 'create'])->name('addresses.create')->middleware(['auth', 'admin']);
+    Route::post('/', [AddressController::class, 'store'])->name('addresses.store')->middleware(['auth', 'admin']);
+    Route::get('/{address}', [AddressController::class, 'show'])->name('addresses.show');
+    Route::get('/{address}/edit', [AddressController::class, 'edit'])->name('addresses.edit')->middleware(['auth', 'admin']);
+    Route::put('/{address}', [AddressController::class, 'update'])->name('addresses.update')->middleware(['auth', 'admin']);
+    Route::delete('/{address}', [AddressController::class, 'destroy'])->name('addresses.destroy')->middleware(['auth', 'admin']);
+});
+
 
 Auth::routes();
