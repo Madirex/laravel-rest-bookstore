@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CartCodeController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -17,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-if (env('DEVELOP_MODE') == 'true') {
+//if (env('DEVELOP_MODE') == 'true') {
     Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         return $request->user();
     });
@@ -35,4 +36,5 @@ if (env('DEVELOP_MODE') == 'true') {
     });
 
     Route::post('v1/books/{id}/update-image', [BookController::class, 'updateImage']);
-}
+//}
+
