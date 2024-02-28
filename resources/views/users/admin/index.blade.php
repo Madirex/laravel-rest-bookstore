@@ -36,10 +36,12 @@
 
                     </div>
                     <div class="user-actions">
-                        <a class="btn btn-primary btn-sm" href="{{ route('users.admin.show', $user->id) }}"><i class="fas fa-info-circle"></i> Detalles</a>
+                        <a class="btn btn-primary btn-sm" href="{{ route('users.admin.show', $user->id) }}"><i class="fas fa-info-circle"></i></a>
                         @if(auth()->check() && auth()->user()->hasRole('admin'))
-                            <a class="btn btn-secondary btn-sm" href="{{ route('users.admin.edit', $user->id) }}"><i class="fas fa-edit"></i> Editar</a>
-                            <a class="btn btn-danger btn-sm delete-btn" data-toggle="modal" data-target="#confirmDeleteModal{{ $user->id }}"><i class="fas fa-trash-alt"></i> Eliminar</a>
+                            <a class="btn btn-secondary btn-sm" href="{{ route('users.admin.edit', $user->id) }}"><i class="fas fa-edit"></i></a>
+                            <a class="btn btn-info btn-sm" href="{{ route('users.admin.image', $user->id) }}"><i class="fas fa-image"></i></a>
+
+                            <a class="btn btn-danger btn-sm delete-btn" data-toggle="modal" data-target="#confirmDeleteModal{{ $user->id }}"><i class="fas fa-trash-alt"></i></a>
                         @endif
                     </div>
                 </div>

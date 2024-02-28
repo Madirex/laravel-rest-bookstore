@@ -30,5 +30,7 @@
     {{-- Si el usuario es administrador --}}
     @if(auth()->check() && auth()->user()->hasRole('admin'))
         <a class="btn btn-secondary" href="{{ route('users.admin.edit', $user->id) }}"><i class="fas fa-edit"></i> Editar</a>
+        <a class="btn btn-info" href="{{ route('users.admin.image', $user->id) }}"><i class="fas fa-image"></i> Editar imagen</a>
+
     @endif
 @endsection

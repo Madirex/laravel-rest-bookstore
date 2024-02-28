@@ -80,7 +80,7 @@ class UserController extends Controller
         $fileToSave = $user->id . '.' . $extension;
         $user->image = $image->storeAs('users', $fileToSave, 'public');
         $user->save();
-        flash('User image updated successfully')->success()->important();
+        flash('Imagen de usuario actualizada correctamente')->success()->important();
         return redirect()->route('users.admin.show', $user);
     }
 
@@ -192,7 +192,7 @@ class UserController extends Controller
     }
 
     /**
-     * Edit the authenticated user's image.
+     * Edit the authenticated user's image
      *
      * @return \Illuminate\View\View The edit image view.
      */
@@ -203,7 +203,7 @@ class UserController extends Controller
     }
 
     /**
-     * Update the authenticated user's image.
+     * Update the authenticated user's image
      *
      * @param \Illuminate\Http\Request $request The request
      * @return \Illuminate\Http\RedirectResponse Redirect to the user details page.
@@ -226,7 +226,7 @@ class UserController extends Controller
     }
 
     /**
-     * Remove the authenticated user's image.
+     * Remove the authenticated user's image
      *
      * @param $user User
      * @return void
