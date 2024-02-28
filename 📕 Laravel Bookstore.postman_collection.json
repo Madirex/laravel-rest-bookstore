@@ -1662,7 +1662,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"name\": \"BookTest\",\r\n    \"description\": \"test\",\r\n    \"isbn\": \"979-8354235865\",\r\n    \"author\": \"Madirex\",\r\n    \"publisher\": \"Madirex\",\r\n    \"price\": 3.33,\r\n    \"stock\": 34,\r\n    \"category_name\": \"TERROR\"\r\n}",
+									"raw": "{\r\n    \"name\": \"Booktest\",\r\n    \"description\": \"test\",\r\n    \"isbn\": \"979-8354235865\",\r\n    \"author\": \"Madirex\",\r\n    \"publisher\": \"Madirex\",\r\n    \"price\": 3.33,\r\n    \"stock\": 34,\r\n    \"category_name\": \"TERROR\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1883,6 +1883,420 @@
 							],
 							"path": [
 								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "🔴 Casos incorrectos",
+					"item": [
+						{
+							"name": "Get By Id User - Bad Id",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}users/asdada",
+									"host": [
+										"{{url}}users"
+									],
+									"path": [
+										"asdada"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Post User - Repeat username and email",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"aDmIn\",\r\n    \"email\": \"angel@madirex.com\",\r\n    \"username\": \"aDmIn\",\r\n    \"surname\": \"createtest\",\r\n    \"phone\": \"1234567890\",\r\n    \"address\": \"123 Main St\",\r\n    \"password\": \"password123\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}users",
+									"host": [
+										"{{url}}users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Post User - Limits",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456\",\r\n    \"email\": \"1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456\",\r\n    \"username\": \"1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456\",\r\n    \"surname\": \"1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456\",\r\n    \"phone\": \"1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456\",\r\n    \"address\": \"1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456\",\r\n    \"password\": \"1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}users",
+									"host": [
+										"{{url}}users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Put User - Bad Id",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Ejemplo2sddsf\",\r\n    \"description\": \"Descripción\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}users/sdf",
+									"host": [
+										"{{url}}users"
+									],
+									"path": [
+										"sdf"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Put User - Repeat username and email",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"aDmIn\",\r\n    \"email\": \"angel@madirex.com\",\r\n    \"username\": \"aDmIn\",\r\n    \"surname\": \"createtest\",\r\n    \"phone\": \"1234567890\",\r\n    \"address\": \"123 Main St\",\r\n    \"password\": \"password123\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}users/2",
+									"host": [
+										"{{url}}users"
+									],
+									"path": [
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Put User - Limits",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456\",\r\n    \"email\": \"1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456\",\r\n    \"username\": \"1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456\",\r\n    \"surname\": \"1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456\",\r\n    \"phone\": \"1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456\",\r\n    \"address\": \"1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456\",\r\n    \"password\": \"1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}users/1",
+									"host": [
+										"{{url}}users"
+									],
+									"path": [
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete User - Bad Id",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{url}}users/asdad",
+									"host": [
+										"{{url}}users"
+									],
+									"path": [
+										"asdad"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Post User Update Image - Without image - Bad Id",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "image",
+											"type": "file",
+											"src": "/C:/Users/madir/Pictures/Nullers.png",
+											"disabled": true
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}users/asddasd/update-image",
+									"host": [
+										"{{url}}users"
+									],
+									"path": [
+										"asddasd",
+										"update-image"
+									],
+									"query": [
+										{
+											"key": "_method",
+											"value": "PUT",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Post User Update Image - Without image",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "image",
+											"type": "file",
+											"src": "/C:/Users/madir/Pictures/Nullers.png",
+											"disabled": true
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}users/1/update-image",
+									"host": [
+										"{{url}}users"
+									],
+									"path": [
+										"1",
+										"update-image"
+									],
+									"query": [
+										{
+											"key": "_method",
+											"value": "PUT",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}users",
+							"host": [
+								"{{url}}users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get By Id User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}users/1",
+							"host": [
+								"{{url}}users"
+							],
+							"path": [
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"MadiN2\",\r\n    \"email\": \"madirex12@example.com\",\r\n    \"username\": \"maditest22\",\r\n    \"surname\": \"createtest\",\r\n    \"phone\": \"1234567890\",\r\n    \"address\": \"123 Main St\",\r\n    \"password\": \"password123\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}users",
+							"host": [
+								"{{url}}users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Put User",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Madi2\",\r\n    \"email\": \"madirex2@example.com\",\r\n    \"username\": \"maditest\",\r\n    \"surname\": \"edittest\",\r\n    \"phone\": \"1234567890\",\r\n    \"address\": \"123 Main St\",\r\n    \"password\": \"password123\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}users/2",
+							"host": [
+								"{{url}}users"
+							],
+							"path": [
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}users/1",
+							"host": [
+								"{{url}}users"
+							],
+							"path": [
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post User Update Image",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/C:/Users/madir/Pictures/Nullers.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}users/2/update-image",
+							"host": [
+								"{{url}}users"
+							],
+							"path": [
+								"2",
+								"update-image"
+							],
+							"query": [
+								{
+									"key": "_method",
+									"value": "PUT",
+									"disabled": true
+								}
 							]
 						}
 					},

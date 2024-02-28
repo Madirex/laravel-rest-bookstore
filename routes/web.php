@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AddressController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CartCodeController;
 use App\Http\Controllers\CartController;
@@ -61,6 +62,38 @@ Route::post('/cart', [CartController::class, 'addToCart'])->name('cart.add')->mi
 
 Route::group(['prefix' => 'users'], function () {
     Route::get('/profile', [UserController::class, 'show'])->name('users.profile')->middleware('auth');
+});
+
+Route::group(['prefix' => 'users', 'middleware' => ['auth', 'admin']], function () {
+    Route::get('/', [UserController::class, 'index'])->name('users.admin.index');
+    Route::get('/users/create', [UserController::class, 'create'])->name('users.admin.create');
+    Route::get('/users/{user}', [UserController::class, 'showUser'])->name('users.admin.show');
+    Route::delete('/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+    Route::get('/{user}/edit', [UserController::class, 'editUser'])->name('users.admin.edit');
+    Route::put('/{user}', [UserController::class, 'updateUser'])->name('users.update');
+    Route::get('/{user}/edit-image', [UserController::class, 'editImageUser'])->name('users.admin.image');
+    Route::post('/{user}/edit-image', [UserController::class, 'updateImageUser'])->name('users.admin.updateImage');
+    Route::post('/users', [UserController::class, 'store'])->name('users.admin.store');
+});
+
+Route::put('/user/{user}', [UserController::class, 'update'])->name('user.update');
+
+Route::delete('/user', [UserController::class, 'delete'])->middleware('auth');
+Route::get('/user/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+Route::get('/users/edit-image', [UserController::class, 'editImage'])->name('users.editImage')->middleware('auth');
+Route::post('/users/edit-image', [UserController::class, 'updateImage'])->name('users.updateImage')->middleware('auth');
+
+Route::get('/user/password', [UserController::class, 'showChangePasswordForm'])->name('user.password');
+Route::post('/user/password', [UserController::class, 'changePassword'])->name('user.password.update');
+
+Route::group(['prefix' => 'addresses'], function () {
+    Route::get('/', [AddressController::class, 'index'])->name('addresses.index');
+    Route::get('/create', [AddressController::class, 'create'])->name('addresses.create')->middleware(['auth', 'admin']);
+    Route::post('/', [AddressController::class, 'store'])->name('addresses.store')->middleware(['auth', 'admin']);
+    Route::get('/{address}', [AddressController::class, 'show'])->name('addresses.show');
+    Route::get('/{address}/edit', [AddressController::class, 'edit'])->name('addresses.edit')->middleware(['auth', 'admin']);
+    Route::put('/{address}', [AddressController::class, 'update'])->name('addresses.update')->middleware(['auth', 'admin']);
+    Route::delete('/{address}', [AddressController::class, 'destroy'])->name('addresses.destroy')->middleware(['auth', 'admin']);
 });
 
 

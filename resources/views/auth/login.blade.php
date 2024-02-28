@@ -23,14 +23,26 @@
         <div class="custom-card">
             <div class="card-header">{{ __('Login') }}</div>
 
+            <!-- errors -->
+            @if ($errors->any())
+                <div class="alert alert-danger alert-dismissible">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                <br/>
+            @endif
+
             <div class="card-body">
                 <form method="POST" action="{{ route('login') }}" class="custom-form">
                     @csrf
 
                     <div class="custom-input-group">
-                        <label for="email" class="custom-label">{{ __('Email') }}</label>
-                        <input id="email" type="email" class="custom-input @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
-                        @error('email')
+                        <label for="login" class="custom-label">{{ __('Email o Nombre de Usuario') }}</label>
+                        <input id="login" type="text" class="custom-input @error('login') is-invalid @enderror" name="login" value="{{ old('login') }}" required autocomplete="login" autofocus>
+                        @error('login')
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>
                         </span>

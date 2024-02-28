@@ -29,9 +29,39 @@
                     @csrf
 
                     <div class="custom-input-group">
+                        <label for="username" class="custom-label">{{ __('Nombre de usuario') }}</label>
+                        <input id="username" type="text" class="custom-input @error('username') is-invalid @enderror" name="username" value="{{ old('username') }}" required autocomplete="username" autofocus>
+                        @error('username')
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
+                        @enderror
+                    </div>
+
+                    <div class="custom-input-group">
                         <label for="name" class="custom-label">{{ __('Nombre') }}</label>
                         <input id="name" type="text" class="custom-input @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
                         @error('name')
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
+                        @enderror
+                    </div>
+
+                    <div class="custom-input-group">
+                        <label for="surname" class="custom-label">{{ __('Apellidos') }}</label>
+                        <input id="surname" type="text" class="custom-input @error('surname') is-invalid @enderror" name="surname" value="{{ old('surname') }}" required autocomplete="surname" autofocus>
+                        @error('surname')
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
+                        @enderror
+                    </div>
+
+                    <div class="custom-input-group">
+                        <label for="phone" class="custom-label">{{ __('Teléfono') }}</label>
+                        <input id="phone" type="text" class="custom-input @error('phone') is-invalid @enderror" name="phone" value="{{ old('phone') }}" required autocomplete="phone" autofocus>
+                        @error('phone')
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>
                         </span>

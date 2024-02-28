@@ -22,7 +22,7 @@
             @foreach ($books as $book)
                 <a href="{{ route('books.show', $book->id) }}" class="book-link">
                     <div class="book-card">
-                        <p class="book-price"><i class="fas fa-dollar-sign"></i> {{ $book->price }}</p>
+                        <p class="book-price"><i class="fas fa-euro-sign"></i> {{ $book->price }}</p>
                         <div class="book-header">
                             <img class="book-image" src="{{ $book->image != Book::$IMAGE_DEFAULT ? asset('storage/' . $book->image) : Book::$IMAGE_DEFAULT }}" alt="Imagen del Book" onerror="this.onerror=null; this.src='http://localhost/images/books.bmp';">
                             <p class="book-stock"><i class="fas fa-box-open"></i> {{ $book->stock }}</p>

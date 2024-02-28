@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -16,8 +15,10 @@ class DatabaseSeeder extends Seeder
             CategoriesTableSeeder::class,
             CartCodesTableSeeder::class,
             BooksTableSeeder::class,
+            UserSeeder::class,
             AdminUserSeeder::class,
             CartSeeder::class,
+            AddressTableSeeder::class,
         ]);
     }
 }
