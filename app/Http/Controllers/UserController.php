@@ -149,7 +149,6 @@ class UserController extends Controller
         $user->username = $request->username;
         $user->surname = $request->surname;
         $user->phone = $request->phone;
-        $user->address = $request->address;
         $user->password = Hash::make($request->password);
         $user->image = User::$IMAGE_DEFAULT;
         $user->cart = json_encode("");
@@ -189,7 +188,6 @@ class UserController extends Controller
         $user->username = $request->username;
         $user->surname = $request->surname;
         $user->phone = $request->phone;
-        $user->address = $request->address;
         $user->update();
 
         if ($request->expectsJson()) {
@@ -328,7 +326,6 @@ class UserController extends Controller
         $user->username = $request->username;
         $user->surname = $request->surname;
         $user->phone = $request->phone;
-        $user->address = $request->address;
         $user->save();
 
         flash('Detalles de la cuenta actualizados con éxito')->success()->important();
@@ -354,7 +351,6 @@ class UserController extends Controller
                 'username' => ['required', 'string', 'max:255', new UniqueCaseInsensitive('users', 'username')],
                 'surname' => ['required', 'string', 'max:255'],
                 'phone' => ['required', 'string', 'max:255'],
-                'address' => ['required', 'string', 'max:255'],
             ];
         } else {
             $rules = [
@@ -363,7 +359,6 @@ class UserController extends Controller
                 'username' => ['required', 'string', 'max:255', new UniqueCaseInsensitive('users', 'username', $user->id)],
                 'surname' => ['required', 'string', 'max:255'],
                 'phone' => ['required', 'string', 'max:255'],
-                'address' => ['required', 'string', 'max:255'],
             ];
         }
 
