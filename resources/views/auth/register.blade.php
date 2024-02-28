@@ -69,16 +69,6 @@
                     </div>
 
                     <div class="custom-input-group">
-                        <label for="address" class="custom-label">{{ __('Dirección') }}</label>
-                        <input id="address" type="text" class="custom-input @error('address') is-invalid @enderror" name="address" value="{{ old('address') }}" required autocomplete="address" autofocus>
-                        @error('address')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                        @enderror
-                    </div>
-
-                    <div class="custom-input-group">
                         <label for="email" class="custom-label">{{ __('Email') }}</label>
                         <input id="email" type="email" class="custom-input @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
                         @error('email')
