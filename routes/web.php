@@ -64,8 +64,6 @@ Route::group(['prefix' => 'users', 'middleware' => ['auth', 'admin']], function 
     Route::delete('/{user}', [UserController::class, 'destroy'])->name('users.destroy');
     Route::get('/{user}/edit', [UserController::class, 'editUser'])->name('users.admin.edit');
     Route::put('/{user}', [UserController::class, 'updateUser'])->name('users.update');
-    Route::get('/{user}/edit-image', [UserController::class, 'editImageUser'])->name('users.admin.image');
-    Route::post('/{user}/edit-image', [UserController::class, 'updateImageUser'])->name('users.updateImage');
     Route::post('/users', [UserController::class, 'store'])->name('users.admin.store');
 });
 
