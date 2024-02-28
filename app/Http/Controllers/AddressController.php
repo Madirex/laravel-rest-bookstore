@@ -35,7 +35,16 @@ class AddressController extends Controller
      */
     public function show($id, Request $request)
     {
-        $address = Address::find($id);
+        try {
+            $address = Address::findOrFail($id);
+        } catch (\Exception $e) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Dirección no encontrada'], 404);
+            }
+
+            flash('Dirección no encontrada')->error();
+            return redirect()->back();
+        }
 
         if (!$address) {
             if ($request->expectsJson()) {
@@ -83,7 +92,16 @@ class AddressController extends Controller
      */
     public function update($id, Request $request)
     {
-        $address = Address::find($id);
+        try {
+            $address = Address::findOrFail($id);
+        } catch (\Exception $e) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Dirección no encontrada'], 404);
+            }
+
+            flash('Dirección no encontrada')->error();
+            return redirect()->back();
+        }
 
         if (!$address) {
             if ($request->expectsJson()) {
@@ -117,7 +135,16 @@ class AddressController extends Controller
      */
     public function destroy($id, Request $request)
     {
-        $address = Address::find($id);
+        try {
+            $address = Address::findOrFail($id);
+        } catch (\Exception $e) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Dirección no encontrada'], 404);
+            }
+
+            flash('Dirección no encontrada')->error();
+            return redirect()->back();
+        }
 
         if (!$address) {
             if ($request->expectsJson()) {
@@ -170,12 +197,12 @@ class AddressController extends Controller
     public function validateAddress(Request $request)
     {
         $request->validate([
-            'street' => 'required',
-            'number' => 'required',
-            'city' => 'required',
-            'province' => 'required',
-            'country' => 'required',
-            'postal_code' => 'required',
+            'street' => ['required', 'max:255'],
+            'number' => ['required', 'max:255'],
+            'city' => ['required', 'max:255'],
+            'province' => ['required', 'max:255'],
+            'country' => ['required', 'max:255'],
+            'postal_code' => ['required', 'max:255'],
             'addressable_id' => 'required',
             'addressable_type' => 'required',
         ]);
