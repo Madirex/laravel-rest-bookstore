@@ -40,6 +40,11 @@
                                 <a class="btn btn-info btn-sm" href="{{ route('books.editImage', $book->id) }}"><i class="fas fa-image"></i></a>
                                 <a class="btn btn-danger btn-sm delete-btn" data-toggle="modal" data-target="#confirmDeleteModal{{ $book->id }}"><i class="fas fa-trash-alt"></i></a>
                             @endif
+                            <form action="{{ route('cart.add') }}" method="POST" style="display:inline;">
+                                @csrf
+                                <input type="hidden" name="book_id" value="{{ $book->id }}">
+                                <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-cart-plus"></i></button>
+                            </form>
                         </div>
                     </div>
                 </a>
