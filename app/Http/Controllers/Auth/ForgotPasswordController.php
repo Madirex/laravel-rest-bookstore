@@ -26,25 +26,30 @@ class ForgotPasswordController extends Controller
     public function sendResetLinkEmail(Request $request)
     {
         $this->validateEmail($request);
-
-        // Convertir el correo electrónico a minúsculas antes de buscar el usuario
         $email = strtolower($request->email);
-
-        // Buscar todos los usuarios
         $users = User::all();
-
-        // Buscar el usuario con el correo electrónico proporcionado de manera insensible a mayúsculas y minúsculas
         $user = $users->first(function ($user) use ($email) {
             return strtolower($user->email) === $email;
         });
 
         if (!$user) {
-            // Si no se encuentra el usuario, manejar el error
             return $this->sendResetLinkFailedResponse($request, Password::INVALID_USER);
         }
 
-        // Si se encuentra el usuario, enviar el enlace de restablecimiento de contraseña
         $response = $this->broker()->sendResetLink(['email' => $user->email]);
+
+        return $response == Password::RESET_LINK_SENT
+            ? $this->sendResetLinkResponse($request, $response)
+            : $this->sendResetLinkFailedResponse($request, $response);
+    }
+
+    public function sendResetLinkEmailUserLogged(Request $request)
+    {
+        $email = auth()->user()->email;
+
+        $response = $this->broker()->sendResetLink(['email' => $email]);
+
+        flash('Se ha enviado un correo electrónico con las instrucciones para restablecer la contraseña.')->success()->important();
 
         return $response == Password::RESET_LINK_SENT
             ? $this->sendResetLinkResponse($request, $response)
