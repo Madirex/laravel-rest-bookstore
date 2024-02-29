@@ -57,3 +57,10 @@
 </div>
 </body>
 @include('footer')
+
+<script>
+    document.querySelector('form').addEventListener('submit', function(event) {
+        var emailInput = document.querySelector('#email');
+        emailInput.value = emailInput.value.toLowerCase();
+    });
+</script>
