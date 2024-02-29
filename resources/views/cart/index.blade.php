@@ -1,4 +1,7 @@
 <!-- resources/views/cart.blade.php -->
+@extends('main')
+@section('title', 'Libros - NULLERS')
+@section('content')
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,15 +10,25 @@
     <title>Carrito de Compras</title>
 </head>
 <body>
-<h1>Carrito de Compras</h1>
 @if($cartItems)
-<ul>
-    @foreach($cartItems as $bookId => $quantity)
-    <li>Libro ID: {{ $bookId }} - Cantidad: {{ $quantity }}</li>
-    @endforeach
-</ul>
+<div class="container bg-white rounded">
+    <h3>Carrito</h3>
+   <div class=""></div>
+    <ul>
+        @foreach($cartItems as $item)
+        <li>
+            <p>Libro: {{ $item['id'] }}</p>
+            <p>Nombre: {{ $item['name'] }}</p>
+            <p>Precio: {{ $item['price'] }}</p>
+            <p>Cantidad: {{ $item['quantity'] }}</p>
+            <img src="{{asset('storage/' . $item['image'])}}" alt="{{ $item['name'] }}" width="100">
+        </li>
+        @endforeach
+    </ul>
+</div>
 @else
 <p>Tu carrito está vacío.</p>
 @endif
 </body>
 </html>
+@endsection
