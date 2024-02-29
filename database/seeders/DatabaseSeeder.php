@@ -16,7 +16,6 @@ class DatabaseSeeder extends Seeder
             CartCodesTableSeeder::class,
             BooksTableSeeder::class,
             UserSeeder::class,
-            AdminUserSeeder::class,
             CartSeeder::class,
             AddressTableSeeder::class,
         ]);
