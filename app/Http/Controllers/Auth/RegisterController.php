@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Rules\UserUsernameExists;
+use App\Rules\UniqueCaseInsensitive;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
@@ -54,9 +54,9 @@ class RegisterController extends Controller
     {
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'email' => ['required', 'string', 'email', 'max:255', new UniqueCaseInsensitive('users', 'email')],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'username' => ['required', 'string', 'max:255', new UserUsernameExists, 'regex:/^[A-Za-z0-9]+$/'],
+            'username' => ['required', 'string', 'max:255', new UniqueCaseInsensitive('users', 'username'), 'regex:/^[A-Za-z0-9]+$/'],
             'surname' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:255'],
         ]);
@@ -70,11 +70,12 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
+
         return User::create([
-            'username' => $data['username'],
+            'username' => ucfirst(strtolower($data['username'])),
             'name' => $data['name'],
             'surname' => $data['surname'],
-            'email' => $data['email'],
+            'email' => strtolower($data['email']),
             'password' => Hash::make($data['password']),
             'phone' => $data['phone'],
             'image' => 'images/user.png',
