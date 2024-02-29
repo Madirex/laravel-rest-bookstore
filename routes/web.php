@@ -1,15 +1,15 @@
 <?php
 
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CartCodeController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\EmailController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,8 +53,10 @@ Route::post('user/address', [AddressController::class, 'storeUserAddress'])->nam
 Route::put('user/address/{address}', [AddressController::class, 'updateUserAddress'])->name('user.address.update')->middleware('auth', 'verified');
 Route::delete('user/address/{address}', [AddressController::class, 'deleteUserAddress'])->name('user.address.delete')->middleware('auth', 'verified');
 
+// no hace falta verificación de cuenta
+Route::post('/password/reset/send', [ForgotPasswordController::class, 'sendResetLinkEmailUserLogged'])->name('password.reset.send')->middleware('auth');
+
 /* EMAILS */
-//TODO: DO  - Route::get('/welcome', [EmailController::class, 'sendWelcomeEmail'])->name('email.welcome')->middleware('auth');
 Route::get('/email/verify', function () {
     if (auth()->user()->hasVerifiedEmail()) {
         return redirect()->route('users.profile');
