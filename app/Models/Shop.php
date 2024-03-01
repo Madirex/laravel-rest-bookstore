@@ -5,6 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Clase Shop
+ */
+
 class Shop extends Model
 {
     use HasFactory;
@@ -18,6 +22,10 @@ class Shop extends Model
     protected $hidden = [
         'active',
     ];
+
+
+
+
 
     /**
      * Convierte en tipos nativos
@@ -34,6 +42,16 @@ class Shop extends Model
     public function books()
     {
         return $this->hasMany(Book::class);
+    }
+
+    /**
+     * Relación con la tabla categorías
+     * @return mixed mixed
+     */
+
+    public function address()
+    {
+        return $this->morphOne(Address::class, 'addressable');
     }
 
     /**

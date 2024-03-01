@@ -23,6 +23,7 @@ class Book extends Model
         'active',
     ];
 
+
     /**
      * Convierte en tipos nativos
      * @var string[] $casts
