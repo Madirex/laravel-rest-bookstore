@@ -145,8 +145,8 @@ class UserController extends Controller
         $request->validate($this->rules());
         $user = new User;
         $user->name = $request->name;
-        $user->email = $request->email;
-        $user->username = $request->username;
+        $user->email = strtolower($request->email);
+        $user->username = ucfirst(strtolower($request->username));
         $user->surname = $request->surname;
         $user->phone = $request->phone;
         $user->password = Hash::make($request->password);
@@ -184,8 +184,8 @@ class UserController extends Controller
 
         $request->validate($this->rules($user));
         $user->name = $request->name;
-        $user->email = $request->email;
-        $user->username = $request->username;
+        $user->email = strtolower($request->email);
+        $user->username = ucfirst(strtolower($request->username));
         $user->surname = $request->surname;
         $user->phone = $request->phone;
         $user->update();
@@ -322,8 +322,8 @@ class UserController extends Controller
         $user = Auth::user();
         $request->validate($this->rules());
         $user->name = $request->name;
-        $user->email = $request->email;
-        $user->username = $request->username;
+        $user->email = strtolower($request->email);
+        $user->username = ucfirst(strtolower($request->username));
         $user->surname = $request->surname;
         $user->phone = $request->phone;
         $user->save();

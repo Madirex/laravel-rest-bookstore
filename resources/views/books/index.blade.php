@@ -47,7 +47,7 @@
                                 <a class="btn btn-danger btn-sm delete-btn" data-toggle="modal"
                                    data-target="#confirmDeleteModal{{ $book->id }}"><i class="fas fa-trash-alt"></i></a>
                             @endif
-                            @if(auth()->check())
+                            @if(auth()->check() && auth()->user()->hasVerifiedEmail() && $book->stock > 0)
                                 <form action="{{ route('cart.add') }}" method="POST" style="display:inline;">
                                     @csrf
                                     <input type="hidden" name="book_id" value="{{ $book->id }}">
