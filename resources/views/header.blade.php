@@ -24,25 +24,29 @@
             <ul class="navbar-nav">
                 <li class="nav-item dropdown">
                     @if (auth()->check() && auth()->user()->hasRole('admin'))
-                    <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-toggle="dropdown"
-                       aria-haspopup="true" aria-expanded="false">
-                        Administrar
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="adminDropdown">
-                        <a class="dropdown-item" href="{{ route('cartcodes.index') }}">Gestionar códigos de tienda</a>
-                        <a class="dropdown-item" href="{{ route('users.admin.index') }}">Gestionar usuarios</a>
-                        <a class="dropdown-item" href="{{ route('addresses.index') }}">Gestionar direcciones</a>
-                    </div>
+                        <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button"
+                           data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">
+                            Administrar
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="adminDropdown">
+                            <a class="dropdown-item" href="{{ route('cartcodes.index') }}">Gestionar códigos de
+                                tienda</a>
+                            <a class="dropdown-item" href="{{ route('users.admin.index') }}">Gestionar usuarios</a>
+                            <a class="dropdown-item" href="{{ route('addresses.index') }}">Gestionar direcciones</a>
+                        </div>
                     @endif
                 </li>
-                <!--cuando estoy en /cart no parece este icono-->
-                @if (!request()->routeIs('cart.cart') && !request()->routeIs('cart.add')&& !request()->routeIs('cart.remove') && !request()->routeIs('cart.clear'))
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('cart.cart') }}">
-                        <i class="fas fa-shopping-cart"></i>
-                        Carrito
-                    </a>
-                </li>
+                @if (auth()->check() && auth()->user()->hasVerifiedEmail())
+                    <!--cuando estoy en /cart no parece este icono-->
+                    @if (!request()->routeIs('cart.cart') && !request()->routeIs('cart.add')&& !request()->routeIs('cart.remove') && !request()->routeIs('cart.clear'))
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('cart.cart') }}">
+                                <i class="fas fa-shopping-cart"></i>
+                                Carrito
+                            </a>
+                        </li>
+                    @endif
                 @endif
             </ul>
 
@@ -54,15 +58,20 @@
                             <div class="nav-username">
                                 <a href="{{ route('users.profile') }}">
                                     @if(auth()->user()->image != User::$IMAGE_DEFAULT)
-                                        <img src="{{ asset('storage/' . auth()->user()->image) }}" class="rounded" width="30" height="30">
+                                        <img src="{{ asset('storage/' . auth()->user()->image) }}" class="rounded"
+                                             width="30" height="30">
                                     @else
-                                        <img src="{{ '/' . User::$IMAGE_DEFAULT }}" style="border: 2px solid black; background-color: white;" class="rounded" width="30" height="30">
+                                        <img src="{{ '/' . User::$IMAGE_DEFAULT }}"
+                                             style="border: 2px solid black; background-color: white;" class="rounded"
+                                             width="30" height="30">
                                     @endif
                                     {{ ucfirst(strtolower(auth()->user()->username)) }}
                                 </a>
                             </div>
                         @else
-                            <a href="{{route('verification.notice')}}" style="color:white;font-size: x-small;text-decoration: underline;">Email pendiente de verificación</a>
+                            <a href="{{route('verification.notice')}}"
+                               style="color:white;font-size: x-small;text-decoration: underline;">Email pendiente de
+                                verificación</a>
                         @endif
                     @else
                         <a class="nav-link" href="{{ route('register') }}">Registro</a>
@@ -70,15 +79,15 @@
                 </li>
                 <li class="nav-item">
                     @guest
-                    <a class="nav-link" href="{{ route('login') }}">Login</a>
+                        <a class="nav-link" href="{{ route('login') }}">Login</a>
                     @else
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="nav-link"
-                                style="background: none; border: none; cursor: pointer; display:block; margin:auto">
-                            Logout
-                        </button>
-                    </form>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="nav-link"
+                                    style="background: none; border: none; cursor: pointer; display:block; margin:auto">
+                                Logout
+                            </button>
+                        </form>
                     @endguest
                 </li>
             </ul>
