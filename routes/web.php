@@ -26,6 +26,7 @@ Route::get('/', function () {
 /* carrito de compras */
 Route::get('/cart', [CartController::class, 'getCart'])->name('cart.cart')->middleware('auth');
 Route::post('/cart', [CartController::class, 'addToCart'])->name('cart.add')->middleware('auth');
+Route::delete('/cart', [CartController::class, 'removeFromCart'])->name('cart.remove')->middleware('auth');
 
 /* Rutas de libros y categorías */
 Route::get('books/', [BookController::class, 'index'])->name('books.index');
