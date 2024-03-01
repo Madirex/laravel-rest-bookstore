@@ -15,10 +15,12 @@ class CartController extends Controller
         $quantity = $request->input('quantity', 1);
 
         $cartKey = "cart:$userId";
-        $currentQuantity = Redis::hGet($cartKey, $bookId) ?? 0;
-        Redis::hSet($cartKey, $bookId, $currentQuantity + $quantity);
+        Redis::hSet($cartKey, $bookId, $quantity);
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true]);
+        }
 
-        return $this->getCart($request);
+        return redirect()->route('cart.cart');
     }
 
 
@@ -29,8 +31,7 @@ class CartController extends Controller
 
         $cartKey = "cart:$userId";
         Redis::hDel($cartKey, $bookId);
-
-        return response()->json(['message' => 'Book removed from cart successfully']);
+        return redirect()->route('cart.cart');
     }
 
     public function getCart(Request $request)
@@ -38,6 +39,7 @@ class CartController extends Controller
         $userId = $request->user()->id;
         $cartKey = "cart:$userId";
         $cartItems = Redis::hGetAll($cartKey);
+        $total = 0;
 
         $itemsDetails = [];
         foreach ($cartItems as $bookId => $quantity) {
@@ -47,19 +49,21 @@ class CartController extends Controller
                 'name' => $book->name,
                 'image' => $book->image,
                 'price' => $book->price,
-                'quantity' => $quantity
+                'quantity' => $quantity,
+                'stock' => $book->stock,
+                'author' => $book->author,
             ];
         }
 
         return view('cart.index', ['cartItems' => $itemsDetails]);
     }
 
-    public function clearCart(Request $request)
-    {
-        $userId = $request->user()->id;
-        $cartKey = "cart:$userId";
-        Redis::del($cartKey);
-
-        return response()->json(['message' => 'Cart cleared successfully']);
-    }
+//    public function clearCart(Request $request)
+//    {
+//        $userId = $request->user()->id;
+//        $cartKey = "cart:$userId";
+//        Redis::del($cartKey);
+//
+//        return $this->getCart($request);
+//    }
 }
