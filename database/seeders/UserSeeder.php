@@ -28,6 +28,7 @@ class UserSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
                 'role' => 'admin',
+                'email_verified_at' => '2021-10-01 00:00:00',
             ]);
 
             DB::table('users')->insert([
@@ -44,6 +45,7 @@ class UserSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
                 'role' => 'user',
+                'email_verified_at' => '2021-10-01 00:00:00',
             ]);
         }
     }

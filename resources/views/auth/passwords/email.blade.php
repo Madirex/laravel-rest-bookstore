@@ -2,7 +2,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'Nullers Bookstore') }}</title>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">
@@ -57,3 +57,10 @@
 </div>
 </body>
 @include('footer')
+
+<script>
+    document.querySelector('form').addEventListener('submit', function(event) {
+        var emailInput = document.querySelector('#email');
+        emailInput.value = emailInput.value.toLowerCase();
+    });
+</script>

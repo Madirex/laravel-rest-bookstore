@@ -36,7 +36,7 @@
                     @endif
                 </li>
                 <!--cuando estoy en /cart no parece este icono-->
-                @if (!request()->routeIs('cart.cart') && !request()->routeIs('cart.add')&& !request()->routeIs('cart.remove') && !request()->routeIs('cart.clear'))
+                @if (!request()->routeIs('cart.cart') && !request()->routeIs('cart.add')&& !request()->routeIs('cart.remove'))
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('cart.cart') }}">
                         <i class="fas fa-shopping-cart"></i>
@@ -49,23 +49,24 @@
 
             <ul class="navbar-nav ml-auto" style="flex-direction: column;">
                 <li class="nav-item">
-                    @guest
-                    <a class="nav-link" href="{{ route('register') }}">Registro</a>
+                    @if(auth()->check())
+                        @if(auth()->user()->hasVerifiedEmail())
+                            <div class="nav-username">
+                                <a href="{{ route('users.profile') }}">
+                                    @if(auth()->user()->image != User::$IMAGE_DEFAULT)
+                                        <img src="{{ asset('storage/' . auth()->user()->image) }}" class="rounded" width="30" height="30">
+                                    @else
+                                        <img src="{{ '/' . User::$IMAGE_DEFAULT }}" style="border: 2px solid black; background-color: white;" class="rounded" width="30" height="30">
+                                    @endif
+                                    {{ ucfirst(strtolower(auth()->user()->username)) }}
+                                </a>
+                            </div>
+                        @else
+                            <a href="{{route('verification.notice')}}" style="color:white;font-size: x-small;text-decoration: underline;">Email pendiente de verificación</a>
+                        @endif
                     @else
-                    <div class="nav-username">
-                        <a href="{{ route('users.profile') }}">
-                            @if(auth()->user()->image != User::$IMAGE_DEFAULT)
-                            <img src="{{ asset('storage/' . auth()->user()->image) }}" class="rounded" width="30"
-                                 height="30">
-                            @else
-                            <img src="{{ '/' . User::$IMAGE_DEFAULT }}"
-                                 style="border: 2px solid black; background-color: white;" class="rounded" width="30"
-                                 height="30">
-                            @endif
-                            {{ ucfirst(strtolower(auth()->user()->username)) }}
-                        </a>
-                    </div>
-                    @endguest
+                        <a class="nav-link" href="{{ route('register') }}">Registro</a>
+                    @endif
                 </li>
                 <li class="nav-item">
                     @guest

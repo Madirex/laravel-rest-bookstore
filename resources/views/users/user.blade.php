@@ -3,6 +3,20 @@
 @extends('main')
 @section('title', 'Detalles del usuario')
 @section('content')
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+    @if (session('message'))
+        <div class="alert alert-success">
+            {{ session('message') }}
+        </div>
+    @endif
     <br/>
     <h1>Detalles del usuario</h1>
     <div class="card">
@@ -87,12 +101,17 @@
     <br/>
 
     <a href="{{ route('users.edit', $user) }}" class="btn btn-primary">Editar perfil</a>
-    <a href="{{ route('password.request') }}" class="btn btn-secondary">Cambiar contraseña</a>
     <a href="{{ route('users.editImage') }}" class="btn btn-info">Cambiar imagen</a>
 
     <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">
         Eliminar cuenta
     </button>
+    <br/>
+    <br/>
+    <form method="POST" action="{{ route('password.reset.send') }}">
+        @csrf
+        <button type="submit" class="btn btn-secondary">Cambiar contraseña</button>
+    </form>
 
     <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
          aria-hidden="true">

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use App\Models\User;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class LoginController extends Controller
 {
@@ -58,7 +58,14 @@ class LoginController extends Controller
      */
     protected function credentials(\Illuminate\Http\Request $request)
     {
-        $credentials = $request->only($this->username(), 'password');
+        $username = $request->get($this->username());
+
+        // Convertir el nombre de usuario y el correo electrónico a minúsculas
+        if (filter_var($username, FILTER_VALIDATE_EMAIL)) {
+            $credentials = ['email' => strtolower($username), 'password' => $request->password];
+        } else {
+            $credentials = ['username' => strtolower($username), 'password' => $request->password];
+        }
 
         // Check if the user is deleted
         $user = User::where($this->username(), $credentials[$this->username()])->first();
