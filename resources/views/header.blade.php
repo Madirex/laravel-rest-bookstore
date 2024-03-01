@@ -36,7 +36,7 @@
                     @endif
                 </li>
                 <!--cuando estoy en /cart no parece este icono-->
-                @if (!request()->routeIs('cart.cart') && !request()->routeIs('cart.add')&& !request()->routeIs('cart.remove') && !request()->routeIs('cart.clear'))
+                @if (!request()->routeIs('cart.cart') && !request()->routeIs('cart.add')&& !request()->routeIs('cart.remove'))
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('cart.cart') }}">
                         <i class="fas fa-shopping-cart"></i>
