@@ -33,14 +33,6 @@
             <input class="form-control" id="city" name="city" type="text" required value="{{$address->city}}">
         </div>
         <div class="form-group">
-            <label for="province">Provincia:</label>
-            <input class="form-control" id="province" name="province" type="text" required value="{{$address->province}}">
-        </div>
-        <div class="form-group">
-            <label for="country">País:</label>
-            <input class="form-control" id="country" name="country" type="text" required value="{{$address->country}}">
-        </div>
-        <div class="form-group">
             <label for="postal_code">Código Postal:</label>
             <input class="form-control" id="postal_code" name="postal_code" type="text" required value="{{$address->postal_code}}">
         </div>
