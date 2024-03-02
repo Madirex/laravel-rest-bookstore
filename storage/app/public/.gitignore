@@ -1,3 +1,2 @@
-/books/*
-/users/*
+*
 !.gitignore
