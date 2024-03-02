@@ -58,6 +58,10 @@ Route::delete('user/address/{address}', [AddressController::class, 'deleteUserAd
 Route::post('/password/reset/send', [ForgotPasswordController::class, 'sendResetLinkEmailUserLogged'])->name('password.reset.send')->middleware('auth');
 
 /* EMAILS */
+Route::get('/user/email/change', [UserController::class, 'changeEmailForm'])->name('user.email.change.form');
+Route::post('/user/email/change', [UserController::class, 'requestEmailChange'])->name('user.email.change');
+Route::get('/user/email/confirm/{token}', [UserController::class, 'confirmEmailChange'])->name('user.email.confirm');
+
 Route::get('/email/verify', function () {
     if (auth()->user()->hasVerifiedEmail()) {
         return redirect()->route('users.profile');
