@@ -10,6 +10,7 @@ use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ShopController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,6 +32,16 @@ Route::get('/cart', [CartController::class, 'getCart'])->name('cart.cart')->midd
 Route::post('/cart', [CartController::class, 'addToCart'])->name('cart.add')->middleware('auth');
 Route::delete('/cart', [CartController::class, 'removeFromCart'])->name('cart.remove')->middleware('auth');
 
+Route::group(['prefix' => 'cartcodes'], function () {
+    Route::get('/', [CartCodeController::class, 'index'])->name('cartcodes.index')->middleware(['auth', 'admin']);
+    Route::get('/create', [CartCodeController::class, 'create'])->name('cartcodes.create')->middleware(['auth', 'admin']);
+    Route::post('/', [CartCodeController::class, 'store'])->name('cartcodes.store')->middleware(['auth', 'admin']);
+    Route::get('/{cartcode}', [CartCodeController::class, 'show'])->name('cartcodes.show')->middleware(['auth', 'admin']);
+    Route::get('/{cartcode}/edit', [CartCodeController::class, 'edit'])->name('cartcodes.edit')->middleware(['auth', 'admin']);
+    Route::put('/{cartcode}', [CartCodeController::class, 'update'])->name('cartcodes.update')->middleware(['auth', 'admin']);
+    Route::delete('/{cartcode}', [CartCodeController::class, 'destroy'])->name('cartcodes.destroy')->middleware(['auth', 'admin']);
+});
+
 /* Rutas de libros y categorías */
 Route::get('books/', [BookController::class, 'index'])->name('books.index');
 Route::get('books/{book}', [BookController::class, 'show'])->name('books.show');
@@ -38,21 +49,21 @@ Route::get('categories/', [CategoryController::class, 'index'])->name('categorie
 Route::get('categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
 
 /* Rutas de gestión del usuario autenticado */
-Route::get('users/profile', [UserController::class, 'show'])->name('users.profile')->middleware('auth', 'verified');
-Route::put('/user/{user}', [UserController::class, 'update'])->name('user.update')->middleware('auth', 'verified');
-Route::delete('/user', [UserController::class, 'delete'])->middleware('auth', 'verified');
-Route::get('/user/{user}/edit', [UserController::class, 'edit'])->name('users.edit')->middleware('auth', 'verified');
-Route::get('/users/edit-image', [UserController::class, 'editImage'])->name('users.editImage')->middleware('auth', 'verified');
-Route::post('/users/edit-image', [UserController::class, 'updateImage'])->name('users.updateImage')->middleware('auth', 'verified');
-Route::get('/user/password', [UserController::class, 'showChangePasswordForm'])->name('user.password')->middleware('auth', 'verified');
-Route::post('/user/password', [UserController::class, 'changePassword'])->name('user.password.update')->middleware('auth', 'verified');
-
-/* Rutas para las direcciones del usuario autenticado */
-Route::get('users/{user}/address/edit', [AddressController::class, 'editUserAddress'])->name('users.address.edit')->middleware('auth', 'verified');
-Route::get('users/{user}/address/create', [AddressController::class, 'createUserAddress'])->name('users.address.create')->middleware('auth', 'verified');
-Route::post('user/address', [AddressController::class, 'storeUserAddress'])->name('user.address.store')->middleware('auth', 'verified');
-Route::put('user/address/{address}', [AddressController::class, 'updateUserAddress'])->name('user.address.update')->middleware('auth', 'verified');
-Route::delete('user/address/{address}', [AddressController::class, 'deleteUserAddress'])->name('user.address.delete')->middleware('auth', 'verified');
+Route::group(['middleware' => ['auth', 'verified']], function () {
+    Route::get('users/profile', [UserController::class, 'show'])->name('users.profile');
+    Route::put('/user/{user}', [UserController::class, 'update'])->name('user.update');
+    Route::delete('/user', [UserController::class, 'delete']);
+    Route::get('/user/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+    Route::get('/users/edit-image', [UserController::class, 'editImage'])->name('users.editImage');
+    Route::post('/users/edit-image', [UserController::class, 'updateImage'])->name('users.updateImage');
+    Route::get('/user/password', [UserController::class, 'showChangePasswordForm'])->name('user.password');
+    Route::post('/user/password', [UserController::class, 'changePassword'])->name('user.password.update');
+    Route::get('users/{user}/address/edit', [AddressController::class, 'editUserAddress'])->name('users.address.edit');
+    Route::get('users/{user}/address/create', [AddressController::class, 'createUserAddress'])->name('users.address.create');
+    Route::post('user/address', [AddressController::class, 'storeUserAddress'])->name('user.address.store');
+    Route::put('user/address/{address}', [AddressController::class, 'updateUserAddress'])->name('user.address.update');
+    Route::delete('user/address/{address}', [AddressController::class, 'deleteUserAddress'])->name('user.address.delete');
+});
 
 // no hace falta verificación de cuenta
 Route::post('/password/reset/send', [ForgotPasswordController::class, 'sendResetLinkEmailUserLogged'])->name('password.reset.send')->middleware('auth');
@@ -98,10 +109,10 @@ Route::post('/email/verification-resend', function (Request $request) {
 /* Rutas para ADMINS */
 ///////////////////////
 Route::group(['prefix' => 'cartcodes', 'middleware' => ['auth', 'admin']], function () {
-    Route::get('/{cartcode}', [CartCodeController::class, 'show'])->name('cartcodes.show');
     Route::get('/', [CartCodeController::class, 'index'])->name('cartcodes.index');
     Route::get('/create', [CartCodeController::class, 'create'])->name('cartcodes.create');
     Route::post('/', [CartCodeController::class, 'store'])->name('cartcodes.store');
+    Route::get('/{cartcode}', [CartCodeController::class, 'show'])->name('cartcodes.show');
     Route::get('/{cartcode}/edit', [CartCodeController::class, 'edit'])->name('cartcodes.edit');
     Route::put('/{cartcode}', [CartCodeController::class, 'update'])->name('cartcodes.update');
     Route::delete('/{cartcode}', [CartCodeController::class, 'destroy'])->name('cartcodes.destroy');
@@ -109,14 +120,28 @@ Route::group(['prefix' => 'cartcodes', 'middleware' => ['auth', 'admin']], funct
 
 Route::group(['prefix' => 'users', 'middleware' => ['auth', 'admin']], function () {
     Route::get('/', [UserController::class, 'index'])->name('users.admin.index');
-    Route::get('/users/create', [UserController::class, 'create'])->name('users.admin.create');
-    Route::get('/users/{user}', [UserController::class, 'showUser'])->name('users.admin.show');
+    Route::get('/create', [UserController::class, 'create'])->name('users.admin.create');
+    Route::get('/{user}', [UserController::class, 'showUser'])->name('users.admin.show');
     Route::delete('/{user}', [UserController::class, 'destroy'])->name('users.destroy');
     Route::get('/{user}/edit', [UserController::class, 'editUser'])->name('users.admin.edit');
     Route::put('/{user}', [UserController::class, 'updateUser'])->name('users.update');
     Route::get('/{user}/edit-image', [UserController::class, 'editImageUser'])->name('users.admin.image');
     Route::post('/{user}/edit-image', [UserController::class, 'updateImageUser'])->name('users.admin.updateImage');
     Route::post('/users', [UserController::class, 'store'])->name('users.admin.store');
+});
+
+Route::group(['prefix' => 'shops'], function () {
+    Route::get('/', [ShopController::class, 'index'])->name('shops.index');
+    Route::get('/create', [ShopController::class, 'create'])->name('shops.create')->middleware(['auth', 'admin']);
+    Route::post('/', [ShopController::class, 'store'])->name('shops.store')->middleware(['auth', 'admin']);
+    Route::get('/{shop}', [ShopController::class, 'show'])->name('shops.show');
+    Route::get('/{shop}/edit', [ShopController::class, 'edit'])->name('shops.edit')->middleware(['auth', 'admin']);
+    Route::put('/{shop}', [ShopController::class, 'update'])->name('shops.update')->middleware(['auth', 'admin']);
+    Route::delete('/{shop}', [ShopController::class, 'destroy'])->name('shops.destroy')->middleware(['auth', 'admin']);
+});
+
+Route::group(['prefix' => 'users'], function () {
+    Route::get('/profile', [UserController::class, 'show'])->name('users.profile')->middleware('auth');
 });
 
 Route::group(['prefix' => 'addresses', 'middleware' => ['auth', 'admin']], function () {
@@ -146,4 +171,5 @@ Route::group(['prefix' => 'categories', 'middleware' => ['auth', 'admin']], func
     Route::put('/{category}', [CategoryController::class, 'update'])->name('categories.update');
     Route::delete('/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
 });
+
 Auth::routes();

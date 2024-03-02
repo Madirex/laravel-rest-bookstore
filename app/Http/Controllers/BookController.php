@@ -56,7 +56,7 @@ class BookController extends Controller
         return view('books.show')->with('book', $book);
     }
 
-    /**
+ /**
      * store
      * @param Request $request request
      * @return string | mixed
@@ -123,6 +123,8 @@ class BookController extends Controller
 
         flash('Libro ' . $book->name . ' actualizado con éxito.')->success()->important();
         return redirect()->route('books.index');
+
+
     }
 
     /**
@@ -319,4 +321,7 @@ class BookController extends Controller
         $book->active = true;
         return $book;
     }
+
+
+
 }

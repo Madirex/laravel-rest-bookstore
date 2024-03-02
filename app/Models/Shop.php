@@ -6,14 +6,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Clase Book
+ * Clase Shop
  */
-class Book extends Model
+
+class Shop extends Model
 {
     use HasFactory;
 
-    public static $IMAGE_DEFAULT = 'images/book.png';
-    protected $fillable = ['isbn', 'name', 'author', 'publisher', 'image', 'description', 'price', 'stock', 'category_name', 'active'];
+    public mixed $active;
+    public mixed $name;
+    protected $fillable = [ 'name', 'address', 'books', 'active'];
 
     /**
      * Oculta los campos
@@ -24,6 +26,9 @@ class Book extends Model
     ];
 
 
+
+
+
     /**
      * Convierte en tipos nativos
      * @var string[] $casts
@@ -32,24 +37,38 @@ class Book extends Model
         'active' => 'boolean',
     ];
 
+
+
+    /**
+     * Relación con la tabla libros
+     * @return mixed mixed
+     */
+    public function books()
+    {
+        return $this->hasMany(Book::class);
+    }
+
     /**
      * Relación con la tabla categorías
      * @return mixed mixed
      */
-    public function category()
+
+    public function address()
     {
-        return $this->belongsTo(Category::class);
+        return $this->morphOne(Address::class, 'addressable');
     }
 
     /**
-     * Busca por nombre de Book
+     * Busca por nombre de Shop
      * @param $query mixed consulta
      * @param $search string búsqueda
      * @return mixed mixed
      */
+
     public function scopeSearch($query, $search)
     {
         return $query->whereRaw('LOWER(name) LIKE ?', ["%" . strtolower($search) . "%"])
-            ->orWhereRaw('LOWER(author) LIKE ?', ["%" . strtolower($search) . "%"]);
+            ->orWhereRaw('LOWER(address) LIKE ?', ["%" . strtolower($search) . "%"]);
     }
+
 }
