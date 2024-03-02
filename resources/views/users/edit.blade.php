@@ -36,11 +36,6 @@
         </div>
 
         <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" class="form-control" id="email" name="email" value="{{ $user->email }}">
-        </div>
-
-        <div class="form-group">
             <label for="phone">Teléfono</label>
             <input type="text" class="form-control" id="phone" name="phone" value="{{ $user->phone }}">
         </div>

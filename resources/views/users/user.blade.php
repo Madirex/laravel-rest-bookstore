@@ -108,7 +108,9 @@
     </button>
     <br/>
     <br/>
+
     <form method="POST" action="{{ route('password.reset.send') }}">
+        <a href="{{ route('user.email.change.form') }}" class="btn btn-secondary">Cambiar correo</a>
         @csrf
         <button type="submit" class="btn btn-secondary">Cambiar contraseña</button>
     </form>
