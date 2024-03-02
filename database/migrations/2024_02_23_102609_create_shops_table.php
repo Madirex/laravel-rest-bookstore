@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('shops', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->json('address');
             $table->boolean('active')->default(true);
             $table->timestamps();
         });
