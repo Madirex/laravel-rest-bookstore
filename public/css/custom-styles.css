@@ -211,14 +211,14 @@ div.nav-username {
     color: #333;
 }
 
-/* categories */
-.category-container {
+/* categories, address, user, cartcode */
+.category-container, .address-container, .user-container, .cartcode-container{
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-.category-card {
+.category-card, .address-card, .user-card, .cartcode-card{
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -228,45 +228,16 @@ div.nav-username {
     background-color: #fff;
 }
 
-.category-info {
+.category-info, .address-info, .user-info, .cartcode-info {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-.category-actions {
+.category-actions, .address-actions, .user-actions, .cartcode-actions {
     display: flex;
     gap: 10px;
 }
-
-/* cartcodes */
-.cartcode-container {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.cartcode-card {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: #fff;
-}
-
-.cartcode-info {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.cartcode-actions {
-    display: flex;
-    gap: 10px;
-}
-
 
 /* banners */
 .error-banner {

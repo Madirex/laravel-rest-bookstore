@@ -22,8 +22,6 @@
                 <div class="category-card">
                     <div class="category-info">
                         <h2>{{ $category->name }}</h2>
-                        <p><i class="fas fa-calendar-alt"></i> {{ $category->created_at }}</p>
-                        <p><i class="fas fa-sync-alt"></i> {{ $category->updated_at }}</p>
                     </div>
                     <div class="category-actions">
                         <a class="btn btn-primary btn-sm" href="{{ route('categories.show', $category->id) }}"><i class="fas fa-info-circle"></i> Detalles</a>

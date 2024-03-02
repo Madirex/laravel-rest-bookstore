@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Rules\UserUsernameExists;
+use App\Rules\UniqueCaseInsensitive;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class RegisterController extends Controller
 {
@@ -51,12 +54,11 @@ class RegisterController extends Controller
     {
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'email' => ['required', 'string', 'email', 'max:255', new UniqueCaseInsensitive('El email ya existe en la base de datos.', 'users', 'email')],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'username' => ['required', 'string', 'max:255', new UserUsernameExists],
+            'username' => ['required', 'string', 'max:255', new UniqueCaseInsensitive('El nombre de usuario (username) ya existe en la base de datos.', 'users', 'username'), 'regex:/^[A-Za-z0-9]+$/'],
             'surname' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:255'],
-            'address' => ['required', 'string', 'max:255'],
         ]);
     }
 
@@ -68,17 +70,40 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
+
         return User::create([
-            'username' => $data['username'],
+            'username' => ucfirst(strtolower($data['username'])),
             'name' => $data['name'],
             'surname' => $data['surname'],
-            'email' => $data['email'],
+            'email' => strtolower($data['email']),
             'password' => Hash::make($data['password']),
             'phone' => $data['phone'],
-            'address' => $data['address'],
-            'image' => '/images/book.png',
+            'image' => 'images/user.png',
             'cart' => '',
             'orders' => '[]',
         ]);
+    }
+
+    /**
+     * The user has been registered.
+     *
+     * @param Request $request
+     * @return mixed
+     */
+    public function register(Request $request)
+    {
+        $this->validator($request->all())->validate();
+
+        event(new Registered($user = $this->create($request->all())));
+
+        $this->guard()->login($user);
+
+        if ($response = $this->registered($request, $user)) {
+            return $response;
+        }
+
+        return $request->wantsJson()
+            ? new JsonResponse([], 201)
+            : redirect()->route('verification.notice');
     }
 }
