@@ -6,8 +6,16 @@ use App\Models\Book;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 
+/**
+ * Class CartController
+ */
 class CartController extends Controller
 {
+    /**
+     * Add a book to the cart
+     * @param Request $request request
+     * @return mixed view or json
+     */
     public function addToCart(Request $request)
     {
         $userId = $request->user()->id;
@@ -21,12 +29,21 @@ class CartController extends Controller
 
         Redis::hSet($cartKey, $bookId, $newQuantity);
 
+        // hacer flash si no espera json
+        if (!$request->expectsJson()) {
+            flash('Libro agregado el carrito')->success()->important();
+        }
         return $request->expectsJson()
             ? response()->json(['success' => true, 'quantity' => $newQuantity])
-            : back()->with('success', 'Item added to cart');
+            : back()->with('success', 'Libro agregado al carrito');
     }
 
 
+    /**
+     * Remove a book from the cart
+     * @param Request $request request
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     */
     public function removeFromCart(Request $request)
     {
         $userId = $request->user()->id;
@@ -35,11 +52,20 @@ class CartController extends Controller
         $cartKey = "cart:$userId";
         Redis::hDel($cartKey, $bookId);
 
+        // hacer flash si no espera json
+        if (!$request->expectsJson()) {
+            flash('Libro eliminado del carrito')->success()->important();
+        }
         return $request->expectsJson()
             ? response()->json(['success' => true])
-            : back()->with('success', 'Item removed from cart');
+            : back()->with('success', 'Libro eliminado del carrito');
     }
 
+    /**
+     * Get the cart
+     * @param Request $request request
+     * @return mixed view
+     */
     public function getCart(Request $request)
     {
         $userId = $request->user()->id;
@@ -50,9 +76,8 @@ class CartController extends Controller
             return view('cart.index', ['cartItems' => []]);
         }
 
-
         $bookIds = array_keys($cartItems);
-        $bookIds = array_filter($bookIds, function($id) {
+        $bookIds = array_filter($bookIds, function ($id) {
             return is_numeric($id);
         });
         $books = Book::whereIn('id', $bookIds)->get()->keyBy('id');
