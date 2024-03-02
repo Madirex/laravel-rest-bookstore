@@ -1,11 +1,5 @@
 <?php
 
-use App\Http\Controllers\AddressController;
-use App\Http\Controllers\BookController;
-use App\Http\Controllers\CartCodeController;
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,23 +14,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-if (env('DEVELOP_MODE') == 'true') {
-    Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-        return $request->user();
-    });
-
-    Route::prefix('v1')->group(function () {
-        Route::apiResource('categories', CategoryController::class);
-
-        Route::apiResource('cartcodes', CartCodeController::class);
-
-        Route::apiResource('books', BookController::class);
-        Route::post('books/{id}/update-image', [BookController::class, 'updateImage']);
-
-        Route::get('users/{id}', [UserController::class, 'showUser']);
-        Route::put('users/{id}', [UserController::class, 'updateUser']);
-        Route::post('users/{id}/update-image', [UserController::class, 'updateImageUser']);
-        Route::apiResource('users', UserController::class);
-        Route::apiResource('addresses', AddressController::class);
-    });
-}
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
