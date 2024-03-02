@@ -43,11 +43,13 @@ Route::group(['prefix' => 'cartcodes'], function () {
     Route::delete('/{cartcode}', [CartCodeController::class, 'destroy'])->name('cartcodes.destroy')->middleware(['auth', 'admin']);
 });
 
-/* Rutas de libros y categorías */
+/* Rutas de libros, categorías y tiendas */
 Route::get('books/', [BookController::class, 'index'])->name('books.index');
 Route::get('books/{book}', [BookController::class, 'show'])->name('books.show');
 Route::get('categories/', [CategoryController::class, 'index'])->name('categories.index');
 Route::get('categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
+Route::get('shops/', [ShopController::class, 'index'])->name('shops.index');
+Route::get('shops/{shop}', [ShopController::class, 'show'])->name('shops.show');
 
 /* Rutas de gestión del usuario autenticado */
 Route::group(['middleware' => ['auth', 'verified']], function () {
@@ -131,14 +133,12 @@ Route::group(['prefix' => 'users', 'middleware' => ['auth', 'admin']], function 
     Route::post('/users', [UserController::class, 'store'])->name('users.admin.store');
 });
 
-Route::group(['prefix' => 'shops'], function () {
-    Route::get('/', [ShopController::class, 'index'])->name('shops.index');
-    Route::get('/create', [ShopController::class, 'create'])->name('shops.create')->middleware(['auth', 'admin']);
-    Route::post('/', [ShopController::class, 'store'])->name('shops.store')->middleware(['auth', 'admin']);
-    Route::get('/{shop}', [ShopController::class, 'show'])->name('shops.show');
-    Route::get('/{shop}/edit', [ShopController::class, 'edit'])->name('shops.edit')->middleware(['auth', 'admin']);
-    Route::put('/{shop}', [ShopController::class, 'update'])->name('shops.update')->middleware(['auth', 'admin']);
-    Route::delete('/{shop}', [ShopController::class, 'destroy'])->name('shops.destroy')->middleware(['auth', 'admin']);
+Route::group(['prefix' => 'shops', 'middleware' => ['auth', 'admin']], function () {
+    Route::get('/create', [ShopController::class, 'create'])->name('shops.create');
+    Route::post('/', [ShopController::class, 'store'])->name('shops.store');
+    Route::get('/{shop}/edit', [ShopController::class, 'edit'])->name('shops.edit');
+    Route::put('/{shop}', [ShopController::class, 'update'])->name('shops.update');
+    Route::delete('/{shop}', [ShopController::class, 'destroy'])->name('shops.destroy');
 });
 
 Route::group(['prefix' => 'users'], function () {
