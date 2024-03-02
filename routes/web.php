@@ -5,6 +5,7 @@ use App\Http\Controllers\CartCodeController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ShopController;
 
 /*
 |--------------------------------------------------------------------------
@@ -56,6 +57,17 @@ Route::group(['prefix' => 'categories'], function () {
     Route::get('/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit')->middleware(['auth', 'admin']);
     Route::put('/{category}', [CategoryController::class, 'update'])->name('categories.update')->middleware(['auth', 'admin']);
     Route::delete('/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy')->middleware(['auth', 'admin']);
+});
+
+Route::group(['prefix' => 'shops'], function () {
+    Route::get('/', [ShopController::class, 'index'])->name('shops.index');
+    Route::get('/create', [ShopController::class, 'create'])->name('shops.create')->middleware(['auth', 'admin']);
+    Route::post('/', [ShopController::class, 'store'])->name('shops.store')->middleware(['auth', 'admin']);
+    Route::get('/{shop}', [ShopController::class, 'show'])->name('shops.show');
+    Route::get('/{shop}/edit', [ShopController::class, 'edit'])->name('shops.edit')->middleware(['auth', 'admin']);
+    Route::put('/{shop}', [ShopController::class, 'update'])->name('shops.update')->middleware(['auth', 'admin']);
+    Route::delete('/{shop}', [ShopController::class, 'destroy'])->name('shops.destroy')->middleware(['auth', 'admin']);
+
 });
 
 Route::group(['prefix' => 'users'], function () {
