@@ -398,7 +398,7 @@ class UserController extends Controller
         }
 
         $user = User::find($emailChange->user_id);
-        $user->email = $emailChange->new_email;
+        $user->email = strtolower($emailChange->new_email);
         $user->save();
 
         // Elimina el token de Redis
