@@ -44,7 +44,7 @@ class EmailChangeMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Email Change Mail',
+            subject: 'Confirmación de cambio de email',
         );
     }
 
