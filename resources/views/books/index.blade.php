@@ -48,12 +48,12 @@
                                    data-target="#confirmDeleteModal{{ $book->id }}"><i class="fas fa-trash-alt"></i></a>
                             @endif
                             @if(auth()->check() && auth()->user()->hasVerifiedEmail() && $book->stock > 0)
-                                <form action="{{ route('cart.add') }}" method="POST" style="display:inline;">
-                                    @csrf
-                                    <input type="hidden" name="book_id" value="{{ $book->id }}">
-                                    <button type="submit" class="btn btn-success btn-sm"><i
-                                            class="fas fa-cart-plus"></i></button>
-                                </form>
+                            <form action="{{ route('cart.handle') }}" method="POST" style="display:inline;">
+                                @csrf
+                                <input type="hidden" name="book_id" value="{{ $book->id }}">
+                                <input type="hidden" name="action" value="add">
+                                <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-cart-plus"></i></button>
+                            </form>
                             @endif
                         </div>
                     </div>
