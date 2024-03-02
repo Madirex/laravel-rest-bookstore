@@ -54,9 +54,9 @@ class RegisterController extends Controller
     {
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', new UniqueCaseInsensitive('users', 'email')],
+            'email' => ['required', 'string', 'email', 'max:255', new UniqueCaseInsensitive('El email ya existe en la base de datos.', 'users', 'email')],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'username' => ['required', 'string', 'max:255', new UniqueCaseInsensitive('users', 'username'), 'regex:/^[A-Za-z0-9]+$/'],
+            'username' => ['required', 'string', 'max:255', new UniqueCaseInsensitive('El nombre de usuario (username) ya existe en la base de datos.', 'users', 'username'), 'regex:/^[A-Za-z0-9]+$/'],
             'surname' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:255'],
         ]);
