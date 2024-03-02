@@ -69,6 +69,10 @@ class AddressController extends Controller
      */
     public function store(Request $request)
     {
+        // TODO: el país se fuerza a España (si en un futuro se quiere ampliar a otros países, se debe de quitar la línea de abajo)
+        $request->merge(['country' => 'España']);
+        $request->merge(['province' => $this->getProvinceName($request->postal_code)]);
+
         $validation_bad = $this->validateAddress($request);
         if ($validation_bad) {
             return $validation_bad;
@@ -111,6 +115,10 @@ class AddressController extends Controller
             flash('Dirección no encontrada')->error();
             return redirect()->back();
         }
+
+        // TODO: el país se fuerza a España (si en un futuro se quiere ampliar a otros países, se debe de quitar la línea de abajo)
+        $request->merge(['country' => 'España']);
+        $request->merge(['province' => $this->getProvinceName($request->postal_code)]);
 
         $validation_bad = $this->validateAddress($request);
         if ($validation_bad) {
@@ -200,12 +208,21 @@ class AddressController extends Controller
             'street' => ['required', 'max:255'],
             'number' => ['required', 'max:255'],
             'city' => ['required', 'max:255'],
-            'province' => ['required', 'max:255'],
-            'country' => ['required', 'max:255'],
-            'postal_code' => ['required', 'max:255'],
+            //'province' => ['required', 'max:255'], TODO: esto se comenta porque se obtiene a partir del código postal, si se quiere ampliar a otros países habría que descomentarlo o modificar el sistema actual de detección de provincia a partir del código postal
+            //'country' => ['required', 'max:255'], TODO: volver a poner la validación si se quiere ampliar a otros países
+            'postal_code' => ['required', 'max:5', 'min:5', 'regex:/^[0-9]+$/'], //TODO: en un futuro habría que modificar esto si se quiere agregar implementación de otros países
             'addressable_id' => 'required',
             'addressable_type' => 'required',
         ]);
+
+        $province = $this->getProvinceName($request->postal_code);
+        if ($province === '-') {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Código postal no válido'], 422);
+            }
+            flash('Código postal no válido')->error();
+            return redirect()->back();
+        }
 
         if ($request->addressable_type === User::class) {
             $userId = intval($request->addressable_id);
@@ -219,6 +236,33 @@ class AddressController extends Controller
             }
         }
         return null;
+    }
+
+    /**
+     * Obtener el nombre de la provincia a partir del código postal
+     * @param $postalCode string
+     * @return string
+     */
+    private function getProvinceName($postalCode)
+    {
+        $postalCodeProvinces = [
+            '01' => "Álava", '02' => "Albacete", '03' => "Alicante", '04' => "Almería", '05' => "Ávila",
+            '06' => "Badajoz", '07' => "Baleares", '08' => "Barcelona", '09' => "Burgos", '10' => "Cáceres",
+            '11' => "Cádiz", '12' => "Castellón", '13' => "Ciudad Real", '14' => "Córdoba", '15' => "A Coruña",
+            '16' => "Cuenca", '17' => "Girona", '18' => "Granada", '19' => "Guadalajara", '20' => "Gipuzkoa",
+            '21' => "Huelva", '22' => "Huesca", '23' => "Jaén", '24' => "León", '25' => "Lleida",
+            '26' => "La Rioja", '27' => "Lugo", '28' => "Madrid", '29' => "Málaga", '30' => "Murcia",
+            '31' => "Navarra", '32' => "Ourense", '33' => "Asturias", '34' => "Palencia", '35' => "Las Palmas",
+            '36' => "Pontevedra", '37' => "Salamanca", '38' => "Santa Cruz de Tenerife", '39' => "Cantabria", '40' => "Segovia",
+            '41' => "Sevilla", '42' => "Soria", '43' => "Tarragona", '44' => "Teruel", '45' => "Toledo",
+            '46' => "Valencia", '47' => "Valladolid", '48' => "Bizkaia", '49' => "Zamora", '50' => "Zaragoza",
+            '51' => "Ceuta", '52' => "Melilla"
+        ];
+
+        $firstTwoDigits = substr($postalCode, 0, 2);
+        $provinceName = $postalCodeProvinces[$firstTwoDigits] ?? "-";
+
+        return $provinceName;
     }
 
 
@@ -257,6 +301,10 @@ class AddressController extends Controller
         $data['addressable_id'] = auth()->user()->id;
         $data['addressable_type'] = User::class;
 
+        // TODO: el país se fuerza a España (si en un futuro se quiere ampliar a otros países, se debe de quitar la línea de abajo)
+        $request->merge(['country' => 'España']);
+        $request->merge(['province' => $this->getProvinceName($request->postal_code)]);
+
         $validation_bad = $this->validateAddress(new Request($data));
         if ($validation_bad) {
             return $validation_bad;
@@ -278,6 +326,10 @@ class AddressController extends Controller
         $data = $request->all();
         $data['addressable_id'] = auth()->user()->id;
         $data['addressable_type'] = User::class;
+
+        // TODO: el país se fuerza a España (si en un futuro se quiere ampliar a otros países, se debe de quitar la línea de abajo)
+        $request->merge(['country' => 'España']);
+        $request->merge(['province' => $this->getProvinceName($request->postal_code)]);
 
         $validation_bad = $this->validateAddress(new Request($data));
         if ($validation_bad) {
