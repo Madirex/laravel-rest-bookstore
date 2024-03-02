@@ -33,6 +33,11 @@ Route::group(['prefix' => 'books'], function () {
     Route::patch('/{book}/edit-image', [BookController::class, 'updateImage'])->name('books.updateImage')->middleware(['auth', 'admin']);
 });
 
+
+
+
+
+
 Route::group(['prefix' => 'cartcodes'], function () {
     Route::get('/', [CartCodeController::class, 'index'])->name('cartcodes.index')->middleware(['auth', 'admin']);
     Route::get('/create', [CartCodeController::class, 'create'])->name('cartcodes.create')->middleware(['auth', 'admin']);

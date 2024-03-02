@@ -321,4 +321,7 @@ class BookController extends Controller
         $book->active = true;
         return $book;
     }
+
+
+
 }
