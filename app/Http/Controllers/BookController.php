@@ -23,11 +23,15 @@ class BookController extends Controller
      */
     public function index(Request $request)
     {
-        $books = Book::search($request->search)->orderBy('id', 'asc')->paginate(8);
-
         if ($request->expectsJson()) {
+            $books = Book::search($request->search)->orderBy('id', 'asc')->paginate(8);
             return response()->json($books);
         }
+
+        $books = Book::where('active', true)
+            ->search($request->search)
+            ->orderBy('id', 'asc')
+            ->paginate(8);
 
         return view('books.index')->with('books', $books);
     }
@@ -51,6 +55,11 @@ class BookController extends Controller
 
         if (request()->expectsJson()) {
             return response()->json($book);
+        }
+
+        if ($book->active == false) {
+            flash('Libro no encontrado')->error()->important();
+            return redirect()->back();
         }
 
         return view('books.show')->with('book', $book);
@@ -199,13 +208,14 @@ class BookController extends Controller
     public function validateBook(Request $request, $bookISBN = null)
     {
         $rulesToAdd = '';
-        if ($bookISBN != null) {
+        // lo comento porque al tener varias tiendas puede haber libros iguales asignados en diferentes tiendas
+        /*if ($bookISBN != null) {
             if (trim(strtolower($request->isbn)) != trim(strtolower($bookISBN))) {
                 $rulesToAdd = new ISBNNameExists;
             }
         } else {
             $rulesToAdd = new ISBNNameExists;
-        }
+        }*/
 
         try {
 
@@ -214,7 +224,7 @@ class BookController extends Controller
                 'name' => ['required', 'string', 'max:255'],
                 'author' => 'required|string|max:255',
                 'publisher' => 'required|string|max:255',
-                'description' => 'required|string|max:255',
+                'description' => 'required|string|max:2040',
                 'price' => 'required|numeric|min:0|max:999999.99|regex:/^\d{1,6}(\.\d{1,2})?$/',
                 'stock' => 'required|integer|min:0|max:1000000000',
                 'category_name' => ['required', 'string', new CategoryNameNotExists],

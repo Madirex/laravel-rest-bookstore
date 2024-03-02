@@ -3,18 +3,14 @@
 namespace App\Http\Controllers;
 
 
-use App\Http\Controllers\Controller;
 use App\Models\Shop;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\Models\Book;
-use App\Models\Address;
 
 
 /**
  * Class ShopController
  */
-
 class ShopController extends Controller
 {
     /**
@@ -25,16 +21,24 @@ class ShopController extends Controller
     public function index(Request $request)
     {
         // Aquí solo buscamos tiendas por nombre.
-        $shops = Shop::where(function ($query) use ($request) {
-            if ($request->has('search')) {
-                $query->where('name', 'LIKE', '%' . $request->search . '%');
-            }
-        })->orderBy('id', 'asc')->paginate(8);
-
         if ($request->expectsJson()) {
+            $shops = Shop::where(function ($query) use ($request) {
+                if ($request->has('search')) {
+                    $query->where('name', 'LIKE', '%' . $request->search . '%');
+                }
+            })->orderBy('id', 'asc')->paginate(8);
+
             return response()->json($shops);
         }
 
+        $shops = Shop::where('active', true)
+            ->where(function ($query) use ($request) {
+                if ($request->has('search')) {
+                    $query->where('name', 'LIKE', '%' . $request->search . '%');
+                }
+            })
+            ->orderBy('id', 'asc')
+            ->paginate(8);
 
         return view('shops.index', compact('shops'));
     }
@@ -61,6 +65,10 @@ class ShopController extends Controller
             return response()->json($shop);
         }
 
+        if ($shop->active == false) {
+            flash('Tienda no encontrada')->error()->important();
+            return redirect()->back();
+        }
 
         return view('shops.show')->with('shop', $shop);
     }
@@ -98,7 +106,6 @@ class ShopController extends Controller
      * @param string $id id
      * @return string | mixed
      */
-
     public function update(Request $request, string $id)
     {
         try {
@@ -118,7 +125,6 @@ class ShopController extends Controller
             flash('Error al actualizar la tienda: ' . $errorResponse)->error()->important();
             return redirect()->back();
         }
-
 
         $shop->name = $request->input('name');
         $shop->address = $request->input('address');
@@ -140,7 +146,6 @@ class ShopController extends Controller
      * @param string $id id
      * @return mixed view
      */
-
     public function destroy(string $id)
     {
         try {
@@ -154,9 +159,16 @@ class ShopController extends Controller
             return redirect()->back();
         }
 
+        //borrado lógico
+        $shop->active = false;
 
-
-        $shop->delete();
+        //borrado lógico en books
+        $books = $shop->books;
+        foreach ($books as $book) {
+            $book->active = false;
+            $book->save();
+        }
+        $shop->save();
 
         if (request()->expectsJson()) {
             return response()->json(null, 204);
@@ -170,17 +182,13 @@ class ShopController extends Controller
     /**
      * validateShop
      * @param Request $request request
-
      * @return string|null error message
      */
-
     public function validateShop(Request $request, $shopId = null)
     {
         $rules = [
-            'name' => ['required', 'string', 'max:255', new UniqueShopName($shopId)],
-            'address' => ['required', new ValidJson],
+            'name' => ['required', 'string', 'max:255'],
             'active' => ['required', 'boolean'],
-
         ];
 
         try {
@@ -212,12 +220,10 @@ class ShopController extends Controller
     /// PARA VISTAS ///
     /// /// /// /// ///
 
-
     /**
      * create
      * @return mixed view
      */
-
     public function create()
     {
         return view('shops.create');
@@ -229,7 +235,6 @@ class ShopController extends Controller
      * @param $id id
      * @return mixed view
      */
-
     public function edit($id)
     {
         $shop = Shop::with(['books', 'address'])->find($id);
@@ -239,7 +244,6 @@ class ShopController extends Controller
         }
         return view('shops.edit', compact('shop'));
     }
-
 
     /**
      * getShopStore
@@ -254,9 +258,4 @@ class ShopController extends Controller
         $shop->active = $request->input('active', true);
         return $shop;
     }
-
-
-
-
 }
-
