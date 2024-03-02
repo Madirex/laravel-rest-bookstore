@@ -22,7 +22,7 @@ class CartController extends Controller
     {
         $userId = $request->user()->id;
         $bookId = $request->input('book_id');
-        $quantity = (int) $request->input('quantity', 1);
+        $quantity = (int)$request->input('quantity', 1);
         $action = $request->input('action');
 
         $cartKey = "cart:$userId";
@@ -44,13 +44,14 @@ class CartController extends Controller
                 Redis::hSet($cartKey, $bookId, json_encode($currentData));
                 break;
 
-        // hacer flash si no espera json
-        if (!$request->expectsJson()) {
-            flash('Libro agregado el carrito')->success()->important();
+                // hacer flash si no espera json
+                if (!$request->expectsJson()) {
+                    flash('Libro agregado el carrito')->success()->important();
+                }
+                return $request->expectsJson()
+                    ? response()->json(['success' => true, 'quantity' => $newQuantity])
+                    : back()->with('success', 'Libro agregado al carrito');
         }
-        return $request->expectsJson()
-            ? response()->json(['success' => true, 'quantity' => $newQuantity])
-            : back()->with('success', 'Libro agregado al carrito');
     }
 
 
@@ -110,7 +111,6 @@ class CartController extends Controller
 
         return view('cart.index', ['cartItems' => $itemsDetails]);
     }
-
 
 
     public function checkout(Request $request)
