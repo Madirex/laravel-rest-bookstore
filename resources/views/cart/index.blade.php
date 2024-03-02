@@ -6,6 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Carrito de Compras</title>
     <style>
         ul {
@@ -48,9 +49,11 @@
                                     <ul class="list-group list-group-horizontal">
                                         <li>
                                             <span class="badge text-info">Cantidad:</span>
-                                            <input type="number" class="item-quantity" name="quantity" value="{{ $item['quantity'] }}" min="1" max="{{ $item['stock'] }}"
+                                            <input type="number" class="item-quantity" name="quantity"
+                                                   data-book-id="{{ $item['id'] }}" value="{{ $item['quantity'] }}"
+                                                   min="1" max="{{ $item['stock'] }}"
                                                    style="width: 3rem; border-radius: 5px; border:1px solid #6c757d"
-                                                   onchange="updateItemQuantity({{ $item['id'] }}, this.value)">
+                                                   onchange="updateItemQuantity(this.dataset.bookId, this.value)">
                                         </li>
                                         <form method="POST" action="{{ route('cart.remove') }}"
                                               class="form-remove-book">
@@ -63,7 +66,8 @@
                                 </div>
                             </div>
                             <div class="col-md-4 d-flex justify-content-end align-items-start">
-                                <p class="mb-0 h4 item-price" data-price="{{ $item['price'] }}">{{ $item['price'] }} €</p>
+                                <p class="mb-0 h4 item-price" data-price="{{ $item['price'] }}">{{ $item['price'] }}
+                                    €</p>
                             </div>
                         </div>
                     </div>
@@ -80,6 +84,11 @@
             <div class="col-md-4 d-flex justify-content-end">
                 <p class="h4" id="cart-total">Total: 0 €</p>
             </div>
+            <form action="{{ route('cart.checkout') }}" method="POST" class="w-100">
+                @csrf
+                <button type="submit" class="btn btn-primary w-100">Realizar pedido</button>
+            </form>
+
         </div>
     </div>
 </div>
@@ -110,7 +119,7 @@
 </body>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        document.querySelector('.container').addEventListener('change', function(e) {
+        document.querySelector('.container').addEventListener('change', function (e) {
             if (e.target && e.target.matches('.item-quantity')) {
                 const bookId = e.target.dataset.bookId;
                 const quantity = e.target.value;
@@ -118,40 +127,22 @@
             }
         });
     });
-    document.addEventListener('DOMContentLoaded', function () {
-        calculateTotal(true);
-    });
+
     function updateItemQuantity(bookId, quantity) {
-        let formData = new FormData();
-        formData.append('book_id', bookId);
-        formData.append('quantity', quantity);
-        formData.append('_token', '{{ csrf_token() }}');
-
+        const data = {
+            book_id: bookId,
+            quantity: quantity,
+            action: 'update',
+        };
         calculateTotal();
-
-        fetch('{{ route("cart.add") }}', {
+        fetch("{{ route('cart.handle') }}", { 
             method: 'POST',
-            body: formData,
             headers: {
-                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
             },
+            body: JSON.stringify(data)
         })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    console.log('Item successfully added to cart');
-                    setTimeout(calculateTotal, 0);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                setTimeout(calculateTotal, 0);
-            });
     }
 
     function calculateTotal() {
