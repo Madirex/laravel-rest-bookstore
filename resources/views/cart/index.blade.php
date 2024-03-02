@@ -109,17 +109,31 @@
 @endif
 </body>
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelector('.container').addEventListener('change', function(e) {
+            if (e.target && e.target.matches('.item-quantity')) {
+                const bookId = e.target.dataset.bookId;
+                const quantity = e.target.value;
+                updateItemQuantity(bookId, quantity);
+            }
+        });
+    });
+    document.addEventListener('DOMContentLoaded', function () {
+        calculateTotal(true);
+    });
     function updateItemQuantity(bookId, quantity) {
         let formData = new FormData();
         formData.append('book_id', bookId);
         formData.append('quantity', quantity);
-        formData.append('_token', '{{ csrf_token() }}'); // 确保包含 CSRF 令牌
+        formData.append('_token', '{{ csrf_token() }}');
+
+        calculateTotal();
 
         fetch('{{ route("cart.add") }}', {
             method: 'POST',
             body: formData,
             headers: {
-                'Accept': 'application/json', // 明确指定期望得到 JSON 响应
+                'Accept': 'application/json',
             },
         })
             .then(response => {
@@ -131,10 +145,13 @@
             .then(data => {
                 if (data.success) {
                     console.log('Item successfully added to cart');
-                    calculateTotal();
+                    setTimeout(calculateTotal, 0);
                 }
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => {
+                console.error('Error:', error);
+                setTimeout(calculateTotal, 0);
+            });
     }
 
     function calculateTotal() {
@@ -142,9 +159,7 @@
         document.querySelectorAll('.cart-item').forEach(item => {
             const priceElement = item.querySelector('.item-price');
             const quantityInput = item.querySelector('.item-quantity');
-            console.log(priceElement, quantityInput.value)
             if (priceElement && quantityInput) {
-                // 使用 dataset 访问 data-* 属性
                 const price = parseFloat(priceElement.getAttribute('data-price'));
                 const quantity = parseInt(quantityInput.value, 10);
                 total += price * quantity;

@@ -12,15 +12,18 @@ class CartController extends Controller
     {
         $userId = $request->user()->id;
         $bookId = $request->input('book_id');
-        $quantity = $request->input('quantity', 1);
+        $additionalQuantity = $request->input('quantity', 1);
 
         $cartKey = "cart:$userId";
-        Redis::hSet($cartKey, $bookId, $quantity);
-        if ($request->expectsJson()) {
-            return response()->json(['success' => true]);
-        }
 
-        return redirect()->route('cart.cart');
+        $currentQuantity = Redis::hGet($cartKey, $bookId);
+        $newQuantity = $currentQuantity ? $currentQuantity + $additionalQuantity : $additionalQuantity;
+
+        Redis::hSet($cartKey, $bookId, $newQuantity);
+
+        return $request->expectsJson()
+            ? response()->json(['success' => true, 'quantity' => $newQuantity])
+            : back()->with('success', 'Item added to cart');
     }
 
 
@@ -31,7 +34,10 @@ class CartController extends Controller
 
         $cartKey = "cart:$userId";
         Redis::hDel($cartKey, $bookId);
-        return redirect()->route('cart.cart');
+
+        return $request->expectsJson()
+            ? response()->json(['success' => true])
+            : back()->with('success', 'Item removed from cart');
     }
 
     public function getCart(Request $request)
@@ -39,21 +45,29 @@ class CartController extends Controller
         $userId = $request->user()->id;
         $cartKey = "cart:$userId";
         $cartItems = Redis::hGetAll($cartKey);
-        $total = 0;
 
-        $itemsDetails = [];
-        foreach ($cartItems as $bookId => $quantity) {
-            $book = Book::find($bookId);
-            $itemsDetails[] = [
+        if (empty($cartItems)) {
+            return view('cart.index', ['cartItems' => []]);
+        }
+
+
+        $bookIds = array_keys($cartItems);
+        $bookIds = array_filter($bookIds, function($id) {
+            return is_numeric($id);
+        });
+        $books = Book::whereIn('id', $bookIds)->get()->keyBy('id');
+
+        $itemsDetails = $books->map(function ($book) use ($cartItems) {
+            return [
                 'id' => $book->id,
                 'name' => $book->name,
                 'image' => $book->image,
                 'price' => $book->price,
-                'quantity' => $quantity,
+                'quantity' => $cartItems[$book->id],
                 'stock' => $book->stock,
                 'author' => $book->author,
             ];
-        }
+        })->values()->all();
 
         return view('cart.index', ['cartItems' => $itemsDetails]);
     }
