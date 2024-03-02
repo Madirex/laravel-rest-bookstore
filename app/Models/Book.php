@@ -52,4 +52,13 @@ class Book extends Model
         return $query->whereRaw('LOWER(name) LIKE ?', ["%" . strtolower($search) . "%"])
             ->orWhereRaw('LOWER(author) LIKE ?', ["%" . strtolower($search) . "%"]);
     }
+
+    /**
+     * Relación con la tabla shop
+     * @return mixed mixed
+     */
+    public function shop()
+    {
+        return $this->belongsTo(Shop::class);
+    }
 }
