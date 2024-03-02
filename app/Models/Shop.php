@@ -13,8 +13,6 @@ class Shop extends Model
 {
     use HasFactory;
 
-    public mixed $active;
-    public mixed $name;
     protected $fillable = [ 'name', 'address', 'books', 'active'];
 
     /**
@@ -25,10 +23,6 @@ class Shop extends Model
         'active',
     ];
 
-
-
-
-
     /**
      * Convierte en tipos nativos
      * @var string[] $casts
@@ -36,7 +30,6 @@ class Shop extends Model
     protected $casts = [
         'active' => 'boolean',
     ];
-
 
 
     /**
