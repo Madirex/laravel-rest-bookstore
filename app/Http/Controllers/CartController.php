@@ -43,15 +43,14 @@ class CartController extends Controller
                 $currentData = ['book_id' => $bookId, 'quantity' => $quantity];
                 Redis::hSet($cartKey, $bookId, json_encode($currentData));
                 break;
-
-                // hacer flash si no espera json
-                if (!$request->expectsJson()) {
-                    flash('Libro agregado el carrito')->success()->important();
-                }
-                return $request->expectsJson()
-                    ? response()->json(['success' => true, 'quantity' => $newQuantity])
-                    : back()->with('success', 'Libro agregado al carrito');
         }
+        // hacer flash si no espera json
+        if (!$request->expectsJson()) {
+            flash('Libro agregado el carrito')->success()->important();
+        }
+        return $request->expectsJson()
+            ? response()->json(['success' => true])
+            : back()->with('success', 'Libro agregado al carrito');
     }
 
 

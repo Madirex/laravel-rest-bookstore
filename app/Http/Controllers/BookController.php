@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Book;
 use App\Models\Category;
 use App\Rules\CategoryNameNotExists;
-use App\Rules\ISBNNameExists;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -29,6 +28,7 @@ class BookController extends Controller
         }
 
         $books = Book::where('active', true)
+            ->where('stock', '>', 0)
             ->search($request->search)
             ->orderBy('id', 'asc')
             ->paginate(8);
@@ -65,7 +65,7 @@ class BookController extends Controller
         return view('books.show')->with('book', $book);
     }
 
- /**
+    /**
      * store
      * @param Request $request request
      * @return string | mixed
@@ -333,7 +333,6 @@ class BookController extends Controller
         $book->active = true;
         return $book;
     }
-
 
 
 }
