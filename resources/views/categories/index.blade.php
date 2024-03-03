@@ -19,9 +19,12 @@
         <div class="category-container">
             {{-- Por cada category --}}
             @foreach ($categories as $category)
+
                 <div class="category-card">
                     <div class="category-info">
-                        <h2>{{ $category->name }}</h2>
+                        <a href="{{ route('categories.show', $category->id) }}">
+                            <h4>{{ $category->name }}</h4>
+                        </a>
                     </div>
                     <div class="category-actions">
                         <a class="btn btn-primary btn-sm" href="{{ route('categories.show', $category->id) }}"><i class="fas fa-info-circle"></i> Detalles</a>

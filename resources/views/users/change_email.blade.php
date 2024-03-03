@@ -21,12 +21,12 @@
 
         <div class="form-group">
             <label for="new_email">Nuevo correo electrónico</label>
-            <input type="email" class="form-control" id="new_email" name="new_email" required>
+            <input type="email" class="form-control" id="new_email" name="new_email" required value="{{ old('new_email') }}">
         </div>
 
         <div class="form-group">
             <label for="password">Confirmar Contraseña</label>
-            <input type="password" class="form-control" id="password" name="password">
+            <input type="password" class="form-control" id="password" name="password" required>
         </div>
 
         <button type="submit" class="btn btn-primary">Cambiar correo electrónico</button>

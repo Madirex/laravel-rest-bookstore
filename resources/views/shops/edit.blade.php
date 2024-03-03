@@ -22,10 +22,9 @@
         @method('PUT')
         <div class="form-group">
             <label for="name">Nombre:</label>
-            <input class="form-control" id="name" name="name" type="text" required value="{{$shop->name}}">
+            <input class="form-control" id="name" name="name" type="text" required value="{{ old('name', $shop->name) }}">
         </div>
         <button class="btn btn-primary" type="submit">Actualizar</button>
-        <a class="btn btn-secondary mx-2" href="{{ route('shops.index') }}">Volver</a>
     </form>
 
 @endsection

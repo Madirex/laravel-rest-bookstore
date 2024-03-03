@@ -22,33 +22,32 @@
         @csrf
         <div class="form-group">
             <label for="street">Calle:</label>
-            <input class="form-control" id="street" name="street" type="text" required>
+            <input class="form-control" id="street" name="street" type="text" required value="{{ old('street') }}">
         </div>
         <div class="form-group">
             <label for="number">Número:</label>
-            <input class="form-control" id="number" name="number" type="text" required>
+            <input class="form-control" id="number" name="number" type="text" required value="{{ old('number') }}">
         </div>
         <div class="form-group">
             <label for="city">Ciudad:</label>
-            <input class="form-control" id="city" name="city" type="text" required>
+            <input class="form-control" id="city" name="city" type="text" required value="{{ old('city') }}">
         </div>
         <div class="form-group">
             <label for="postal_code">Código Postal:</label>
-            <input class="form-control" id="postal_code" name="postal_code" type="text" required>
+            <input class="form-control" id="postal_code" name="postal_code" type="text" required value="{{ old('postal_code') }}">
         </div>
         <div class="form-group">
             <label for="addressable_type">Asignar dirección:</label>
             <select class="form-control" id="addressable_type" name="addressable_type" required>
                 <option value="">Selecciona el tipo</option>
-                <option value="App\Models\User">Usuario</option>
+                <option value="App\Models\User" {{ old('addressable_type') == 'App\Models\User' ? 'selected' : '' }}>Usuario</option>
             </select>
         </div>
         <div class="form-group">
             <label for="addressable_id">ID:</label>
-            <input class="form-control" id="addressable_id" name="addressable_id" type="text" required>
+            <input class="form-control" id="addressable_id" name="addressable_id" type="text" required value="{{ old('addressable_id') }}">
         </div>
         <button class="btn btn-primary" type="submit">Crear</button>
-        <a class="btn btn-secondary mx-2" href="{{ route('addresses.index') }}">Volver</a>
     </form>
 
 @endsection

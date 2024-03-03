@@ -40,7 +40,5 @@
         <a class="btn btn-info" href="{{ route('books.editImage', $book->id) }}"><i class="fas fa-image"></i> Editar Imagen</a>
     @endif
     <br/><br/>
-    <a class="btn btn-primary" href="{{ route('books.index') }}"><i class="fas fa-arrow-left"></i> Volver</a>
-
 
 @endsection
