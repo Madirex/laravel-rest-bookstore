@@ -25,11 +25,22 @@
     </div>
 
     <br/>
+    @if(auth()->check() && auth()->user()->hasVerifiedEmail() && $book->stock > 0)
+        <form action="{{ route('cart.handle') }}" method="POST" style="display:inline;">
+            @csrf
+            <input type="hidden" name="book_id" value="{{ $book->id }}">
+            <input type="hidden" name="action" value="add">
+            <button type="submit" class="btn btn-success btn-sm">Agregar al carrito <i class="fas fa-cart-plus"></i></button>
+        </form>
+    @endif
 
-    <a class="btn btn-primary" href="{{ route('books.index') }}"><i class="fas fa-arrow-left"></i> Volver</a>
-
+    <br/><br/>
     @if(auth()->check() && auth()->user()->hasRole('admin'))
         <a class="btn btn-secondary" href="{{ route('books.edit', $book->id) }}"><i class="fas fa-edit"></i> Editar</a>
         <a class="btn btn-info" href="{{ route('books.editImage', $book->id) }}"><i class="fas fa-image"></i> Editar Imagen</a>
     @endif
+    <br/><br/>
+    <a class="btn btn-primary" href="{{ route('books.index') }}"><i class="fas fa-arrow-left"></i> Volver</a>
+
+
 @endsection
