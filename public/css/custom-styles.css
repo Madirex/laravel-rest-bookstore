@@ -146,6 +146,11 @@ body {
     text-decoration: none;
 }
 
+/* estilo card */
+.card{
+    margin-top: 20px;
+}
+
 /* BASE */
 footer {
     left: 0;
