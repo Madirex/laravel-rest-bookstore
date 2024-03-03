@@ -72,6 +72,28 @@ class CartController extends Controller
     }
 
     /**
+     * Get the number of items in the cart
+     * @param Request $request request
+     * @return int|mixed view
+     */
+    public function itemCount(Request $request)
+    {
+        $userId = $request->user()->id;
+        $cartKey = "cart:$userId";
+        $cartItems = Redis::hGetAll($cartKey);
+
+        $count = 0;
+        foreach ($cartItems as $itemJson) {
+            $item = json_decode($itemJson, true);
+            if (is_array($item) && isset($item['quantity'])) {
+                $count += $item['quantity'];
+            }
+        }
+
+        return $count;
+    }
+
+    /**
      * Get the cart
      * @param Request $request request
      * @return mixed view
@@ -103,8 +125,6 @@ class CartController extends Controller
                         'author' => $book->author,
                     ];
                 }
-            } else {
-
             }
         }
 
@@ -137,8 +157,6 @@ class CartController extends Controller
                         'quantity' => $item['quantity'],
                     ];
                 }
-            } else {
-
             }
         }
 

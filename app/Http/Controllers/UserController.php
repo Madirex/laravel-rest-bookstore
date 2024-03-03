@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Mail\EmailChangeMail;
 use App\Models\User;
 use App\Rules\CheckCorrectPassword;
-use App\Rules\EmailExists;
 use App\Rules\UniqueCaseInsensitive;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
