@@ -141,6 +141,10 @@ body {
     margin-top: 20px;
 }
 
+/* categories */
+.category-info > a{
+    text-decoration: none;
+}
 
 /* BASE */
 footer {
