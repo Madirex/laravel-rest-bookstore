@@ -1,4 +1,5 @@
 @php use App\Models\User; @endphp
+@php use App\Http\Controllers\CartController; @endphp
 
 <header>
     <nav class="navbar navbar-expand-lg navbar-dark">
@@ -37,25 +38,28 @@
                         </div>
                     @endif
                 </li>
-                @if (auth()->check() && auth()->user()->hasVerifiedEmail())
-                    <!--cuando estoy en /cart no parece este icono-->
-                    @if (!request()->routeIs('cart.cart') && !request()->routeIs('cart.add')&& !request()->routeIs('cart.remove'))
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('cart.cart') }}">
-                            <i class="fas fa-shopping-cart"></i>
-                            Carrito
-                        </a>
-                    </li>
-                    @endif
-                @endif
             </ul>
 
 
+            <br/>
+            <br/>
+
             <ul class="navbar-nav ml-auto" style="flex-direction: column;">
-                <li class="nav-item">
+
+                <li class="nav-item ml-auto d-block m-auto">
                     @if(auth()->check())
                         @if(auth()->user()->hasVerifiedEmail())
                             <div class="nav-username">
+                                @if (!request()->routeIs('cart.cart') && !request()->routeIs('cart.add')&& !request()->routeIs('cart.remove'))
+                                    <div class="nav-container">
+                                        <a class="nav-link" href="{{ route('cart.cart') }}">
+                                            <i class="fas fa-shopping-cart"></i>
+                                            <span class="badge badge-light">
+            {{ (app(CartController::class)->itemCount(request()) > 99) ? '99+' : app(CartController::class)->itemCount(request()) }}
+        </span>
+                                        </a>
+                                    </div>
+                                @endif
                                 <a href="{{ route('users.profile') }}">
                                     @if(auth()->user()->image != User::$IMAGE_DEFAULT)
                                         <img src="{{ asset('storage/' . auth()->user()->image) }}" class="rounded"
