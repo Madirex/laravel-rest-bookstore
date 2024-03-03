@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
 use App\Models\Book;
+use App\Models\Category;
 use App\Rules\CategoryNameExists;
 use Illuminate\Http\Request;
 
@@ -35,7 +35,7 @@ class CategoryController extends Controller
      * @param string $id id
      * @return mixed view or json
      */
-    public function show(string $id)
+    public function show(string $id, Request $request)
     {
         try {
             $category = Category::findOrFail($id);
@@ -47,11 +47,22 @@ class CategoryController extends Controller
             return redirect()->back()->withInput();
         }
 
-        if (request()->expectsJson()) {
-            return response()->json($category);
+        // Aquí es donde obtenemos los libros de la categoría
+        $query = Book::where('category_name', $category->name);
+
+        // Si hay un término de búsqueda, lo añadimos a la consulta
+        if ($request->has('search')) {
+            $search = trim(strtolower($request->get('search')));
+            $query->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"]);
         }
 
-        return view('categories.show')->with('category', $category);;
+        $books = $query->paginate(8);
+
+        if (request()->expectsJson()) {
+            return response()->json(['category' => $category, 'books' => $books]);
+        }
+
+        return view('categories.show', compact('category', 'books'));
     }
 
     /**
