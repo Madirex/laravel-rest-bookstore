@@ -43,7 +43,7 @@ class AddressController extends Controller
             }
 
             flash('Dirección no encontrada')->error();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         if (!$address) {
@@ -52,7 +52,7 @@ class AddressController extends Controller
             }
 
             flash('Dirección no encontrada')->error();
-            return redirect()->back()->with('error', 'Dirección no encontrada');
+            return redirect()->back()->withInput()->with('error', 'Dirección no encontrada');
         }
 
         if ($request->expectsJson()) {
@@ -104,7 +104,7 @@ class AddressController extends Controller
             }
 
             flash('Dirección no encontrada')->error();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         if (!$address) {
@@ -113,7 +113,7 @@ class AddressController extends Controller
             }
 
             flash('Dirección no encontrada')->error();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         // TODO: el país se fuerza a España (si en un futuro se quiere ampliar a otros países, se debe de quitar la línea de abajo)
@@ -151,7 +151,7 @@ class AddressController extends Controller
             }
 
             flash('Dirección no encontrada')->error();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         if (!$address) {
@@ -160,7 +160,7 @@ class AddressController extends Controller
             }
 
             flash('Dirección no encontrada')->error();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         $address->delete();
@@ -192,7 +192,7 @@ class AddressController extends Controller
         $address = Address::find($id);
 
         if (!$address) {
-            return redirect()->back()->with('error', 'Dirección no encontrada');
+            return redirect()->back()->withInput()->with('error', 'Dirección no encontrada');
         }
 
         return view('addresses.edit', compact('address'));
@@ -221,7 +221,7 @@ class AddressController extends Controller
                 return response()->json(['message' => 'Código postal no válido'], 422);
             }
             flash('Código postal no válido')->error();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         if ($request->addressable_type === User::class) {
@@ -232,7 +232,7 @@ class AddressController extends Controller
                     return response()->json(['message' => 'Usuario no encontrado'], 404);
                 }
                 flash('Usuario no encontrado')->error();
-                return redirect()->back();
+                return redirect()->back()->withInput();
             }
         }
         return null;
@@ -355,7 +355,7 @@ class AddressController extends Controller
 
         if (!$address || $address->addressable_id != auth()->user()->id) {
             flash('Dirección no encontrada o no pertenece al usuario autenticado')->error();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         $address->delete();

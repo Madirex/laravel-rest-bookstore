@@ -50,7 +50,7 @@ class BookController extends Controller
                 return response()->json(['message' => 'Libro no encontrado'], 404);
             }
             flash('Libro no encontrado')->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         if (request()->expectsJson()) {
@@ -59,7 +59,7 @@ class BookController extends Controller
 
         if ($book->active == false) {
             flash('Libro no encontrado')->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         return view('books.show')->with('book', $book);
@@ -77,7 +77,7 @@ class BookController extends Controller
                 return $errorResponse;
             }
             flash('Error al crear el libro: ' . $errorResponse)->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
         $book = $this->getBookStore($request);
         $book->save();
@@ -105,7 +105,7 @@ class BookController extends Controller
                 return response()->json(['message' => 'Libro no encontrado'], 404);
             }
             flash('Libro no encontrado')->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         if ($errorResponse = $this->validateBook($request, $book->isbn)) {
@@ -113,7 +113,7 @@ class BookController extends Controller
                 return $errorResponse;
             }
             flash('Error al actualizar el libro: ' . $errorResponse)->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         $book->isbn = $request->input('isbn');
@@ -151,7 +151,7 @@ class BookController extends Controller
             }
 
             flash('Libro no encontrado')->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
         $this->removeBookImage($book);
         $book->delete();
@@ -195,7 +195,7 @@ class BookController extends Controller
                 return response()->json(['message' => 'Error al actualizar la imagen del libro'], 400);
             }
             flash('Error al actualizar la imagen del libro' . $e->getMessage())->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
     }
 

@@ -58,7 +58,7 @@ class ShopController extends Controller
             }
             // Asumiendo que tienes un sistema de notificaciones flash.
             flash('Tienda no encontrada')->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         if (request()->expectsJson()) {
@@ -67,7 +67,7 @@ class ShopController extends Controller
 
         if ($shop->active == false) {
             flash('Tienda no encontrada')->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         return view('shops.show')->with('shop', $shop);
@@ -86,7 +86,7 @@ class ShopController extends Controller
                 return $errorResponse;
             }
             flash('Error al crear la tienda: ' . $errorResponse)->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         $shop = $this->getShopStore($request);
@@ -115,7 +115,7 @@ class ShopController extends Controller
                 return response()->json(['message' => 'Tienda no encontrada'], 404);
             }
             flash('Tienda no encontrada')->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         if ($errorResponse = $this->validateShop($request, $shop->id)) {
@@ -123,7 +123,7 @@ class ShopController extends Controller
                 return $errorResponse;
             }
             flash('Error al actualizar la tienda: ' . $errorResponse)->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         $shop->name = $request->input('name');
@@ -156,7 +156,7 @@ class ShopController extends Controller
             }
 
             flash('Tienda no encontrada')->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         //borrado lógico
@@ -240,7 +240,7 @@ class ShopController extends Controller
         $shop = Shop::with(['books', 'address'])->find($id);
         if (!$shop) {
             flash('Tienda no encontrada')->error();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
         return view('shops.edit', compact('shop'));
     }

@@ -44,7 +44,7 @@ class CategoryController extends Controller
                 return response()->json(['message' => 'Categoría no encontrada'], 404);
             }
             flash('Categoría no encontrada')->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         if (request()->expectsJson()) {
@@ -71,7 +71,7 @@ class CategoryController extends Controller
             }
 
             flash('Error al crear la categoría: debe ser única, tener máximo 255 caracteres y no debe estar vacía')->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
         $category = new Category();
         $category->name = $request->input('name');
@@ -102,7 +102,7 @@ class CategoryController extends Controller
                 return response()->json(['message' => 'Categoría no encontrada'], 404);
             }
             flash('Categoría no encontrada')->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         try {
@@ -119,7 +119,7 @@ class CategoryController extends Controller
                 return response()->json(['message' => 'Error al crear la categoría: debe ser única, tener máximo 255 caracteres y no debe estar vacía'], 400);
             }
             flash('Error al crear la categoría: debe ser única, tener máximo 255 caracteres y no debe estar vacía')->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         // Obtener todos los books relacionados con la categoría
@@ -156,7 +156,7 @@ class CategoryController extends Controller
                 return response()->json(['message' => 'Categoría no encontrada'], 404);
             }
             flash('Categoría no encontrada')->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
         $category->delete();
 

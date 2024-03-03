@@ -356,7 +356,7 @@ class UserController extends Controller
         //comprobar si email es igual
         if (strtolower($request->new_email) == strtolower($user->email)) {
             flash('El nuevo correo electrónico no puede ser igual al actual.')->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         $request->validate([
@@ -367,7 +367,7 @@ class UserController extends Controller
 
         if (!Hash::check($request->password, $user->password)) {
             flash('La contraseña proporcionada es incorrecta.')->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         $newEmail = $request->input('new_email');
