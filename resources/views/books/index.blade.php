@@ -18,7 +18,6 @@
     @if (count($books) > 0)
         <div class="book-container">
             {{-- Por cada book --}}
-            {{-- Por cada book --}}
             @foreach ($books as $book)
                 <a href="{{ route('books.show', $book->id) }}" class="book-link">
                     <div class="book-card">
