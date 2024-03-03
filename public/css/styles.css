@@ -113,6 +113,24 @@ div.nav-username{
     background-color: #e0f0f717;
 }
 
-.nav-container > .nav-link {
+.nav-container > .nav-link, .username-nav-content {
     color: #b7b7b7 !important;
+}
+
+.username-nav-content{
+    padding: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    transition: background-color 0.1s ease;
+}
+
+/** zoom **/
+.header-container {
+    margin-right:20px;
+    border-radius: 10px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.header-container:hover {
+    transform: scale(1.1);
 }

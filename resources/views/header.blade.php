@@ -3,10 +3,14 @@
 
 <header>
     <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="header-container">
+            <a style="display:block; margin:5px;"> </a>
         <a class="navbar-brand" href="{{ url('/') }}">
             <img class="d-inline-block align-text-top" height="30" src="/favicon.ico" width="30">
             BookStore
         </a>
+            <a style="display:block; margin:5px;"> </a>
+        </div>
         <button aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler"
                 data-target="#navbarNav" data-toggle="collapse" type="button">
             <span class="navbar-toggler-icon"></span>
@@ -60,17 +64,21 @@
                                         </a>
                                     </div>
                                 @endif
-                                <a href="{{ route('users.profile') }}">
-                                    @if(auth()->user()->image != User::$IMAGE_DEFAULT)
-                                        <img src="{{ asset('storage/' . auth()->user()->image) }}" class="rounded"
-                                             width="30" height="30">
-                                    @else
-                                        <img src="{{ '/' . User::$IMAGE_DEFAULT }}"
-                                             style="border: 2px solid black; background-color: white;" class="rounded"
-                                             width="30" height="30">
-                                    @endif
-                                    {{ ucfirst(strtolower(auth()->user()->username)) }}
-                                </a>
+                                    <div class="nav-container">
+                                        <a style="display:block; margin:5px;"> </a>
+                                        <a class="username-nav-content" href="{{ route('users.profile') }}">
+                                            @if(auth()->user()->image != User::$IMAGE_DEFAULT)
+                                                <img src="{{ asset('storage/' . auth()->user()->image) }}" class="rounded"
+                                                     width="30" height="30">
+                                            @else
+                                                <img src="{{ '/' . User::$IMAGE_DEFAULT }}"
+                                                     style="border: 2px solid black; background-color: white;" class="rounded"
+                                                     width="30" height="30">
+                                            @endif
+                                            {{ ucfirst(strtolower(auth()->user()->username)) }}
+                                        </a>
+                                        <a style="display:block; margin:5px;"> </a>
+                                    </div>
                             </div>
                         @else
                             <a href="{{route('verification.notice')}}"
