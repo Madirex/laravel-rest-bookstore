@@ -7,6 +7,12 @@
     <h1 class="card-title"><i class="fas fa-store"></i> {{ $shop->name }}</h1>
     <br/>
 
+    @if (count($books) == 0)
+        <div class="alert alert-warning" role="alert">
+            <i class="fas fa-exclamation-triangle"></i> No hay libros en esta tienda.
+        </div>
+    @endif
+
     @if (count($books) > 0)
         <form action="{{ route('shops.show', $shop->id) }}" class="mb-3" method="get">
             @csrf
