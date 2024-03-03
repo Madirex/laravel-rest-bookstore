@@ -26,7 +26,7 @@ Los protagonistas se darán cuenta de que no están solos en la mansión, en ese
                 'price' => 10.4,
                 'stock' => 50,
                 'active' => true,
-                'shop' => 1,
+                'shop_id' => 1,
                 'created_at' => '2020-10-17 10:00:00',
                 'updated_at' => '2020-10-17 10:00:00'
             ],
@@ -43,7 +43,7 @@ Vivimos en un mundo extraordinario con cambios exponenciales e inciertos. El des
                 'price' => 10.4,
                 'stock' => 10,
                 'active' => true,
-                'shop' => 1,
+                'shop_id' => 1,
                 'created_at' => '2021-06-25 10:00:00',
                 'updated_at' => '2021-06-25 10:00:00'
             ],
@@ -61,7 +61,7 @@ Manuel consiguió erradicar por completo la mala fama que tenía ese pueblo.Año
                 'price' => 15.18,
                 'stock' => 10,
                 'active' => true,
-                'shop' => 1,
+                'shop_id' => 1,
                 'created_at' => '2022-09-24 10:00:00',
                 'updated_at' => '2022-09-24 10:00:00'
             ],
@@ -80,7 +80,7 @@ Prepárate para un viaje transformador hacia la prosperidad financiera.',
                 'price' => 12,
                 'stock' => 10,
                 'active' => true,
-                'shop' => 1,
+                'shop_id' => 1,
                 'created_at' => '2023-11-23 10:00:00',
                 'updated_at' => '2023-11-23 10:00:00'
             ],

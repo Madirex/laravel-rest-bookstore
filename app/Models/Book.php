@@ -13,7 +13,7 @@ class Book extends Model
     use HasFactory;
 
     public static $IMAGE_DEFAULT = 'images/book.png';
-    protected $fillable = ['isbn', 'name', 'author', 'publisher', 'image', 'description', 'price', 'stock', 'category_name', 'active'];
+    protected $fillable = ['isbn', 'name', 'author', 'publisher', 'image', 'description', 'price', 'stock', 'category_name', 'shop_id', 'active'];
 
     /**
      * Oculta los campos

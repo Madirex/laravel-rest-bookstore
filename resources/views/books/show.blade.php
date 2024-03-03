@@ -10,6 +10,7 @@
             <p class="card-text"><i class="fas fa-barcode"></i> ISBN: {{ $book->isbn }}</p>
             <p class="card-text"><i class="fas fa-user"></i> Autor: {{ $book->author }}</p>
             <p class="card-text"><i class="fas fa-building"></i> Editorial: {{ $book->publisher }}</p>
+            <p class="card-text"><i class="fas fa-store"></i> Tienda: {{ $book->shop->name }}</p>
             <p class="card-text"><i class="fas fa-euro-sign"></i> Precio: {{ $book->price }}</p>
             <p class="card-text">
                 @if($book->image != Book::$IMAGE_DEFAULT)

@@ -23,7 +23,7 @@ return new class extends Migration
             $table->integer('stock');
             $table->string('category_name');
             //shop
-            $table->foreignId('shop')->constrained();
+            $table->foreignId('shop_id')->constrained();
             $table->boolean('active')->default(true);
             $table->timestamps();
         });

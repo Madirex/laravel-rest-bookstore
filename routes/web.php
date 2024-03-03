@@ -44,12 +44,34 @@ Route::group(['prefix' => 'cartcodes'], function () {
 });
 
 /* Rutas de libros, categorías y tiendas */
-Route::get('books/', [BookController::class, 'index'])->name('books.index');
-Route::get('books/{book}', [BookController::class, 'show'])->name('books.show');
-Route::get('categories/', [CategoryController::class, 'index'])->name('categories.index');
-Route::get('categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
-Route::get('shops/', [ShopController::class, 'index'])->name('shops.index');
-Route::get('shops/{shop}', [ShopController::class, 'show'])->name('shops.show');
+
+Route::group(['prefix' => 'categories'], function () {
+    Route::get('/', [CategoryController::class, 'index'])->name('categories.index');
+    Route::get('categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
+});
+
+Route::group(['prefix' => 'shops'], function () {
+    Route::get('/', [ShopController::class, 'index'])->name('shops.index');
+    Route::get('/{shop}', [ShopController::class, 'show'])->name('shops.show');
+    Route::get('/create', [ShopController::class, 'create'])->name('shops.create')->middleware(['auth', 'admin']);
+    Route::post('/', [ShopController::class, 'store'])->name('shops.store')->middleware(['auth', 'admin']);
+    Route::get('/{shop}/edit', [ShopController::class, 'edit'])->name('shops.edit')->middleware(['auth', 'admin']);
+    Route::put('/{shop}', [ShopController::class, 'update'])->name('shops.update')->middleware(['auth', 'admin']);
+    Route::delete('/{shop}', [ShopController::class, 'destroy'])->name('shops.destroy')->middleware(['auth', 'admin']);
+});
+
+Route::group(['prefix' => 'books'], function () {
+    Route::get('/', [BookController::class, 'index'])->name('books.index');
+    Route::get('/create', [BookController::class, 'create'])->name('books.create')->middleware(['auth', 'admin']);
+    Route::post('/', [BookController::class, 'store'])->name('books.store')->middleware(['auth', 'admin']);
+    Route::get('/{book}', [BookController::class, 'show'])->name('books.show');
+    Route::get('/{book}/edit', [BookController::class, 'edit'])->name('books.edit')->middleware(['auth', 'admin']);
+    Route::put('/{book}', [BookController::class, 'update'])->name('books.update')->middleware(['auth', 'admin']);
+    Route::delete('/{book}', [BookController::class, 'destroy'])->name('books.destroy')->middleware(['auth', 'admin']);
+    Route::get('/{book}/edit-image', [BookController::class, 'editImage'])->name('books.editImage')->middleware(['auth', 'admin']);
+    Route::patch('/{book}/edit-image', [BookController::class, 'updateImage'])->name('books.updateImage')->middleware(['auth', 'admin']);
+});
+
 
 /* Rutas de gestión del usuario autenticado */
 Route::group(['middleware' => ['auth', 'verified']], function () {
@@ -133,14 +155,6 @@ Route::group(['prefix' => 'users', 'middleware' => ['auth', 'admin']], function 
     Route::post('/users', [UserController::class, 'store'])->name('users.admin.store');
 });
 
-Route::group(['prefix' => 'shops', 'middleware' => ['auth', 'admin']], function () {
-    Route::get('/create', [ShopController::class, 'create'])->name('shops.create');
-    Route::post('/', [ShopController::class, 'store'])->name('shops.store');
-    Route::get('/{shop}/edit', [ShopController::class, 'edit'])->name('shops.edit');
-    Route::put('/{shop}', [ShopController::class, 'update'])->name('shops.update');
-    Route::delete('/{shop}', [ShopController::class, 'destroy'])->name('shops.destroy');
-});
-
 Route::group(['prefix' => 'users'], function () {
     Route::get('/profile', [UserController::class, 'show'])->name('users.profile')->middleware('auth');
 });
@@ -153,16 +167,6 @@ Route::group(['prefix' => 'addresses', 'middleware' => ['auth', 'admin']], funct
     Route::get('/{address}/edit', [AddressController::class, 'edit'])->name('addresses.edit');
     Route::put('/{address}', [AddressController::class, 'update'])->name('addresses.update');
     Route::delete('/{address}', [AddressController::class, 'destroy'])->name('addresses.destroy');
-});
-
-Route::group(['prefix' => 'books', 'middleware' => ['auth', 'admin']], function () {
-    Route::get('/create', [BookController::class, 'create'])->name('books.create');
-    Route::post('/', [BookController::class, 'store'])->name('books.store');
-    Route::get('/{book}/edit', [BookController::class, 'edit'])->name('books.edit');
-    Route::put('/{book}', [BookController::class, 'update'])->name('books.update');
-    Route::delete('/{book}', [BookController::class, 'destroy'])->name('books.destroy');
-    Route::get('/{book}/edit-image', [BookController::class, 'editImage'])->name('books.editImage');
-    Route::patch('/{book}/edit-image', [BookController::class, 'updateImage'])->name('books.updateImage');
 });
 
 Route::group(['prefix' => 'categories', 'middleware' => ['auth', 'admin']], function () {

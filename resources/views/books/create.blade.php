@@ -58,6 +58,10 @@
                 @endforeach
             </select>
         </div>
+        <div class="form-group">
+            <label for="shop_id">ID de la tienda:</label>
+            <input class="form-control" id="shop_id" min="1" name="shop_id" type="number" required value="1">
+        </div>
 
         <button class="btn btn-primary" type="submit">Crear</button>
         <a class="btn btn-secondary mx-2" href="{{ route('books.index') }}">Volver</a>

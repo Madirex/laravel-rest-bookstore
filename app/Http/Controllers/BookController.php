@@ -228,6 +228,7 @@ class BookController extends Controller
                 'price' => 'required|numeric|min:0|max:999999.99|regex:/^\d{1,6}(\.\d{1,2})?$/',
                 'stock' => 'required|integer|min:0|max:1000000000',
                 'category_name' => ['required', 'string', new CategoryNameNotExists],
+                'shop_id' => ['required', 'exists:shops,id'],
             ]);
 
 
@@ -327,6 +328,7 @@ class BookController extends Controller
         $book->description = $request->input('description');
         $book->price = $request->input('price');
         $book->stock = $request->input('stock');
+        $book->shop_id = $request->input('shop_id');
         $book->category_name = $request->input('category_name');
         $book->active = true;
         return $book;
