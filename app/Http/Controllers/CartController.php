@@ -27,11 +27,26 @@ class CartController extends Controller
 
         $cartKey = "cart:$userId";
 
+        $book = Book::find($bookId);
+        if (!$book) {
+            return $request->expectsJson()
+                ? response()->json(['error' => 'Libro no encontrado'], 404)
+                : back()->with('error', 'Libro no encontrado');
+        }
+
         switch ($action) {
             case 'add':
                 $currentValue = Redis::hGet($cartKey, $bookId);
                 if ($currentValue) {
                     $currentData = json_decode($currentValue, true);
+                    $newQuantity = $currentData['quantity'] + $quantity;
+                    if ($newQuantity > $book->stock) {
+                        if (!$request->expectsJson())
+                            flash('No hay suficiente stock')->error()->important();
+                        return $request->expectsJson()
+                            ? response()->json(['error' => 'No hay suficiente stock'], 400)
+                            : back()->with('error', 'No hay suficiente stock');
+                    }
                     $currentData['quantity'] += $quantity;
                 } else {
                     $currentData = ['book_id' => $bookId, 'quantity' => $quantity];
@@ -156,6 +171,12 @@ class CartController extends Controller
                         ],
                         'quantity' => $item['quantity'],
                     ];
+                }
+
+                //comprobar stock
+                if ($item['quantity'] > $book->stock) {
+                    flash('No hay suficiente stock')->error()->important();
+                    return back();
                 }
             }
         }
