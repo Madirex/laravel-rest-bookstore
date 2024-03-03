@@ -241,7 +241,7 @@ class ShopController extends Controller
      */
     public function edit($id)
     {
-        $shop = Shop::with(['books', 'address'])->find($id);
+        $shop = Shop::find($id);
         if (!$shop) {
             flash('Tienda no encontrada')->error();
             return redirect()->back()->withInput();
