@@ -216,13 +216,13 @@ div.nav-username {
 }
 
 /* categories, address, user, cartcode */
-.category-container, .address-container, .user-container, .cartcode-container{
+.category-container, .address-container, .user-container, .cartcode-container, .shop-container{
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-.category-card, .address-card, .user-card, .cartcode-card{
+.category-card, .address-card, .user-card, .cartcode-card, .shop-card{
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -232,13 +232,13 @@ div.nav-username {
     background-color: #fff;
 }
 
-.category-info, .address-info, .user-info, .cartcode-info {
+.category-info, .address-info, .user-info, .cartcode-info, .shop-info {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-.category-actions, .address-actions, .user-actions, .cartcode-actions {
+.category-actions, .address-actions, .user-actions, .cartcode-actions, .shop-actions  {
     display: flex;
     gap: 10px;
 }
