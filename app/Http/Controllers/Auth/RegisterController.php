@@ -81,6 +81,7 @@ class RegisterController extends Controller
             'image' => 'images/user.png',
             'cart' => '',
             'orders' => '[]',
+            'money' => 0
         ]);
     }
 

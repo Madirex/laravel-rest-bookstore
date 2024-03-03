@@ -157,6 +157,7 @@ class UserController extends Controller
         $user->image = User::$IMAGE_DEFAULT;
         $user->cart = json_encode("");
         $user->orders = json_encode([]);
+        $user->money = 0;
         $user->save();
 
         if ($request->expectsJson()) {
