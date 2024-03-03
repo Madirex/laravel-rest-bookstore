@@ -27,6 +27,11 @@
                 </li>
             </ul>
             <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('shops.index') }}">Tiendas</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav">
                 <li class="nav-item dropdown">
                     @if (auth()->check() && auth()->user()->hasRole('admin'))
                         <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button"
