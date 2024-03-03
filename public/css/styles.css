@@ -21,6 +21,10 @@ div.nav-username{
     font-weight: bold;
     font-size: 20px;
     padding-top: 10px;
+
+    display: flex;
+    align-items: center;
+
 }
 
 
@@ -96,4 +100,19 @@ div.nav-username{
 /* Estilo para cuando se pasa el ratón sobre el enlace */
 .nav-username a:hover {
     color: #d7d7d7;
+}
+
+/* carrito */
+.nav-container {
+    margin-right:20px;
+    border-radius: 10px;
+    transition: background-color 0.1s ease;
+}
+
+.nav-container:hover {
+    background-color: #e0f0f717;
+}
+
+.nav-container > .nav-link {
+    color: #b7b7b7 !important;
 }
