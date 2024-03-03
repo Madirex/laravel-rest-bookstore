@@ -51,9 +51,9 @@ Route::group(['prefix' => 'categories'], function () {
 });
 
 Route::group(['prefix' => 'shops'], function () {
+    Route::get('/create', [ShopController::class, 'create'])->name('shops.create')->middleware(['auth', 'admin']);
     Route::get('/', [ShopController::class, 'index'])->name('shops.index');
     Route::get('/{shop}', [ShopController::class, 'show'])->name('shops.show');
-    Route::get('/create', [ShopController::class, 'create'])->name('shops.create')->middleware(['auth', 'admin']);
     Route::post('/', [ShopController::class, 'store'])->name('shops.store')->middleware(['auth', 'admin']);
     Route::get('/{shop}/edit', [ShopController::class, 'edit'])->name('shops.edit')->middleware(['auth', 'admin']);
     Route::put('/{shop}', [ShopController::class, 'update'])->name('shops.update')->middleware(['auth', 'admin']);
