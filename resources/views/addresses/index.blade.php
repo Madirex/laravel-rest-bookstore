@@ -1,6 +1,6 @@
 @php use App\Models\Address; @endphp
 @extends('main')
-@section('title', 'Direcciones CRUD')
+@section('title', 'Direcciones')
 @section('content')
     <br/>
     <h1>Listado de direcciones</h1>

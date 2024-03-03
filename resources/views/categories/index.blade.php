@@ -1,6 +1,6 @@
 @php use App\Models\Category; @endphp
 @extends('main')
-@section('title', 'Categorías CRUD')
+@section('title', 'Categorías')
 @section('content')
     <br/>
     <h1>Listado de categorías</h1>

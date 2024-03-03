@@ -141,8 +141,8 @@ body {
     margin-top: 20px;
 }
 
-/* categories */
-.category-info > a{
+/* categories y shop */
+.category-info > a, .shop-info > a {
     text-decoration: none;
 }
 
@@ -232,7 +232,7 @@ div.nav-username {
     background-color: #fff;
 }
 
-.category-info, .address-info, .user-info, .cartcode-info, .shop-info {
+.category_info, .address-info, .user-info, .cartcode-info, .shop-info {
     display: flex;
     flex-direction: column;
     gap: 10px;
