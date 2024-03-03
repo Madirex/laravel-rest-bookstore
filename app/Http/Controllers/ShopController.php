@@ -48,21 +48,27 @@ class ShopController extends Controller
      * @param $id id
      * @return mixed view or json
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
         try {
             $shop = Shop::findOrFail($id);
+            $query = $shop->books();
+
+            if ($request->has('search')) {
+                $query->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($request->search) . '%']);
+            }
+
+            $books = $query->paginate(8);
         } catch (\Exception $e) {
             if (request()->expectsJson()) {
                 return response()->json(['message' => 'Tienda no encontrada'], 404);
             }
-            // Asumiendo que tienes un sistema de notificaciones flash.
             flash('Tienda no encontrada')->error()->important();
             return redirect()->back()->withInput();
         }
 
         if (request()->expectsJson()) {
-            return response()->json($shop);
+            return response()->json(['shop' => $shop, 'books' => $books]);
         }
 
         if ($shop->active == false) {
@@ -70,7 +76,7 @@ class ShopController extends Controller
             return redirect()->back()->withInput();
         }
 
-        return view('shops.show')->with('shop', $shop);
+        return view('shops.show', compact('shop', 'books'));
     }
 
 
@@ -90,6 +96,7 @@ class ShopController extends Controller
         }
 
         $shop = $this->getShopStore($request);
+        $shop->active = true;
         $shop->save();
 
         if ($request->expectsJson()) {
@@ -127,8 +134,6 @@ class ShopController extends Controller
         }
 
         $shop->name = $request->input('name');
-        $shop->address = $request->input('address');
-
 
         $shop->save();
 
@@ -188,7 +193,6 @@ class ShopController extends Controller
     {
         $rules = [
             'name' => ['required', 'string', 'max:255'],
-            'active' => ['required', 'boolean'],
         ];
 
         try {
