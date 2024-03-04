@@ -128,7 +128,7 @@ class BookControllerTest extends TestCase
         $requestMock->shouldReceive('validate');
         $requestMock->shouldReceive('file')
             ->andReturn($fileMock);
-        $requestMock->shouldReceive('expectsJson')->andReturn(false); // Add this line
+        $requestMock->shouldReceive('expectsJson')->andReturn(false);
 
         $bookMock = Mockery::mock('overload:App\Models\Book');
         $bookMock->shouldReceive('find')
