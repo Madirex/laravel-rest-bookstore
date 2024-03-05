@@ -2,26 +2,38 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Address;
 use App\Models\Book;
 use App\Models\CartCode;
 use App\Models\Order;
 use App\Models\OrderLine;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class OrdersController extends Controller
 {
 
     public function index(Request $request)
     {
-        $orders = Order::search($request->search)->orderBy('id', 'asc')->paginate(8);
+        $cacheKey = 'orders_' . md5($request->fullUrl());
+        if (Cache::has($cacheKey)) {
+            $orders = Cache::get($cacheKey);
+        } else {
+            $orders = Order::search($request->search)->orderBy('id', 'asc')->paginate(8);
+            Cache::put($cacheKey, $orders, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+        }
         return view('orders.index')->with('orders', $orders);
     }
 
     public function show($id)
     {
-        $order = Order::find($id);
+        $cacheKey = 'category_' . $id;
+        if (Cache::has($cacheKey)) {
+            $order = Cache::get($cacheKey);
+        } else {
+            $order = Order::find($id);
+            Cache::put($cacheKey, $order, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+        }
         return view('orders.show')->with('order', $order);
     }
 
@@ -47,14 +59,14 @@ class OrdersController extends Controller
         $order = Order::find($id);
 
         $type = $request->type;
-        if( $type == 'book' ){
+        if ($type == 'book') {
             $book = Book::find($request->book_id);
 
-            if($book == null){
+            if ($book == null) {
                 return redirect()->route('orders.edit', $order->id)->with('error', 'No se ha encontrado el libro');
             }
 
-            if($book->stock < $request->quantity){
+            if ($book->stock < $request->quantity) {
                 return redirect()->route('orders.edit', $order->id)->with('error', 'No hay suficiente stock');
             }
 
@@ -77,11 +89,11 @@ class OrdersController extends Controller
             $book->stock -= $request->quantity;
             $book->save();
 
-        }elseif($type == 'coupon'){
+        } elseif ($type == 'coupon') {
 
             $cartCode = CartCode::where('code', $request->coupon)->first();
-            if($cartCode == null){
-               flash('Código no válido')->error();
+            if ($cartCode == null) {
+                flash('Código no válido')->error();
                 return redirect()->route('orders.edit', $order->id);
             }
             $orderLine = new OrderLine();
@@ -90,13 +102,11 @@ class OrdersController extends Controller
             $orderLine->selected = true;
             $orderLine->type = 'coupon';
 
-
-
-            if($cartCode->percent_discount != 0) {
+            if ($cartCode->percent_discount != 0) {
                 $orderLine->price = $cartCode->percent_discount;
                 $orderLine->total = $order->total_amount * ($cartCode->percent_discount / 100);
                 $orderLine->subtotal = $order->total_amount * ($cartCode->percent_discount / 100);
-            }elseif($cartCode->fixed_discount != 0){
+            } elseif ($cartCode->fixed_discount != 0) {
                 $orderLine->price = $cartCode->fixed_discount;
                 $orderLine->total = $cartCode->fixed_discount;
                 $orderLine->subtotal = $cartCode->fixed_discount;
@@ -118,15 +128,15 @@ class OrdersController extends Controller
     public function destroyOrderLine($id, $orderLineId)
     {
         $order = Order::find($id);
-        if($order == null){
-            return redirect()->route('orders.index')->with('error', 'No se ha encontrado la orden');
+        if ($order == null) {
+            return redirect()->route('orders.index')->with('error', 'No se ha encontrado el pedido');
         }
         $orderLine = OrderLine::find($orderLineId);
-        if($orderLine == null){
-            return redirect()->route('orders.edit', $order->id)->with('error', 'No se ha encontrado la línea de orden');
+        if ($orderLine == null) {
+            return redirect()->route('orders.edit', $order->id)->with('error', 'No se ha encontrado la línea de pedido');
         }
         $book = Book::find($orderLine->book_id);
-        if($book == null){
+        if ($book == null) {
             return redirect()->route('orders.edit', $order->id)->with('error', 'No se ha encontrado el libro');
         }
 
@@ -146,15 +156,15 @@ class OrdersController extends Controller
     public function updateOrderLine($id, Request $request)
     {
         $order = Order::find($id);
-        if($order == null){
-            return redirect()->route('orders.index')->with('error', 'No se ha encontrado la orden');
+        if ($order == null) {
+            return redirect()->route('orders.index')->with('error', 'No se ha encontrado el pedido');
         }
         $orderLine = OrderLine::find($request->order_line_id_edit);
-        if($orderLine == null){
-            return redirect()->route('orders.edit', $order->id)->with('error', 'No se ha encontrado la línea de orden');
+        if ($orderLine == null) {
+            return redirect()->route('orders.edit', $order->id)->with('error', 'No se ha encontrado la línea de pedido');
         }
         $book = Book::find($orderLine->book_id);
-        if($book == null){
+        if ($book == null) {
             return redirect()->route('orders.edit', $order->id)->with('error', 'No se ha encontrado el libro');
         }
 
@@ -181,13 +191,15 @@ class OrdersController extends Controller
         return redirect()->route('orders.edit', $order->id);
     }
 
-    public function create(){
+    public function create()
+    {
         $users = User::all();
         return view('orders.create')
             ->with('users', $users);
     }
 
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $order = new Order();
         $order->status = 'Pendiente';
         $order->user_id = $request->user_id;
@@ -198,10 +210,11 @@ class OrdersController extends Controller
         return redirect()->route('orders.edit', $order->id);
     }
 
-    public function destroy($id){
+    public function destroy($id)
+    {
         $order = Order::find($id);
-        if($order == null){
-            return redirect()->route('orders.index')->with('error', 'No se ha encontrado la orden');
+        if ($order == null) {
+            return redirect()->route('orders.index')->with('error', 'No se ha encontrado el pedido');
         }
         $order->is_deleted = true;
         $order->save();
