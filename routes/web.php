@@ -138,6 +138,8 @@ Route::group(['prefix' => 'orders'], function () {
     Route::delete('/{order}/removeOrderLine/{orderLine}', [OrdersController::class, 'destroyOrderLine'])->name('orders.destroyOrderLine')->middleware(['auth']);
 });
 
+Route::get('/orders/{id}/invoice', [OrdersController::class, 'generateInvoice'])->name('orders.invoice')->middleware(['auth']);
+
 ///////////////////////
 /* Rutas para ADMINS */
 ///////////////////////
