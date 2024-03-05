@@ -85,6 +85,19 @@
                                     </a>
                                     <a style="display:block; margin:5px;"> </a>
                                 </div>
+                                    <div class="nav-container">
+                                        @if(Auth::check())
+                                            <a href="{{ route('logout') }}"
+                                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                                               class="nav-link">
+                                                <i class="fas fa-sign-out-alt" style="color: #b72424;"></i>
+                                            </a>
+
+                                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                                @csrf
+                                            </form>
+                                        @endif
+                                    </div>
                             </div>
                         @else
                             <a href="{{route('verification.notice')}}"
@@ -98,14 +111,6 @@
                 <li class="nav-item">
                     @guest
                         <a class="nav-link" href="{{ route('login') }}">Login</a>
-                    @else
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="nav-link"
-                                    style="background: none; border: none; cursor: pointer; display:block; margin:auto">
-                                Logout
-                            </button>
-                        </form>
                     @endguest
                 </li>
             </ul>
