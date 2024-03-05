@@ -13,18 +13,6 @@
         <br/>
         <button type="button" class="btn btn-primary" id="add_order_line">Añadir Línea</button>
 
-        <script>
-            document.getElementById('status').addEventListener('change', function () {
-                if (this.value === 'pending') {
-                    document.getElementById('actionsColumn').style.display = 'table-cell';
-                    document.getElementById('add_order_line').style.display = 'block';
-                } else {
-                    document.getElementById('actionsColumn').style.display = 'none';
-                    document.getElementById('add_order_line').style.display = 'none';
-                }
-            });
-        </script>
-
         <article class="add_order_line" style="display: none">
             <h3>Añadir línea de pedido</h3>
             <form action="{{ route('orders.addOrderLine', $order->id) }}" method="POST" class="book_form">
@@ -158,26 +146,14 @@
                     <td>{{ $orderLine->subtotal }} €</td>
                     <td>
                         @if($order->status == 'pending')
-                            @csrf
-                            @method('DELETE')
-                            <form action="{{ route('orders.destroyOrderLine',[ $order->id, $orderLine->id]) }}"
-                                  method="POST"
-                                  style="display:inline;">
-                                <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i>
-                                </button>
-                            </form>
-                            <form action="{{ route('orders.destroyOrderLine',[ $order->id, $orderLine->id]) }}"
-                                  method="POST"
-                                  style="display:inline;">
-                                <button type="submit" style="display: contents;"><a
-                                        class="btn btn-secondary btn-sm edit-btn edit_order_line_button"
-                                        data-order-line-id="{{ $orderLine->id }}"
-                                        data-order-line-type="{{ $orderLine->type }}"
-                                        data-order-line-book-id="{{ $orderLine->book_id }}"
-                                        data-order-line-quantity="{{ $orderLine->quantity }}"
-                                    ><i class="fas fa-edit"></i></a></button>
+                            <form id="delete-form-{{ $orderLine->id }}" action="{{ route('orders.destroyOrderLine', [$order->id, $orderLine->id]) }}" method="POST" style="display: none;">
+                                @csrf
+                                @method('DELETE')
                             </form>
 
+                            <a href="#" class="btn btn-danger btn-sm" onclick="event.preventDefault(); console.log('delete-form-{{ $orderLine->id }}'); document.getElementById('delete-form-{{ $orderLine->id }}').submit();">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
                         @endif
                     </td>
                 </tr>
@@ -191,6 +167,15 @@
 
 
     <script>
+        document.getElementById('status').addEventListener('change', function () {
+            if (this.value === 'pending') {
+                document.getElementById('actionsColumn').style.display = 'table-cell';
+                document.getElementById('add_order_line').style.display = 'block';
+            } else {
+                document.getElementById('actionsColumn').style.display = 'none';
+                document.getElementById('add_order_line').style.display = 'none';
+            }
+        });
 
         //al iniciar el documento esperar a values se pongan
         document.addEventListener('DOMContentLoaded', function () {
@@ -238,7 +223,5 @@
 
             });
         });
-
-
     </script>
 @endsection

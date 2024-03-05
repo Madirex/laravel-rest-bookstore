@@ -232,7 +232,7 @@ class OrdersController extends Controller
         return redirect()->back();
     }
 
-    public function destroyOrderLine($request, $id, $orderLineId)
+    public function destroyOrderLine(Request $request = null, $id, $orderLineId)
     {
         $order = Order::find($id);
         if ($order == null) {
