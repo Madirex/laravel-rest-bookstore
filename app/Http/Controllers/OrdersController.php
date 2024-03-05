@@ -7,6 +7,7 @@ use App\Models\CartCode;
 use App\Models\Order;
 use App\Models\OrderLine;
 use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
@@ -170,6 +171,14 @@ class OrdersController extends Controller
         }
 
         return redirect()->route('orders.edit', $order->id);
+    }
+
+    public function generateInvoice($id)
+    {
+        $order = Order::find($id);
+        $pdf = PDF::loadView('invoice', compact('order'));
+
+        return $pdf->download('invoice.pdf');
     }
 
     public function destroyOrderLine($id, $orderLineId)
