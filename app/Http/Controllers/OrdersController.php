@@ -88,18 +88,17 @@ class OrdersController extends Controller
 
     public function addOrderLine(Request $request, $id)
     {
-        if ($errorResponse = $this->validateOrderLine($request)) {
-            if ($request->expectsJson()) {
-                return $errorResponse;
-            }
-            flash('Error: ' . $errorResponse)->error()->important();
-            return redirect()->back()->withInput();
-        }
-
         $order = Order::find($id);
 
         $type = $request->type;
         if ($type == 'book') {
+            if ($errorResponse = $this->validateOrderLine($request)) {
+                if ($request->expectsJson()) {
+                    return $errorResponse;
+                }
+                flash('Error: ' . $errorResponse)->error()->important();
+                return redirect()->back()->withInput();
+            }
             $book = Book::find($request->book_id);
 
             if ($book == null) {
@@ -164,7 +163,12 @@ class OrdersController extends Controller
             $order->save();
         }
 
-        flash('Línea de pedido añadida correctamente')->success();
+        if ($type == 'book') {
+            flash('Línea de pedido añadida correctamente')->success();
+        } elseif ($type == 'coupon') {
+            flash('Cupón aplicado correctamente')->success();
+        }
+
         return redirect()->route('orders.edit', $order->id);
     }
 
@@ -195,7 +199,11 @@ class OrdersController extends Controller
 
         $orderLine->delete();
 
-        flash('Línea de pedido eliminada correctamente')->success();
+        if ($orderLine->type == 'book') {
+            flash('Línea de pedido eliminada correctamente')->success();
+        } elseif ($orderLine->type == 'coupon') {
+            flash('Cupón eliminado correctamente')->success();
+        }
         return redirect()->route('orders.edit', $order->id);
     }
 
@@ -245,7 +253,11 @@ class OrdersController extends Controller
         $book->stock -= $request->quantity;
         $book->save();
 
-        flash('Línea de pedido actualizada correctamente')->success();
+        if ($orderLine->type == 'book') {
+            flash('Línea de pedido actualizada correctamente')->success();
+        } elseif ($orderLine->type == 'coupon') {
+            flash('Cupón actualizado correctamente')->success();
+        }
         return redirect()->route('orders.edit', $order->id);
     }
 
