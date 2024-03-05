@@ -6,6 +6,7 @@ use App\Http\Controllers\BookController;
 use App\Http\Controllers\CartCodeController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -43,35 +44,26 @@ Route::group(['prefix' => 'cartcodes'], function () {
     Route::delete('/{cartcode}', [CartCodeController::class, 'destroy'])->name('cartcodes.destroy')->middleware(['auth', 'admin']);
 });
 
-/* Rutas de libros, categorías y tiendas */
-
-Route::group(['prefix' => 'categories'], function () {
-    Route::get('/', [CategoryController::class, 'index'])->name('categories.index');
-    Route::get('categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
+/* Rutas de pedidos */
+Route::group(['prefix' => 'orders'], function () {
+    Route::get('/', [OrdersController::class, 'index'])->name('orders.index');
+    Route::get('/create', [OrdersController::class, 'create'])->name('orders.create');
+    Route::post('/', [OrdersController::class, 'store'])->name('orders.store');
+    Route::get('/{order}', [OrdersController::class, 'show'])->name('orders.show');
+    Route::get('/{order}/edit', [OrdersController::class, 'edit'])->name('orders.edit');
+    Route::put('/{order}', [OrdersController::class, 'update'])->name('orders.update');
+    Route::delete('/{order}', [OrdersController::class, 'destroy'])->name('orders.destroy');
+    Route::patch('/{order}/addOrderLine', [OrdersController::class, 'addOrderLine'])->name('orders.addOrderLine');
+    Route::put('/{order}/editOrderLine', [OrdersController::class, 'updateOrderLine'])->name('orders.editOrderLine');
+    Route::delete('/{order}/removeOrderLine/{orderLine}', [OrdersController::class, 'destroyOrderLine'])->name('orders.destroyOrderLine');
 });
 
-Route::group(['prefix' => 'shops'], function () {
-    Route::get('/create', [ShopController::class, 'create'])->name('shops.create')->middleware(['auth', 'admin']);
-    Route::get('/', [ShopController::class, 'index'])->name('shops.index');
-    Route::get('/{shop}', [ShopController::class, 'show'])->name('shops.show');
-    Route::post('/', [ShopController::class, 'store'])->name('shops.store')->middleware(['auth', 'admin']);
-    Route::get('/{shop}/edit', [ShopController::class, 'edit'])->name('shops.edit')->middleware(['auth', 'admin']);
-    Route::put('/{shop}', [ShopController::class, 'update'])->name('shops.update')->middleware(['auth', 'admin']);
-    Route::delete('/{shop}', [ShopController::class, 'destroy'])->name('shops.destroy')->middleware(['auth', 'admin']);
-});
 
-Route::group(['prefix' => 'books'], function () {
-    Route::get('/', [BookController::class, 'index'])->name('books.index');
-    Route::get('/create', [BookController::class, 'create'])->name('books.create')->middleware(['auth', 'admin']);
-    Route::post('/', [BookController::class, 'store'])->name('books.store')->middleware(['auth', 'admin']);
-    Route::get('/{book}', [BookController::class, 'show'])->name('books.show');
-    Route::get('/{book}/edit', [BookController::class, 'edit'])->name('books.edit')->middleware(['auth', 'admin']);
-    Route::put('/{book}', [BookController::class, 'update'])->name('books.update')->middleware(['auth', 'admin']);
-    Route::delete('/{book}', [BookController::class, 'destroy'])->name('books.destroy')->middleware(['auth', 'admin']);
-    Route::get('/{book}/edit-image', [BookController::class, 'editImage'])->name('books.editImage')->middleware(['auth', 'admin']);
-    Route::patch('/{book}/edit-image', [BookController::class, 'updateImage'])->name('books.updateImage')->middleware(['auth', 'admin']);
-});
-
+/* Rutas de libros y categorías */
+Route::get('books/', [BookController::class, 'index'])->name('books.index');
+Route::get('books/{book}', [BookController::class, 'show'])->name('books.show');
+Route::get('categories/', [CategoryController::class, 'index'])->name('categories.index');
+Route::get('categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
 
 /* Rutas de gestión del usuario autenticado */
 Route::group(['middleware' => ['auth', 'verified']], function () {
@@ -155,6 +147,16 @@ Route::group(['prefix' => 'users', 'middleware' => ['auth', 'admin']], function 
     Route::post('/users', [UserController::class, 'store'])->name('users.admin.store');
 });
 
+Route::group(['prefix' => 'shops'], function () {
+    Route::get('/', [ShopController::class, 'index'])->name('shops.index');
+    Route::get('/create', [ShopController::class, 'create'])->name('shops.create')->middleware(['auth', 'admin']);
+    Route::post('/', [ShopController::class, 'store'])->name('shops.store')->middleware(['auth', 'admin']);
+    Route::get('/{shop}', [ShopController::class, 'show'])->name('shops.show');
+    Route::get('/{shop}/edit', [ShopController::class, 'edit'])->name('shops.edit')->middleware(['auth', 'admin']);
+    Route::put('/{shop}', [ShopController::class, 'update'])->name('shops.update')->middleware(['auth', 'admin']);
+    Route::delete('/{shop}', [ShopController::class, 'destroy'])->name('shops.destroy')->middleware(['auth', 'admin']);
+});
+
 Route::group(['prefix' => 'users'], function () {
     Route::get('/profile', [UserController::class, 'show'])->name('users.profile')->middleware('auth');
 });
@@ -167,6 +169,16 @@ Route::group(['prefix' => 'addresses', 'middleware' => ['auth', 'admin']], funct
     Route::get('/{address}/edit', [AddressController::class, 'edit'])->name('addresses.edit');
     Route::put('/{address}', [AddressController::class, 'update'])->name('addresses.update');
     Route::delete('/{address}', [AddressController::class, 'destroy'])->name('addresses.destroy');
+});
+
+Route::group(['prefix' => 'books', 'middleware' => ['auth', 'admin']], function () {
+    Route::get('/create', [BookController::class, 'create'])->name('books.create');
+    Route::post('/', [BookController::class, 'store'])->name('books.store');
+    Route::get('/{book}/edit', [BookController::class, 'edit'])->name('books.edit');
+    Route::put('/{book}', [BookController::class, 'update'])->name('books.update');
+    Route::delete('/{book}', [BookController::class, 'destroy'])->name('books.destroy');
+    Route::get('/{book}/edit-image', [BookController::class, 'editImage'])->name('books.editImage');
+    Route::patch('/{book}/edit-image', [BookController::class, 'updateImage'])->name('books.updateImage');
 });
 
 Route::group(['prefix' => 'categories', 'middleware' => ['auth', 'admin']], function () {
