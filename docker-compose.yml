@@ -66,7 +66,7 @@ services:
             timeout: 5s
 
     adminer-postgres-db:
-        container_name: tienda-db_adminer-postgres-db
+        container_name: bookstore-db_adminer-postgres-db
         image: adminer
         restart: always
         env_file: .env
