@@ -7,10 +7,11 @@ use Illuminate\Support\Facades\DB;
 
 class UniqueCaseInsensitive implements Rule
 {
-    private $table, $column, $ignoreId;
+    private $table, $column, $ignoreId, $errormsg;
 
-    public function __construct($table, $column, $ignoreId = null)
+    public function __construct($errormsg, $table, $column, $ignoreId = null)
     {
+        $this->errormsg = $errormsg;
         $this->table = $table;
         $this->column = $column;
         $this->ignoreId = $ignoreId;
@@ -30,6 +31,6 @@ class UniqueCaseInsensitive implements Rule
 
     public function message()
     {
-        return 'El valor del campo :attribute ya está en uso.';
+        return $this->errormsg;
     }
 }

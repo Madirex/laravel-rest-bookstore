@@ -39,8 +39,6 @@
 
     <br/>
 
-    <a class="btn btn-primary" href="{{ route('users.admin.index') }}"><i class="fas fa-arrow-left"></i> Volver</a>
-
     {{-- Si el usuario es administrador --}}
     @if(auth()->check() && auth()->user()->hasRole('admin'))
         <a class="btn btn-secondary" href="{{ route('users.admin.edit', $user->id) }}"><i class="fas fa-edit"></i> Editar</a>

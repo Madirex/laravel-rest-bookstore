@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('books', function (Blueprint $table) {
             $table->id();
-            $table->string('isbn')->unique();
+            $table->string('isbn');
             $table->string('name');
             $table->string('author');
             $table->string('publisher');
@@ -22,6 +22,8 @@ return new class extends Migration
             $table->double('price');
             $table->integer('stock');
             $table->string('category_name');
+            //shop
+            $table->foreignId('shop_id')->constrained();
             $table->boolean('active')->default(true);
             $table->timestamps();
         });

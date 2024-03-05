@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\CartCode;
 use App\Rules\CartCodeCodeExists;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 
 /**
@@ -20,7 +21,14 @@ class CartCodeController extends Controller
      */
     public function index(Request $request)
     {
-        $cartcodes = CartCode::search($request->search)->orderBy('code', 'asc')->paginate(10);
+        $cacheKey = 'cartcodes_' . md5($request->fullUrl());
+
+        if (Cache::has($cacheKey)) {
+            $cartcodes = Cache::get($cacheKey);
+        } else {
+            $cartcodes = CartCode::search($request->search)->orderBy('code', 'asc')->paginate(10);
+          //  Cache::put($cacheKey, $cartcodes, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+        }
 
         // Convertir los valores a números flotantes
         foreach ($cartcodes as $cartcode) {
@@ -43,13 +51,19 @@ class CartCodeController extends Controller
     public function show(string $id)
     {
         try {
-            $cartcode = CartCode::findOrFail($id);
+            $cacheKey = 'address_' . $id;
+            if (Cache::has($cacheKey)) {
+                $cartcode = Cache::get($cacheKey);
+            } else {
+                $cartcode = CartCode::findOrFail($id);
+              //  Cache::put($cacheKey, $cartcode, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+            }
         } catch (\Exception $e) {
             if (request()->expectsJson()) {
                 return response()->json(['message' => 'CartCode no encontrado'], 404);
             }
             flash('CartCode no encontrado')->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         // Convertir los valores a números flotantes
@@ -75,7 +89,7 @@ class CartCodeController extends Controller
                 return $errorResponse;
             }
             flash('Error al crear código de tienda: ' . $errorResponse)->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
         $cartcode = new CartCode();
         $cartcode->code = $request->input('code');
@@ -89,7 +103,7 @@ class CartCodeController extends Controller
                 return response()->json(['message' => 'Debe de haber un descuento'], 400);
             }
             flash('Debe de haber un descuento')->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         $cartcode->save();
@@ -120,7 +134,7 @@ class CartCodeController extends Controller
                 return response()->json(['message' => 'CartCode no encontrado'], 404);
             }
             flash('Código de tienda no encontrado')->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         if ($errorResponse = $this->validateCartCode($request, $cartcode->code)) {
@@ -128,7 +142,7 @@ class CartCodeController extends Controller
                 return $errorResponse;
             }
             flash('Error al actualizar el código de tienda: ' . $errorResponse)->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         $cartcode->code = $request->input('code');
@@ -143,7 +157,7 @@ class CartCodeController extends Controller
                 return response()->json(['message' => 'Debe de haber un descuento'], 400);
             }
             flash('Debe de haber un descuento')->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         $cartcode->save();
@@ -174,7 +188,7 @@ class CartCodeController extends Controller
                 return response()->json(['message' => 'CartCode no encontrado'], 404);
             }
             flash('Código de tienda no encontrado')->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
         $cartcode->delete();
 

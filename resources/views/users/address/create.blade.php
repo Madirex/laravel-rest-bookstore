@@ -21,30 +21,21 @@
         @csrf
         <div class="form-group">
             <label for="street">Calle:</label>
-            <input class="form-control" id="street" name="street" type="text" required>
+            <input class="form-control" id="street" name="street" type="text" required value="{{ old('street') }}">
         </div>
         <div class="form-group">
             <label for="number">Número:</label>
-            <input class="form-control" id="number" name="number" type="text" required>
+            <input class="form-control" id="number" name="number" type="text" required value="{{ old('number') }}">
         </div>
         <div class="form-group">
             <label for="city">Ciudad:</label>
-            <input class="form-control" id="city" name="city" type="text" required>
-        </div>
-        <div class="form-group">
-            <label for="province">Provincia:</label>
-            <input class="form-control" id="province" name="province" type="text" required>
-        </div>
-        <div class="form-group">
-            <label for="country">País:</label>
-            <input class="form-control" id="country" name="country" type="text" required>
+            <input class="form-control" id="city" name="city" type="text" required value="{{ old('city') }}">
         </div>
         <div class="form-group">
             <label for="postal_code">Código Postal:</label>
-            <input class="form-control" id="postal_code" name="postal_code" type="text" required>
+            <input class="form-control" id="postal_code" name="postal_code" type="text" required value="{{ old('postal_code') }}">
         </div>
         <button class="btn btn-primary" type="submit">Crear</button>
-        <a class="btn btn-secondary mx-2" href="{{ route('users.profile') }}">Volver</a>
     </form>
 
 @endsection

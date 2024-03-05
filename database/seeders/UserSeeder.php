@@ -21,7 +21,7 @@ class UserSeeder extends Seeder
                 'surname' => 'Admin',
                 'username' => 'admin',
                 'isDeleted' => false,
-                'phone' => '123456789',
+                'phone' => '6565656678',
                 'image' => 'images/nullers.png',
                 'cart' => '',
                 'orders' => '[]',
@@ -29,6 +29,7 @@ class UserSeeder extends Seeder
                 'updated_at' => now(),
                 'role' => 'admin',
                 'email_verified_at' => '2021-10-01 00:00:00',
+                'money' => '10000.00'
             ]);
 
             DB::table('users')->insert([
@@ -38,7 +39,7 @@ class UserSeeder extends Seeder
                 'surname' => 'Apellido',
                 'username' => 'usuario',
                 'isDeleted' => false,
-                'phone' => '123456789',
+                'phone' => '6565656678',
                 'image' => 'images/user.png',
                 'cart' => '',
                 'orders' => '[]',
@@ -46,6 +47,7 @@ class UserSeeder extends Seeder
                 'updated_at' => now(),
                 'role' => 'user',
                 'email_verified_at' => '2021-10-01 00:00:00',
+                'money' => '0.00'
             ]);
         }
     }

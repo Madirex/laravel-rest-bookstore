@@ -18,7 +18,6 @@
     @if (count($books) > 0)
         <div class="book-container">
             {{-- Por cada book --}}
-            {{-- Por cada book --}}
             @foreach ($books as $book)
                 <a href="{{ route('books.show', $book->id) }}" class="book-link">
                     <div class="book-card">
@@ -34,6 +33,7 @@
                         <p class="book-isbn"><i class="fas fa-barcode"></i> {{ $book->isbn }}</p>
                         <p class="book-author"><i class="fas fa-user"></i> {{ $book->author }}</p>
                         <p class="book-publisher"><i class="fas fa-building"></i> {{ $book->publisher }}</p>
+                        <p class="card-text"><i class="fas fa-store"></i> {{ $book->shop->name }}</p>
                         <p class="book-description">{{ Illuminate\Support\Str::limit($book->description, 100, '...') }}</p>
                         <p class="book-category">Categoría: {{ $book->category_name }}</p>
                         <div class="book-actions">

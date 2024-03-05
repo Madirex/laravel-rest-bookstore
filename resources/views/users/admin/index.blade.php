@@ -1,7 +1,7 @@
 @php use App\Models\User; @endphp
 
 @extends('main')
-@section('title', 'Usuarios CRUD')
+@section('title', 'Usuarios')
 @section('content')
     <br/>
     <h1>Listado de usuarios</h1>

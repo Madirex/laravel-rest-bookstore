@@ -64,6 +64,18 @@ services:
                 - ping
             retries: 3
             timeout: 5s
+
+    adminer-postgres-db:
+        container_name: bookstore-db_adminer-postgres-db
+        image: adminer
+        restart: always
+        env_file: .env
+        ports:
+            - 8080:8080
+        depends_on:
+            - pgsql
+        networks:
+            - sail
 networks:
     sail:
         driver: bridge

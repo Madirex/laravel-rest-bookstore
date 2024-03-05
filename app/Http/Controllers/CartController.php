@@ -8,22 +8,45 @@ use Illuminate\Support\Facades\Redis;
 use Stripe\Checkout\Session;
 use Stripe\Stripe;
 
+/**
+ * Class CartController
+ */
 class CartController extends Controller
 {
+    /**
+     * Add a book to the cart
+     * @param Request $request request
+     * @return mixed view or json
+     */
     public function handleCart(Request $request)
     {
         $userId = $request->user()->id;
         $bookId = $request->input('book_id');
-        $quantity = (int) $request->input('quantity', 1);
+        $quantity = (int)$request->input('quantity', 1);
         $action = $request->input('action');
 
         $cartKey = "cart:$userId";
+
+        $book = Book::find($bookId);
+        if (!$book) {
+            return $request->expectsJson()
+                ? response()->json(['error' => 'Libro no encontrado'], 404)
+                : back()->with('error', 'Libro no encontrado');
+        }
 
         switch ($action) {
             case 'add':
                 $currentValue = Redis::hGet($cartKey, $bookId);
                 if ($currentValue) {
                     $currentData = json_decode($currentValue, true);
+                    $newQuantity = $currentData['quantity'] + $quantity;
+                    if ($newQuantity > $book->stock) {
+                        if (!$request->expectsJson())
+                            flash('No hay suficiente stock')->error()->important();
+                        return $request->expectsJson()
+                            ? response()->json(['error' => 'No hay suficiente stock'], 400)
+                            : back()->with('error', 'No hay suficiente stock');
+                    }
                     $currentData['quantity'] += $quantity;
                 } else {
                     $currentData = ['book_id' => $bookId, 'quantity' => $quantity];
@@ -35,15 +58,16 @@ class CartController extends Controller
                 $currentData = ['book_id' => $bookId, 'quantity' => $quantity];
                 Redis::hSet($cartKey, $bookId, json_encode($currentData));
                 break;
-
-            default:
-                return response()->json(['success' => false, 'message' => 'Unknown action.']);
         }
-
+        // hacer flash si no espera json
+        if (!$request->expectsJson()) {
+            flash('Libro agregado el carrito')->success()->important();
+        }
         return $request->expectsJson()
             ? response()->json(['success' => true])
-            : back()->with('success', 'Item added to cart');
+            : back()->with('success', 'Libro agregado al carrito');
     }
+
 
     public function removeFromCart(Request $request)
     {
@@ -53,11 +77,42 @@ class CartController extends Controller
         $cartKey = "cart:$userId";
         Redis::hDel($cartKey, $bookId);
 
+        // hacer flash si no espera json
+        if (!$request->expectsJson()) {
+            flash('Libro eliminado del carrito')->success()->important();
+        }
         return $request->expectsJson()
             ? response()->json(['success' => true])
-            : back()->with('success', 'Item removed from cart');
+            : back()->with('success', 'Libro eliminado del carrito');
     }
 
+    /**
+     * Get the number of items in the cart
+     * @param Request $request request
+     * @return int|mixed view
+     */
+    public function itemCount(Request $request)
+    {
+        $userId = $request->user()->id;
+        $cartKey = "cart:$userId";
+        $cartItems = Redis::hGetAll($cartKey);
+
+        $count = 0;
+        foreach ($cartItems as $itemJson) {
+            $item = json_decode($itemJson, true);
+            if (is_array($item) && isset($item['quantity'])) {
+                $count += $item['quantity'];
+            }
+        }
+
+        return $count;
+    }
+
+    /**
+     * Get the cart
+     * @param Request $request request
+     * @return mixed view
+     */
     public function getCart(Request $request)
     {
         $userId = $request->user()->id;
@@ -85,14 +140,11 @@ class CartController extends Controller
                         'author' => $book->author,
                     ];
                 }
-            } else {
-
             }
         }
 
         return view('cart.index', ['cartItems' => $itemsDetails]);
     }
-
 
 
     public function checkout(Request $request)
@@ -120,8 +172,12 @@ class CartController extends Controller
                         'quantity' => $item['quantity'],
                     ];
                 }
-            } else {
 
+                //comprobar stock
+                if ($item['quantity'] > $book->stock) {
+                    flash('No hay suficiente stock')->error()->important();
+                    return back();
+                }
             }
         }
 

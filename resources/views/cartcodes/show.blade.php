@@ -19,6 +19,5 @@
 
     <br/>
 
-    <a class="btn btn-primary" href="{{ route('cartcodes.index') }}"><i class="fas fa-arrow-left"></i> Volver</a>
     <a class="btn btn-secondary" href="{{ route('cartcodes.edit', $cartcode->id) }}"><i class="fas fa-edit"></i> Editar</a>
 @endsection

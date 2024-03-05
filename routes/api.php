@@ -3,8 +3,8 @@
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CartCodeController;
-use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ShopController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -27,6 +27,7 @@ if (env('DEVELOP_MODE') == 'true') {
 
     Route::prefix('v1')->group(function () {
         Route::apiResource('categories', CategoryController::class);
+        Route::apiResource('shops', ShopController::class);
 
         Route::apiResource('cartcodes', CartCodeController::class);
 

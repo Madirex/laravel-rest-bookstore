@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('phone')->default('');
             $table->string('image')->default('images/user.png');
             $table->string('cart');
+            $table->decimal('money', 8, 2)->default(0);
             $table->json('orders');
             $table->rememberToken();
             $table->timestamps();

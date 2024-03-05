@@ -22,30 +22,29 @@
         @csrf
         <div class="form-group">
             <label for="username">Nombre de usuario:</label>
-            <input class="form-control" id="username" name="username" type="text" required>
+            <input class="form-control" id="username" name="username" type="text" required value="{{ old('username') }}">
         </div>
         <div class="form-group">
             <label for="name">Nombre:</label>
-            <input class="form-control" id="name" name="name" type="text" required>
+            <input class="form-control" id="name" name="name" type="text" required value="{{ old('name') }}">
         </div>
         <div class="form-group">
             <label for="surname">Apellidos:</label>
-            <input class="form-control" id="surname" name="surname" type="text" required>
+            <input class="form-control" id="surname" name="surname" type="text" required value="{{ old('surname') }}">
         </div>
         <div class="form-group">
             <label for="email">Email:</label>
-            <input class="form-control" id="email" name="email" type="email" required>
+            <input class="form-control" id="email" name="email" type="email" required value="{{ old('email') }}">
         </div>
         <div class="form-group">
             <label for="phone">Teléfono:</label>
-            <input class="form-control" id="phone" name="phone" type="text" required>
+            <input class="form-control" id="phone" name="phone" type="text" required value="{{ old('phone') }}">
         </div>
         <div class="form-group">
             <label for="password">Contraseña:</label>
             <input class="form-control" id="password" name="password" type="password" required>
         </div>
         <button class="btn btn-primary" type="submit">Crear</button>
-        <a class="btn btn-secondary mx-2" href="{{ route('users.admin.index') }}">Volver</a>
     </form>
 
 @endsection
