@@ -43,14 +43,43 @@
                             @if(auth()->check() && auth()->user()->hasRole('admin'))
                                 <a class="btn btn-secondary btn-sm" href="{{ route('orders.edit', $order->id) }}"><i class="fas fa-edit"></i></a>
                                 <form action="{{ route('orders.destroy', $order->id) }}" method="post" style="display: inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i></button>
+                                    <a class="btn btn-danger btn-sm delete-btn" data-toggle="modal"
+                                       data-target="#confirmDeleteModal{{ $order->id }}"><i class="fas fa-trash-alt"></i>
+                                        Eliminar</a>
                                 </form>
                             @endif
                         </td>
                     </tr>
                 @endif
+
+                <!-- Modal de Confirmación de eliminación -->
+                <div class="modal fade" id="confirmDeleteModal{{ $order->id }}" tabindex="-1" role="dialog"
+                     aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar Eliminación</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                ¿Estás seguro de que deseas eliminar este pedido?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+
+                                <!-- Formulario para eliminar el elemento -->
+                                <form action="{{ route('orders.destroy', $order->id) }}" method="POST"
+                                      style="display: inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger">Borrar</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             @endforeach
         </tbody>
     </table>
