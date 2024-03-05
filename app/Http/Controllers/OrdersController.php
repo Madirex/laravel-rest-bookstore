@@ -19,7 +19,11 @@ class OrdersController extends Controller
         if (Cache::has($cacheKey)) {
             $orders = Cache::get($cacheKey);
         } else {
-            $orders = Order::search($request->search)->orderBy('id', 'asc')->paginate(12);
+            $orders = Order::search($request->search)
+                ->orderBy($request->order ?? 'id', $request->direction ?? 'asc')
+                ->where('is_deleted', false)
+                ->paginate(10);
+
           //  Cache::put($cacheKey, $orders, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
         }
         return view('orders.index')->with('orders', $orders);
@@ -51,6 +55,7 @@ class OrdersController extends Controller
         $order = Order::find($id);
         $order->status = $request->status;
         $order->save();
+        flash('Pedido actualizado correctamente')->success();
         return redirect()->route('orders.index');
     }
 
@@ -122,6 +127,7 @@ class OrdersController extends Controller
             $order->save();
         }
 
+        flash('Línea de pedido añadida correctamente')->success();
         return redirect()->route('orders.edit', $order->id);
     }
 
@@ -149,7 +155,7 @@ class OrdersController extends Controller
 
         $orderLine->delete();
 
-
+        flash('Línea de pedido eliminada correctamente')->success();
         return redirect()->route('orders.edit', $order->id);
     }
 
@@ -188,6 +194,7 @@ class OrdersController extends Controller
         $book->stock -= $request->quantity;
         $book->save();
 
+        flash('Línea de pedido actualizada correctamente')->success();
         return redirect()->route('orders.edit', $order->id);
     }
 
@@ -207,6 +214,7 @@ class OrdersController extends Controller
         $order->total_lines = 0;
         $order->is_deleted = false;
         $order->save();
+        flash('Pedido creado correctamente')->success();
         return redirect()->route('orders.edit', $order->id);
     }
 
@@ -218,6 +226,7 @@ class OrdersController extends Controller
         }
         $order->is_deleted = true;
         $order->save();
+        flash('Pedido eliminado correctamente')->success();
         return redirect()->route('orders.index');
     }
 }
