@@ -2,97 +2,29 @@
 @section('title', 'Pedidos - NULLERS')
 @section('content')
     @error('error')
-        <div class="alert alert-danger" role="alert">
-            {{ $message }}
-        </div>
+    <div class="alert alert-danger" role="alert">
+        {{ $message }}
+    </div>
     @enderror
     <br/>
     <h1>Editar pedido</h1>
-    <form action="{{ route('orders.update', $order->id) }}" method="POST">
-        @csrf
-        @method('PUT')
-        <div class="form-group">
-            <label for="status">Estado</label>
-            <select class="form-control" id="status" name="status">
-                <option value="pending" {{ $order->status == 'Pendiente' ? 'selected' : '' }}>Pendiente</option>
-                <option value="shipping" {{ $order->status == 'Enviado' ? 'selected' : '' }}>Enviado</option>
-                <option value="delivered" {{ $order->status == 'Entregado' ? 'selected' : '' }}>Entregado</option>
-            </select>
-        </div>
 
-
-        <div class="form-group">
-            <label for="user_id">Usuario id</label>
-            <input type="text" class="form-control" id="user_id" name="user_id" value="{{ $order->user->id }}" disabled>
-        </div>
-        <div class="form-group">
-            <label for="total_amount">Total</label>
-            <input type="text" class="form-control" id="total_amount" name="total_amount" value="{{ $order->total_amount }}"
-                disabled>
-        </div>
-        <div class="form-group">
-            <label for="created_at">Fecha</label>
-            <input type="text" class="form-control" id="created_at" name="created_at" value="{{ $order->created_at }}"
-                disabled>
-        </div>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">Tipo</th>
-                    <th scope="col">Nombre</th>
-                    <th scope="col">Precio</th>
-                    <th scope="col">Cantidad</th>
-                    <th scope="col">Subtotal</th>
-
-                    @if($order->status == 'pending')
-                        <th scope="col">Acciones</th>
-                    @endif
-                </tr>
-            </thead>
-            <tbody>
-                {{-- Por cada order --}}
-                @foreach ($order->orderLines as $orderLine)
-                    <tr>
-                        <th>{{ $orderLine->id }}</th>
-                        <td>{{ $orderLine->type }}</td>
-                        @if($orderLine->type == 'coupon')
-                            <td>{{ $orderLine->cartCode }}</td>
-                        @else
-                            <td>{{ $orderLine->book->name }}</td>
-                        @endif
-                        <td>{{ $orderLine->price }} €</td>
-                        <td>{{ $orderLine->quantity }}</td>
-                        <td>{{ $orderLine->subtotal }} €</td>
-                        <td>
-                            @if($order->status == 'pending')
-                                <form></form>
-                                <form action="{{ route('orders.destroyOrderLine',[ $order->id, $orderLine->id]) }}" method="POST"
-                                    style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i></button>
-                                </form>
-                                <a class="btn btn-secondary btn-sm edit-btn edit_order_line_button"
-                                    data-order-line-id="{{ $orderLine->id }}"
-                                    data-order-line-type="{{ $orderLine->type }}"
-                                    data-order-line-book-id="{{ $orderLine->book_id }}"
-                                    data-order-line-quantity="{{ $orderLine->quantity }}"
-                                ><i class="fas fa-edit"></i></a>
-                            @endif
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-        <button type="submit" class="btn btn-primary">Guardar Pedido</button>
-    </form>
-    <br>
     <section>
-        <br>
-        @if($order->status == 'pending')
-            <button type="button" class="btn btn-primary" id="add_order_line">Añadir Línea</button>
-        @endif
+        <br/>
+        <button type="button" class="btn btn-primary" id="add_order_line">Añadir Línea</button>
+
+        <script>
+            document.getElementById('status').addEventListener('change', function () {
+                if (this.value === 'pending') {
+                    document.getElementById('actionsColumn').style.display = 'table-cell';
+                    document.getElementById('add_order_line').style.display = 'block';
+                } else {
+                    document.getElementById('actionsColumn').style.display = 'none';
+                    document.getElementById('add_order_line').style.display = 'none';
+                }
+            });
+        </script>
+
         <article class="add_order_line" style="display: none">
             <h3>Añadir línea de pedido</h3>
             <form action="{{ route('orders.addOrderLine', $order->id) }}" method="POST" class="book_form">
@@ -127,6 +59,8 @@
                 <button type="submit" class="btn btn-primary">Añadir Línea</button>
                 <button type="button" class="btn btn-danger" id="cancel_add_order_line">Cancelar</button>
             </form>
+
+
         </article>
         <article class="edit_order_line" style="display: none">
             <h3>Editar línea de pedido</h3>
@@ -165,6 +99,96 @@
 
         </article>
     </section>
+    <br>
+    <form action="{{ route('orders.update', $order->id) }}" method="PUT">
+        @csrf
+        @method('PUT')
+        <div class="form-group">
+            <label for="status">Estado</label>
+            <select class="form-control" id="status" name="status">
+                <option value="pending" {{ $order->status == 'Pendiente' ? 'selected' : '' }}>Pendiente</option>
+                <option value="shipping" {{ $order->status == 'Enviado' ? 'selected' : '' }}>Enviado</option>
+                <option value="delivered" {{ $order->status == 'Entregado' ? 'selected' : '' }}>Entregado</option>
+            </select>
+        </div>
+
+
+        <div class="form-group">
+            <label for="user_id">Usuario id</label>
+            <input type="text" class="form-control" id="user_id" name="user_id"
+                   value="{{ old('user_id', $order->user_id) }}" disabled>
+        </div>
+        <div class="form-group">
+            <label for="total_amount">Total</label>
+            <input type="text" class="form-control" id="total_amount" name="total_amount"
+                   value="{{ old('total_amount', $order->total_amount) }}"
+                   disabled>
+        </div>
+        <div class="form-group">
+            <label for="created_at">Fecha</label>
+            <input type="text" class="form-control" id="created_at" name="created_at"
+                   value="{{ old('created_at', $order->created_at) }}"
+                   disabled>
+        </div>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Tipo</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Precio</th>
+                <th scope="col">Cantidad</th>
+                <th scope="col">Subtotal</th>
+                <th scope="col" id="actionsColumn">Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{-- Por cada order --}}
+            @foreach ($order->orderLines as $orderLine)
+                <tr>
+                    <th>{{ $orderLine->id }}</th>
+                    <td>{{ $orderLine->type }}</td>
+                    @if($orderLine->type == 'coupon')
+                        <td>{{ $orderLine->cartCode }}</td>
+                    @else
+                        <td>{{ $orderLine->book->name }}</td>
+                    @endif
+                    <td>{{ $orderLine->price }} €</td>
+                    <td>{{ $orderLine->quantity }}</td>
+                    <td>{{ $orderLine->subtotal }} €</td>
+                    <td>
+                        @if($order->status == 'pending')
+                            @csrf
+                            @method('DELETE')
+                            <form action="{{ route('orders.destroyOrderLine',[ $order->id, $orderLine->id]) }}"
+                                  method="POST"
+                                  style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
+                            <form action="{{ route('orders.destroyOrderLine',[ $order->id, $orderLine->id]) }}"
+                                  method="POST"
+                                  style="display:inline;">
+                                <button type="submit" style="display: contents;"><a
+                                        class="btn btn-secondary btn-sm edit-btn edit_order_line_button"
+                                        data-order-line-id="{{ $orderLine->id }}"
+                                        data-order-line-type="{{ $orderLine->type }}"
+                                        data-order-line-book-id="{{ $orderLine->book_id }}"
+                                        data-order-line-quantity="{{ $orderLine->quantity }}"
+                                    ><i class="fas fa-edit"></i></a></button>
+                            </form>
+
+                        @endif
+                    </td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+        <br/>
+        <button type="submit" class="btn btn-primary">Guardar Pedido</button>
+    </form>
+
+
 
     <script>
         document.getElementById('type').addEventListener('change', function () {
@@ -202,7 +226,6 @@
 
             });
         });
-
 
 
     </script>

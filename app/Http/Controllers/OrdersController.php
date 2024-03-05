@@ -19,7 +19,7 @@ class OrdersController extends Controller
         if (Cache::has($cacheKey)) {
             $orders = Cache::get($cacheKey);
         } else {
-            $orders = Order::search($request->search)->orderBy('id', 'asc')->paginate(8);
+            $orders = Order::search($request->search)->orderBy('id', 'asc')->paginate(12);
           //  Cache::put($cacheKey, $orders, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
         }
         return view('orders.index')->with('orders', $orders);
@@ -201,7 +201,7 @@ class OrdersController extends Controller
     public function store(Request $request)
     {
         $order = new Order();
-        $order->status = 'Pendiente';
+        $order->status = 'pending';
         $order->user_id = $request->user_id;
         $order->total_amount = 0;
         $order->total_lines = 0;

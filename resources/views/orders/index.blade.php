@@ -44,8 +44,7 @@
                                 <a class="btn btn-secondary btn-sm" href="{{ route('orders.edit', $order->id) }}"><i class="fas fa-edit"></i></a>
                                 <form action="{{ route('orders.destroy', $order->id) }}" method="post" style="display: inline">
                                     <a class="btn btn-danger btn-sm delete-btn" data-toggle="modal"
-                                       data-target="#confirmDeleteModal{{ $order->id }}"><i class="fas fa-trash-alt"></i>
-                                        Eliminar</a>
+                                       data-target="#confirmDeleteModal{{ $order->id }}"><i class="fas fa-trash-alt"></i></a>
                                 </form>
                             @endif
                         </td>
