@@ -8,6 +8,7 @@ use App\Rules\CheckCorrectPassword;
 use App\Rules\UniqueCaseInsensitive;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redis;
@@ -29,7 +30,14 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $users = User::search($request->search)->orderBy('id', 'asc')->paginate(8);
+        $cacheKey = 'users_' . md5($request->fullUrl());
+
+        if (Cache::has($cacheKey)) {
+            $users = Cache::get($cacheKey);
+        } else {
+            $users = User::search($request->search)->orderBy('id', 'asc')->paginate(8);
+            Cache::put($cacheKey, $users, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+        }
 
         if ($request->expectsJson()) {
             return response()->json($users);
