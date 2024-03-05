@@ -53,9 +53,13 @@
         <div class="card-footer">
             <a class="btn btn-secondary" href="{{ route('orders.edit', $order->id) }}"><i class="fas fa-edit"></i>
                 Editar</a>
+            <!-- imprimir factura -->
+            <a href="{{ route('orders.invoice', ['id' => $order->id]) }}" class="btn btn-primary">Descargar Factura</a>
+
+            <!-- enviar por email -->
+            <a href="{{ route('orders.email_invoice', ['id' => $order->id]) }}" class="btn btn-primary">Enviar factura por email</a>
         </div>
 
-        <!-- imprimir factura -->
-        <a href="{{ route('orders.invoice', ['id' => $order->id]) }}" class="btn btn-primary">Descargar Factura</a>
+
     </div>
 @endsection
