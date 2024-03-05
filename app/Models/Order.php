@@ -17,6 +17,7 @@ class Order extends Model
         'status',
         'order_lines',
         'total_amount',
+        'subtotal',
         'total_lines',
         'is_deleted',
         'finished_at'
