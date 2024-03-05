@@ -5,10 +5,10 @@
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="header-container">
             <a style="display:block; margin:5px;"> </a>
-        <a class="navbar-brand" href="{{ url('/') }}">
-            <img class="d-inline-block align-text-top" height="30" src="/favicon.ico" width="30">
-            BookStore
-        </a>
+            <a class="navbar-brand" href="{{ url('/') }}">
+                <img class="d-inline-block align-text-top" height="30" src="/favicon.ico" width="30">
+                BookStore
+            </a>
             <a style="display:block; margin:5px;"> </a>
         </div>
         <button aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler"
@@ -48,36 +48,43 @@
                         </div>
                     @endif
                 </li>
-                @if (auth()->check() && auth()->user()->hasVerifiedEmail())
-                    <!--cuando estoy en /cart no parece este icono-->
-                    @if (!request()->routeIs('cart.cart') && !request()->routeIs('cart.add')&& !request()->routeIs('cart.remove'))
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('cart.cart') }}">
-                            <i class="fas fa-shopping-cart"></i>
-                            Carrito
-                        </a>
-                    </li>
-                    @endif
-                @endif
             </ul>
 
 
+            <br/>
+            <br/>
+
             <ul class="navbar-nav ml-auto" style="flex-direction: column;">
-                <li class="nav-item">
+
+                <li class="nav-item ml-auto d-block m-auto">
                     @if(auth()->check())
                         @if(auth()->user()->hasVerifiedEmail())
                             <div class="nav-username">
-                                <a href="{{ route('users.profile') }}">
-                                    @if(auth()->user()->image != User::$IMAGE_DEFAULT)
-                                        <img src="{{ asset('storage/' . auth()->user()->image) }}" class="rounded"
-                                             width="30" height="30">
-                                    @else
-                                        <img src="{{ '/' . User::$IMAGE_DEFAULT }}"
-                                             style="border: 2px solid black; background-color: white;" class="rounded"
-                                             width="30" height="30">
-                                    @endif
-                                    {{ ucfirst(strtolower(auth()->user()->username)) }}
-                                </a>
+                                @if (!request()->routeIs('cart.cart') && !request()->routeIs('cart.add')&& !request()->routeIs('cart.remove'))
+                                    <div class="nav-container">
+                                        <a class="nav-link" href="{{ route('cart.cart') }}">
+                                            <i class="fas fa-shopping-cart"></i>
+                                            <span class="badge badge-light">
+            {{ (app(CartController::class)->itemCount(request()) > 99) ? '99+' : app(CartController::class)->itemCount(request()) }}
+        </span>
+                                        </a>
+                                    </div>
+                                @endif
+                                <div class="nav-container">
+                                    <a style="display:block; margin:5px;"> </a>
+                                    <a class="username-nav-content" href="{{ route('users.profile') }}">
+                                        @if(auth()->user()->image != User::$IMAGE_DEFAULT)
+                                            <img src="{{ asset('storage/' . auth()->user()->image) }}" class="rounded"
+                                                 width="30" height="30">
+                                        @else
+                                            <img src="{{ '/' . User::$IMAGE_DEFAULT }}"
+                                                 style="border: 2px solid black; background-color: white;" class="rounded"
+                                                 width="30" height="30">
+                                        @endif
+                                        {{ ucfirst(strtolower(auth()->user()->username)) }}
+                                    </a>
+                                    <a style="display:block; margin:5px;"> </a>
+                                </div>
                             </div>
                         @else
                             <a href="{{route('verification.notice')}}"
