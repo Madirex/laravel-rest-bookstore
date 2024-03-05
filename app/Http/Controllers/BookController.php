@@ -269,15 +269,7 @@ class BookController extends Controller
             return 'Error al procesar una propiedad por no tener un número válido. Evita que exceda del tamaño límite.';
         }
 
-        if ($validator->fails()) {
-
-            if ($request->expectsJson()) {
-                return response()->json(['message' => $validator->errors()->first()], 400);
-            }
-            return $validator->errors()->first();
-        } else {
-            return null;
-        }
+        return null;
     }
 
     /**
