@@ -6,6 +6,7 @@ use App\Models\Book;
 use App\Models\Category;
 use App\Rules\CategoryNameExists;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Class CategoryController
@@ -20,8 +21,13 @@ class CategoryController extends Controller
      */
     public function index(Request $request)
     {
-        $categories = Category::search($request->search)->orderBy('name', 'asc')->paginate(8);
-
+        $cacheKey = 'categories_' . md5($request->fullUrl());
+        if (Cache::has($cacheKey)) {
+            $categories = Cache::get($cacheKey);
+        } else {
+            $categories = Category::search($request->search)->orderBy('name', 'asc')->paginate(8);
+            Cache::put($cacheKey, $categories, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+        }
 
         if ($request->expectsJson()) {
             return response()->json($categories);
@@ -38,7 +44,13 @@ class CategoryController extends Controller
     public function show(string $id, Request $request)
     {
         try {
-            $category = Category::findOrFail($id);
+            $cacheKey = 'categories_' . $id;
+            if (Cache::has($cacheKey)) {
+                $category = Cache::get($cacheKey);
+            } else {
+                $category = Category::findOrFail($id);
+                Cache::put($cacheKey, $category, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+            }
         } catch (\Exception $e) {
             if (request()->expectsJson()) {
                 return response()->json(['message' => 'Categoría no encontrada'], 404);
