@@ -152,6 +152,8 @@ Route::group(['prefix' => 'orders', 'middleware' => ['auth', 'admin']], function
     Route::get('/{order}/edit', [OrdersController::class, 'edit'])->name('orders.edit');
     Route::put('/{order}', [OrdersController::class, 'update'])->name('orders.update');
     Route::delete('/{order}', [OrdersController::class, 'destroy'])->name('orders.destroy');
+    Route::patch('/{order}/addCartCode', [OrdersController::class, 'addCartCode'])->name('orders.addCartCode');
+    Route::patch('/{order}/removeCartCode', [OrdersController::class, 'removeCartCode'])->name('orders.removeCartCode');
 });
 
 Route::group(['prefix' => 'cartcodes', 'middleware' => ['auth', 'admin']], function () {
