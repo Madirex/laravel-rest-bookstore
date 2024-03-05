@@ -37,7 +37,7 @@
                         <option value="coupon">Cupón</option>
                     </select>
                 </div>
-                <div class="form-group cupon_form" style="display: none;">
+                <div class="form-group coupon_form" style="display: none;">
                     <label for="coupon">Cupón</label>
                     <input type="text" class="form-control" id="coupon" name="coupon">
                 </div>
@@ -74,7 +74,7 @@
                         <option value="coupon">Cupón</option>
                     </select>
                 </div>
-                <div class="form-group cupon_form" style="display: none;">
+                <div class="form-group coupon_form" style="display: none;">
                     <label for="coupon_edit">Cupón</label>
                     <input type="text" class="form-control" id="coupon_edit" name="coupon">
                 </div>
@@ -191,13 +191,25 @@
 
 
     <script>
+
+        //al iniciar el documento esperar a values se pongan
+        document.addEventListener('DOMContentLoaded', function () {
+            if (document.getElementById('type').value === 'coupon') {
+                document.querySelector('.book_form.control').style.display = 'none';
+                document.querySelector('.coupon_form').style.display = 'block';
+            } else {
+                document.querySelector('.book_form.control').style.display = 'block';
+                document.querySelector('.coupon_form').style.display = 'none';
+            }
+        })
+
         document.getElementById('type').addEventListener('change', function () {
             if (this.value === 'coupon') {
                 document.querySelector('.book_form.control').style.display = 'none';
-                document.querySelector('.cupon_form').style.display = 'block';
+                document.querySelector('.coupon_form').style.display = 'block';
             } else {
-                document.querySelector('.book_form').style.display = 'block';
-                document.querySelector('.cupon_form').style.display = 'none';
+                document.querySelector('.book_form.control').style.display = 'block';
+                document.querySelector('.coupon_form').style.display = 'none';
             }
         });
 
@@ -218,7 +230,7 @@
                 document.querySelector('.add_order_line').style.display = 'none';
                 document.querySelector('#add_order_line').style.display = 'block';
                 document.querySelector('.book_form').style.display = 'block';
-                document.querySelector('.cupon_form').style.display = 'none';
+                document.querySelector('.coupon_form').style.display = 'none';
                 document.querySelector('#type_edit').value = element.getAttribute('data-order-line-type');
                 document.querySelector('#quantity_edit').value = element.getAttribute('data-order-line-quantity');
                 document.querySelector('#book_id_edit').value = element.getAttribute('data-order-line-book-id');
