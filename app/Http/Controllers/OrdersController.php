@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\InvoiceMail;
 use App\Models\Book;
 use App\Models\CartCode;
 use App\Models\Order;
@@ -10,6 +11,7 @@ use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class OrdersController extends Controller
@@ -177,8 +179,21 @@ class OrdersController extends Controller
     {
         $order = Order::find($id);
         $pdf = PDF::loadView('invoice', compact('order'));
-
         return $pdf->download('invoice.pdf');
+    }
+
+    public function generateInvoiceToEmail($id)
+    {
+        $order = Order::find($id);
+        $pdf = PDF::loadView('invoice', compact('order'));
+
+        //enviar email
+        $temp = tempnam(sys_get_temp_dir(), 'invoice');
+        $pdf->save($temp);
+        Mail::to($order->user->email)->send(new InvoiceMail($order, $temp));
+
+        flash('Factura enviada correctamente')->success();
+        return redirect()->back();
     }
 
     public function destroyOrderLine($id, $orderLineId)
