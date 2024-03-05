@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\CartCode;
 use App\Rules\CartCodeCodeExists;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 
 /**
@@ -20,7 +21,14 @@ class CartCodeController extends Controller
      */
     public function index(Request $request)
     {
-        $cartcodes = CartCode::search($request->search)->orderBy('code', 'asc')->paginate(10);
+        $cacheKey = 'cartcodes_' . md5($request->fullUrl());
+
+        if (Cache::has($cacheKey)) {
+            $cartcodes = Cache::get($cacheKey);
+        } else {
+            $cartcodes = CartCode::search($request->search)->orderBy('code', 'asc')->paginate(10);
+            Cache::put($cacheKey, $cartcodes, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+        }
 
         // Convertir los valores a números flotantes
         foreach ($cartcodes as $cartcode) {
@@ -43,7 +51,13 @@ class CartCodeController extends Controller
     public function show(string $id)
     {
         try {
-            $cartcode = CartCode::findOrFail($id);
+            $cacheKey = 'address_' . $id;
+            if (Cache::has($cacheKey)) {
+                $cartcode = Cache::get($cacheKey);
+            } else {
+                $cartcode = CartCode::findOrFail($id);
+                Cache::put($cacheKey, $cartcode, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+            }
         } catch (\Exception $e) {
             if (request()->expectsJson()) {
                 return response()->json(['message' => 'CartCode no encontrado'], 404);
