@@ -9,6 +9,7 @@ use App\Models\OrderLine;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Validator;
 
 class OrdersController extends Controller
 {
@@ -59,8 +60,42 @@ class OrdersController extends Controller
         return redirect()->route('orders.index');
     }
 
+    public function validateOrderLine(Request $request)
+    {
+        try{
+            $validator = Validator::make($request->all(), [
+                'quantity' => 'required|numeric|min:1',
+                'book_id' => 'required|numeric',
+            ]);
+            if ($validator->fails()) {
+                $errors = $validator->errors()->all();
+
+                if ($request->expectsJson()) {
+                    return response()->json(['errors' => $errors], 400);
+                }
+
+                return implode(' ', $errors);
+            }
+        } catch (\Brick\Math\Exception\NumberFormatException $e) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Error al procesar una propiedad por no tener un número válido. Evita que exceda del tamaño límite.'], 400);
+            }
+
+            return 'Error al procesar una propiedad por no tener un número válido. Evita que exceda del tamaño límite.';
+        }
+        return null;
+    }
+
     public function addOrderLine(Request $request, $id)
     {
+        if ($errorResponse = $this->validateOrderLine($request)) {
+            if ($request->expectsJson()) {
+                return $errorResponse;
+            }
+            flash('Error: ' . $errorResponse)->error()->important();
+            return redirect()->back()->withInput();
+        }
+
         $order = Order::find($id);
 
         $type = $request->type;
@@ -68,10 +103,12 @@ class OrdersController extends Controller
             $book = Book::find($request->book_id);
 
             if ($book == null) {
+                flash('No se ha encontrado el libro')->error();
                 return redirect()->route('orders.edit', $order->id)->with('error', 'No se ha encontrado el libro');
             }
 
             if ($book->stock < $request->quantity) {
+                flash('No hay suficiente stock')->error();
                 return redirect()->route('orders.edit', $order->id)->with('error', 'No hay suficiente stock');
             }
 
@@ -135,14 +172,17 @@ class OrdersController extends Controller
     {
         $order = Order::find($id);
         if ($order == null) {
+            flash('No se ha encontrado el pedido')->error();
             return redirect()->route('orders.index')->with('error', 'No se ha encontrado el pedido');
         }
         $orderLine = OrderLine::find($orderLineId);
         if ($orderLine == null) {
+            flash('No se ha encontrado la línea de pedido')->error();
             return redirect()->route('orders.edit', $order->id)->with('error', 'No se ha encontrado la línea de pedido');
         }
         $book = Book::find($orderLine->book_id);
         if ($book == null) {
+            flash('No se ha encontrado el libro')->error();
             return redirect()->route('orders.edit', $order->id)->with('error', 'No se ha encontrado el libro');
         }
 
@@ -161,16 +201,27 @@ class OrdersController extends Controller
 
     public function updateOrderLine($id, Request $request)
     {
+        if ($errorResponse = $this->validateOrderLine($request)) {
+            if ($request->expectsJson()) {
+                return $errorResponse;
+            }
+            flash('Error: ' . $errorResponse)->error()->important();
+            return redirect()->back()->withInput();
+        }
+
         $order = Order::find($id);
         if ($order == null) {
+            flash('No se ha encontrado el pedido')->error();
             return redirect()->route('orders.index')->with('error', 'No se ha encontrado el pedido');
         }
         $orderLine = OrderLine::find($request->order_line_id_edit);
         if ($orderLine == null) {
+            flash('No se ha encontrado la línea de pedido')->error();
             return redirect()->route('orders.edit', $order->id)->with('error', 'No se ha encontrado la línea de pedido');
         }
         $book = Book::find($orderLine->book_id);
         if ($book == null) {
+            flash('No se ha encontrado el libro')->error();
             return redirect()->route('orders.edit', $order->id)->with('error', 'No se ha encontrado el libro');
         }
 
@@ -222,6 +273,7 @@ class OrdersController extends Controller
     {
         $order = Order::find($id);
         if ($order == null) {
+            flash('No se ha encontrado el pedido')->error();
             return redirect()->route('orders.index')->with('error', 'No se ha encontrado el pedido');
         }
         $order->is_deleted = true;
