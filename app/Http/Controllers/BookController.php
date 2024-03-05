@@ -30,7 +30,7 @@ class BookController extends Controller
                 $books = Cache::get($cacheKey);
             }else{
                 $books = Book::search($request->search)->orderBy('id', 'asc')->paginate(8);
-                Cache::put($cacheKey, $books, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+              //  Cache::put($cacheKey, $books, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
             }
             return response()->json($books);
         }
@@ -43,7 +43,7 @@ class BookController extends Controller
                 ->search($request->search)
                 ->orderBy('id', 'asc')
                 ->paginate(8);
-            Cache::put($cacheKey, $books, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+           // Cache::put($cacheKey, $books, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
         }
         return view('books.index')->with('books', $books);
     }
@@ -62,7 +62,7 @@ class BookController extends Controller
                 $book = Cache::get($cacheKey);
             } else {
                 $book = Book::findOrFail($id);
-                Cache::put($cacheKey, $book, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+              //  Cache::put($cacheKey, $book, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
             }
         } catch (\Exception $e) {
             if (request()->expectsJson()) {

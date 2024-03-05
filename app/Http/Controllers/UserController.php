@@ -6,6 +6,7 @@ use App\Mail\EmailChangeMail;
 use App\Models\User;
 use App\Rules\CheckCorrectPassword;
 use App\Rules\UniqueCaseInsensitive;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -36,7 +37,7 @@ class UserController extends Controller
             $users = Cache::get($cacheKey);
         } else {
             $users = User::search($request->search)->orderBy('id', 'asc')->paginate(8);
-            Cache::put($cacheKey, $users, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+          //  Cache::put($cacheKey, $users, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
         }
 
         if ($request->expectsJson()) {

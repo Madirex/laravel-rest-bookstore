@@ -26,7 +26,7 @@ class CategoryController extends Controller
             $categories = Cache::get($cacheKey);
         } else {
             $categories = Category::search($request->search)->orderBy('name', 'asc')->paginate(8);
-            Cache::put($cacheKey, $categories, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+           // Cache::put($cacheKey, $categories, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
         }
 
         if ($request->expectsJson()) {
@@ -49,7 +49,7 @@ class CategoryController extends Controller
                 $category = Cache::get($cacheKey);
             } else {
                 $category = Category::findOrFail($id);
-                Cache::put($cacheKey, $category, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+               // Cache::put($cacheKey, $category, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
             }
         } catch (\Exception $e) {
             if (request()->expectsJson()) {

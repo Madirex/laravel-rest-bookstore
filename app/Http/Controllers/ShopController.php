@@ -33,7 +33,7 @@ class ShopController extends Controller
                         $query->where('name', 'LIKE', '%' . $request->search . '%');
                     }
                 })->orderBy('id', 'asc')->paginate(8);
-                Cache::put($cacheKey, $shops, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+              //  Cache::put($cacheKey, $shops, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
             }
 
             return response()->json($shops);
@@ -50,7 +50,7 @@ class ShopController extends Controller
                 })
                 ->orderBy('id', 'asc')
                 ->paginate(8);
-            Cache::put($cacheKey, $shops, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+           // Cache::put($cacheKey, $shops, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
         }
 
         return view('shops.index', compact('shops'));
@@ -69,7 +69,7 @@ class ShopController extends Controller
                 $shop = Cache::get($cacheKey);
             } else {
                 $shop = Shop::findOrFail($id);
-                Cache::put($cacheKey, $shop, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+               // Cache::put($cacheKey, $shop, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
             }
 
             $query = $shop->books();

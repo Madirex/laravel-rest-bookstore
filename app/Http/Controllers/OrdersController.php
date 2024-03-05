@@ -20,7 +20,7 @@ class OrdersController extends Controller
             $orders = Cache::get($cacheKey);
         } else {
             $orders = Order::search($request->search)->orderBy('id', 'asc')->paginate(8);
-            Cache::put($cacheKey, $orders, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+          //  Cache::put($cacheKey, $orders, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
         }
         return view('orders.index')->with('orders', $orders);
     }
@@ -32,7 +32,7 @@ class OrdersController extends Controller
             $order = Cache::get($cacheKey);
         } else {
             $order = Order::find($id);
-            Cache::put($cacheKey, $order, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+           // Cache::put($cacheKey, $order, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
         }
         return view('orders.show')->with('order', $order);
     }

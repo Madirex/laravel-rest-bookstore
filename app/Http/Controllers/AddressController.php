@@ -25,7 +25,7 @@ class AddressController extends Controller
             $addresses = Cache::get($cacheKey);
         } else {
             $addresses = Address::search($request->search)->orderBy('street', 'asc')->paginate(8);
-            Cache::put($cacheKey, $addresses, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+           // Cache::put($cacheKey, $addresses, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
         }
 
         if ($request->expectsJson()) {
@@ -49,7 +49,7 @@ class AddressController extends Controller
                 $address = Cache::get($cacheKey);
             } else {
                 $address = Address::findOrFail($id);
-                Cache::put($cacheKey, $address, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+               // Cache::put($cacheKey, $address, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
             }
 
         } catch (\Exception $e) {
