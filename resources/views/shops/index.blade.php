@@ -26,6 +26,10 @@
                         <a href="{{ route('shops.show', $shop->id) }}">
                             <div class="shop-header">
                                 <h4>{{ $shop->name }}</h4>
+                                @if ($shop->address)
+                                <!-- address propiedades mostrar: street, number, city, province, country, postal_code-->
+                                <p><i class="fas fa-map-marker-alt"></i> {{ $shop->address->street }} {{ $shop->address->number }} - {{ $shop->address->city }} ({{ $shop->address->postal_code }}) - {{ $shop->address->province }} - {{ $shop->address->country }}</p>
+                                @endif
                             </div>
                         </a>
                     </div>

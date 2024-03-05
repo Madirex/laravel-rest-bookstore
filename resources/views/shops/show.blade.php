@@ -5,6 +5,22 @@
 @section('content')
     <br/>
     <h1 class="card-title"><i class="fas fa-store"></i> {{ $shop->name }}</h1>
+    <!-- mostrar Address si existe -->
+    @if ($shop->address)
+        <div class="card">
+            <div class="card-header">
+                <h2>Dirección</h2>
+            </div>
+            <div class="card-body">
+                <p>Calle: {{ $shop->address->street }}</p>
+                <p>Número: {{ $shop->address->number }}</p>
+                <p>Ciudad: {{ $shop->address->city }}</p>
+                <p>Provincia: {{ $shop->address->province }}</p>
+                <p>País: {{ $shop->address->country }}</p>
+                <p>Código Postal: {{ $shop->address->postal_code }}</p>
+            </div>
+        </div>
+    @endif
     <br/>
 
     @if (count($books) == 0)
