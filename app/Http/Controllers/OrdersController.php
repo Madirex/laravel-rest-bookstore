@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\InvoiceMail;
 use App\Models\Book;
 use App\Models\CartCode;
 use App\Models\Order;
 use App\Models\OrderLine;
 use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class OrdersController extends Controller
@@ -25,32 +28,44 @@ class OrdersController extends Controller
                 ->where('is_deleted', false)
                 ->paginate(10);
 
-          //  Cache::put($cacheKey, $orders, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+            //  Cache::put($cacheKey, $orders, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+        }
+
+        if ($request->expectsJson()) {
+            return response()->json($orders);
         }
         return view('orders.index')->with('orders', $orders);
     }
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $cacheKey = 'category_' . $id;
         if (Cache::has($cacheKey)) {
             $order = Cache::get($cacheKey);
         } else {
             $order = Order::find($id);
-           // Cache::put($cacheKey, $order, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+            // Cache::put($cacheKey, $order, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+        }
+
+        if ($request->expectsJson()) {
+            return response()->json($order);
         }
         return view('orders.show')->with('order', $order);
     }
 
-    public function edit($id)
+    public function edit(Request $request, $id)
     {
         $order = Order::find($id);
         $books = Book::all();
-        $cupons = CartCode::all();
+        $coupons = CartCode::all();
+
+        if ($request->expectsJson()) {
+            return response()->json($order);
+        }
         return view('orders.edit')
             ->with('order', $order)
             ->with('books', $books)
-            ->with('cupons', $cupons);
+            ->with('coupons', $coupons);
     }
 
     public function update(Request $request, $id)
@@ -58,6 +73,11 @@ class OrdersController extends Controller
         $order = Order::find($id);
         $order->status = $request->status;
         $order->save();
+
+        if ($request->expectsJson()) {
+            return response()->json($order);
+        }
+
         flash('Pedido actualizado correctamente')->success();
         return redirect()->route('orders.index');
     }
@@ -104,11 +124,19 @@ class OrdersController extends Controller
         $book = Book::find($request->book_id);
 
         if ($book == null) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'No se ha encontrado el libro'], 400);
+            }
+
             flash('No se ha encontrado el libro')->error();
             return redirect()->route('orders.edit', $order->id)->with('error', 'No se ha encontrado el libro');
         }
 
         if ($book->stock < $request->quantity) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'No hay suficiente stock'], 400);
+            }
+
             flash('No hay suficiente stock')->error();
             return redirect()->route('orders.edit', $order->id)->with('error', 'No hay suficiente stock');
         }
@@ -126,7 +154,7 @@ class OrdersController extends Controller
         $order->subtotal += $orderLine->total;
         $order->total_lines += $orderLine->quantity;
         $order->total_amount = $order->subtotal;
-        $this->aplicateCupon($order, $order->cartCodeId);
+        $this->aplicateCoupon($order, $order->cartCodeId);
         $order->orderLines()->save($orderLine);
         $order->save();
 
@@ -134,14 +162,15 @@ class OrdersController extends Controller
         $book->save();
 
 
+        if ($request->expectsJson()) {
+            return response()->json($orderLine);
+        }
 
         flash('Línea de pedido añadida correctamente')->success();
-
-
         return redirect()->route('orders.edit', $order->id);
     }
 
-    public function destroyOrderLine($id, $orderLineId)
+    public function generateInvoice($id)
     {
         $order = Order::find($id);
         $pdf = PDF::loadView('invoice', compact('order'));
@@ -166,16 +195,25 @@ class OrdersController extends Controller
     {
         $order = Order::find($id);
         if ($order == null) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'No se ha encontrado el pedido'], 400);
+            }
             flash('No se ha encontrado el pedido')->error();
             return redirect()->route('orders.index')->with('error', 'No se ha encontrado el pedido');
         }
         $orderLine = OrderLine::find($orderLineId);
         if ($orderLine == null) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'No se ha encontrado la línea de pedido'], 400);
+            }
             flash('No se ha encontrado la línea de pedido')->error();
             return redirect()->route('orders.edit', $order->id)->with('error', 'No se ha encontrado la línea de pedido');
         }
         $book = Book::find($orderLine->book_id);
         if ($book == null) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'No se ha encontrado el libro'], 400);
+            }
             flash('No se ha encontrado el libro')->error();
             return redirect()->route('orders.edit', $order->id)->with('error', 'No se ha encontrado el libro');
         }
@@ -183,13 +221,17 @@ class OrdersController extends Controller
         $order->subtotal -= $orderLine->total;
         $order->total_lines -= $orderLine->quantity;
         $order->total_amount = $order->subtotal;
-        $this->aplicateCupon($order, $order->cartCodeId);
+        $this->aplicateCoupon($order, $order->cartCodeId);
         $order->save();
 
         $book->stock += $orderLine->quantity;
         $book->save();
 
         $orderLine->delete();
+
+        if ($request->expectsJson()) {
+            return response()->json(['message' => 'Línea de pedido eliminada correctamente'], 200);
+        }
 
         if ($orderLine->type == 'book') {
             flash('Línea de pedido eliminada correctamente')->success();
@@ -211,16 +253,25 @@ class OrdersController extends Controller
 
         $order = Order::find($id);
         if ($order == null) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'No se ha encontrado el pedido'], 400);
+            }
             flash('No se ha encontrado el pedido')->error();
             return redirect()->route('orders.index')->with('error', 'No se ha encontrado el pedido');
         }
         $orderLine = OrderLine::find($request->order_line_id_edit);
         if ($orderLine == null) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'No se ha encontrado la línea de pedido'], 400);
+            }
             flash('No se ha encontrado la línea de pedido')->error();
             return redirect()->route('orders.edit', $order->id)->with('error', 'No se ha encontrado la línea de pedido');
         }
         $book = Book::find($request->book_id);
         if ($book == null) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'No se ha encontrado el libro'], 400);
+            }
             flash('No se ha encontrado el libro')->error();
             return redirect()->route('orders.edit', $order->id)->with('error', 'No se ha encontrado el libro');
         }
@@ -243,13 +294,17 @@ class OrdersController extends Controller
         $order->total_lines += $orderLine->quantity;
         $order->subtotal += $orderLine->subtotal;
         $order->total_amount = $order->subtotal;
-        $this->aplicateCupon($order, $order->cartCodeId);
+        $this->aplicateCoupon($order, $order->cartCodeId);
         $order->save();
 
         $book->stock -= $request->quantity;
         $book->save();
 
 
+        if ($request->expectsJson()) {
+            return response()->json($orderLine);
+        }
+        flash('Línea de pedido actualizada correctamente')->success();
         return redirect()->route('orders.edit', $order->id);
     }
 
@@ -270,19 +325,32 @@ class OrdersController extends Controller
         $order->is_deleted = false;
         $order->subtotal = 0;
         $order->save();
+
+        if ($request->expectsJson()) {
+            return response()->json($order);
+        }
+
         flash('Pedido creado correctamente')->success();
         return redirect()->route('orders.edit', $order->id);
     }
 
-    public function destroy($id)
+    public function destroy($request, $id)
     {
         $order = Order::find($id);
         if ($order == null) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'No se ha encontrado el pedido'], 400);
+            }
             flash('No se ha encontrado el pedido')->error();
             return redirect()->route('orders.index')->with('error', 'No se ha encontrado el pedido');
         }
         $order->is_deleted = true;
         $order->save();
+
+        if ($request->expectsJson()) {
+            return response()->json(['message' => 'Pedido eliminado correctamente'], 200);
+        }
+
         flash('Pedido eliminado correctamente')->success();
         return redirect()->route('orders.index');
     }
@@ -291,31 +359,49 @@ class OrdersController extends Controller
     {
         $order = Order::find($id);
         if ($order == null) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'No se ha encontrado el pedido'], 400);
+            }
             flash('No se ha encontrado el pedido')->error();
             return redirect()->route('orders.index')->with('error', 'No se ha encontrado el pedido');
         }
         $cartCode = CartCode::find($request->cart_code);
         if ($cartCode == null) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'No se ha encontrado el cupón'], 400);
+            }
             flash('Código no válido')->error();
             return redirect()->route('orders.edit', $order->id);
         }
 
         if($cartCode->available_uses <= 0){
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Código no disponible'], 400);
+            }
             flash('Código no disponible')->error();
             return redirect()->route('orders.edit', $order->id);
         }
 
         if($cartCode->expiration_date < date('Y-m-d')){
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Código expirado'], 400);
+            }
             flash('Código expirado')->error();
             return redirect()->route('orders.edit', $order->id);
         }
 
         if($order->cartCodeId != null){
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Ya hay un cupón aplicado'], 400);
+            }
             flash('Ya hay un cupón aplicado')->error();
             return redirect()->route('orders.edit', $order->id);
         }
 
         if($order->total_amount == 0){
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'No se puede aplicar un cupón a un pedido sin importe'], 400);
+            }
             flash('No se puede aplicar un cupón a un pedido sin importe')->error();
             return redirect()->route('orders.edit', $order->id);
         }
@@ -334,19 +420,29 @@ class OrdersController extends Controller
 
         $cartCode->save();
         $order->save();
+
+        if ($request->expectsJson()) {
+            return response()->json(['message' => 'Cupón aplicado correctamente'], 200);
+        }
         flash('Cupón aplicado correctamente')->success();
         return redirect()->route('orders.edit', $order->id);
     }
 
-    public function removeCartCode($id)
+    public function removeCartCode($request, $id)
     {
         $order = Order::find($id);
         if ($order == null) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'No se ha encontrado el pedido'], 400);
+            }
             flash('No se ha encontrado el pedido')->error();
             return redirect()->route('orders.index')->with('error', 'No se ha encontrado el pedido');
         }
         $cartCode = CartCode::find($order->cartCodeId);
         if ($cartCode == null) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'No se ha encontrado el cupón'], 400);
+            }
             flash('No se ha encontrado el cupón')->error();
             return redirect()->route('orders.edit', $order->id);
         }
@@ -359,11 +455,14 @@ class OrdersController extends Controller
 
         $cartCode->save();
         $order->save();
+        if ($request->expectsJson()) {
+            return response()->json(['message' => 'Cupón eliminado correctamente'], 200);
+        }
         flash('Cupón eliminado correctamente')->success();
         return redirect()->route('orders.edit', $order->id);
     }
 
-    private function aplicateCupon($order, $cartCodeId){
+    private function aplicateCoupon($order, $cartCodeId){
 
         if($cartCodeId == null){
             return;
@@ -371,7 +470,7 @@ class OrdersController extends Controller
 
         $cartCode = CartCode::find($cartCodeId);
 
-        if($cartCode->percent_discount > 0){
+        if ($cartCode->percent_discount > 0){
             $order->total_amount = $order->total_amount - ($order->total_amount * $cartCode->percent_discount / 100);
         }else{
             $order->total_amount = $order->total_amount - $cartCode->fixed_discount;
@@ -379,9 +478,7 @@ class OrdersController extends Controller
         $order->total_amount = ($order->total_amount <= 0) ? 0 : $order->total_amount;
 
         $cartCode->available_uses -= 1;
-
         $order->save();
-
         $cartCode->save();
     }
 }
