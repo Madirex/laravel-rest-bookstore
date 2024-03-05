@@ -52,6 +52,10 @@
                     value="App\Models\Shop" {{ old('addressable_type', $address->addressable_type) == 'App\Models\Shop' ? 'selected' : '' }}>
                     Tienda
                 </option>
+                <option
+                    value="App\Models\Order" {{ old('addressable_type', $address->addressable_type) == 'App\Models\Order' ? 'selected' : '' }}>
+                    Pedido
+                </option>
             </select>
         </div>
         <div class="form-group">

@@ -5,22 +5,25 @@
     <h1>Detalle del pedido</h1>
     <div class="card">
         <div class="card-header">
-            <h2>Pedido #{{ $order->id }}</h2>
+            <h3>Pedido #{{ $order->id }}</h3>
         </div>
         <div class="card-body">
-            <h3>Usuario: {{ $order->user->name }}</h3>
-            <h5>Email: {{ $order->user->email }}</h5>
-            <div class="mb-5">
-                <p>Calle:  {{ $order->user->address->street }}</p>
-                <p>Ciudad: {{ $order->user->address->city }}</p>
-                <p>Provincia: {{ $order->user->address->province }}</p>
-                <p>Country: {{ $order->user->address->country }}</p>
-                <p>CP:     {{ $order->user->address->postal_code }}</p>
-            </div>
+            @if ($order->address)
+                <h2>Dirección</h2>
+                <div class="mb-5">
+                    <p>Calle:  {{ $order->address->street }}</p>
+                    <p>Ciudad: {{ $order->address->city }}</p>
+                    <p>Provincia: {{ $order->address->province }}</p>
+                    <p>Country: {{ $order->address->country }}</p>
+                    <p>CP:     {{ $order->address->postal_code }}</p>
+                </div>
+            @endif
+            <h2>Usuario: {{ $order->user->name }}</h2>
+            <p>Email: {{ $order->user->email }}</p>
             <p>Fecha: {{ $order->created_at }}</p>
             <p>Total: {{ $order->total_amount }} €</p>
             <p>Estado: {{ $order->status }}</p>
-            <h3>Lineas de pedido</h3>
+            <h3>Pedidos</h3>
             <table class="table table-striped">
                 <thead>
                     <tr>

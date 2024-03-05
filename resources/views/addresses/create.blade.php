@@ -42,6 +42,7 @@
                 <option value="">Selecciona el tipo</option>
                 <option value="App\Models\User" {{ old('addressable_type') == 'App\Models\User' ? 'selected' : '' }}>Usuario</option>
                 <option value="App\Models\Shop" {{ old('addressable_type') == 'App\Models\Shop' ? 'selected' : '' }}>Tienda</option>
+                <option value="App\Models\Order" {{ old('addressable_type') == 'App\Models\Order' ? 'selected' : '' }}>Pedido</option>
             </select>
         </div>
         <div class="form-group">

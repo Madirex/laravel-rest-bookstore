@@ -91,10 +91,10 @@
     <section>
         <br>
         @if($order->status == 'pending')
-            <button type="button" class="btn btn-primary" id="add_order_line">Añadir Linea</button>
+            <button type="button" class="btn btn-primary" id="add_order_line">Añadir Línea</button>
         @endif
         <article class="add_order_line" style="display: none">
-            <h3>Añadir linea de pedido</h3>
+            <h3>Añadir línea de pedido</h3>
             <form action="{{ route('orders.addOrderLine', $order->id) }}" method="POST" class="book_form">
                 @csrf
                 @method('PATCH')
@@ -124,12 +124,12 @@
                     </div>
                 </div>
                 <input type="hidden" name="order_id" value="{{ $order->id }}">
-                <button type="submit" class="btn btn-primary">Añadir Linea</button>
+                <button type="submit" class="btn btn-primary">Añadir Línea</button>
                 <button type="button" class="btn btn-danger" id="cancel_add_order_line">Cancelar</button>
             </form>
         </article>
         <article class="edit_order_line" style="display: none">
-            <h3>Editar linea de pedido</h3>
+            <h3>Editar línea de pedido</h3>
             <form action="{{ route('orders.editOrderLine', $order->id) }}" method="POST">
                 @csrf
                 @method('PUT')
@@ -160,7 +160,7 @@
                 </div>
                 <input type="hidden" name="order_id_edit" value="{{ $order->id }}">
                 <input type="hidden" name="order_line_id_edit">
-                <button type="submit" class="btn btn-primary">Editar Linea</button>
+                <button type="submit" class="btn btn-primary">Editar Línea</button>
             </form>
 
         </article>

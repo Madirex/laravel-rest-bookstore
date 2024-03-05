@@ -19,7 +19,6 @@ class Order extends Model
         'total_amount',
         'total_lines',
         'is_deleted',
-        'address_id',
         'finished_at'
     ];
 
