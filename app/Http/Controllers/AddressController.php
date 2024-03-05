@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Address;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Class AddressController
@@ -18,7 +19,14 @@ class AddressController extends Controller
      */
     public function index(Request $request)
     {
-        $addresses = Address::search($request->search)->orderBy('street', 'asc')->paginate(8);
+        $cacheKey = 'addresses_' . md5($request->fullUrl());
+
+        if (Cache::has($cacheKey)) {
+            $addresses = Cache::get($cacheKey);
+        } else {
+            $addresses = Address::search($request->search)->orderBy('street', 'asc')->paginate(8);
+            Cache::put($cacheKey, $addresses, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+        }
 
         if ($request->expectsJson()) {
             return response()->json($addresses);
@@ -36,12 +44,18 @@ class AddressController extends Controller
     public function show($id, Request $request)
     {
         try {
-            $address = Address::findOrFail($id);
+            $cacheKey = 'address_' . $id;
+            if (Cache::has($cacheKey)) {
+                $address = Cache::get($cacheKey);
+            } else {
+                $address = Address::findOrFail($id);
+                Cache::put($cacheKey, $address, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+            }
+
         } catch (\Exception $e) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Dirección no encontrada'], 404);
             }
-
             flash('Dirección no encontrada')->error();
             return redirect()->back()->withInput();
         }
