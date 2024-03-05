@@ -54,5 +54,8 @@
             <a class="btn btn-secondary" href="{{ route('orders.edit', $order->id) }}"><i class="fas fa-edit"></i>
                 Editar</a>
         </div>
+
+        <!-- imprimir factura -->
+        <a href="{{ route('orders.invoice', ['id' => $order->id]) }}" class="btn btn-primary">Descargar Factura</a>
     </div>
 @endsection
