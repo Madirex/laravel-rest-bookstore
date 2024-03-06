@@ -18,7 +18,7 @@ class OrderTableSeeder extends Seeder
             [
                 'id' => '388473c7-a77b-48fb-9280-48a794c679a8',
                 'user_id' => 1,
-                'status' => 'pendiente',
+                'status' => 'pending',
                 'total_amount' => 10.00,
                 'total_lines' => 1,
                 'is_deleted' => false,

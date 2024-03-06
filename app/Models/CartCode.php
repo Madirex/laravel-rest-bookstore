@@ -14,23 +14,7 @@ class CartCode extends Model
     protected $keyType = 'string';
     protected $primaryKey = 'id';
 
-    protected $fillable = ['id', 'code', 'percent_discount', 'fixed_discount', 'available_uses', 'expiration_date', 'is_deleted'];
-
-    /**
-     * Oculta los campos
-     * @var string[] $hidden
-     */
-    protected $hidden = [
-        'is_deleted',
-    ];
-
-    /**
-     * Convierte en tipos nativos
-     * @var string[] $casts
-     */
-    protected $casts = [
-        'is_deleted' => 'boolean',
-    ];
+    protected $fillable = ['id', 'code', 'percent_discount', 'fixed_discount', 'available_uses', 'expiration_date'];
 
     /**
      * generar un UUID cuando se crea un nuevo registro

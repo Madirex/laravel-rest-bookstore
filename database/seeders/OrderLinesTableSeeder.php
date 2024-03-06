@@ -21,6 +21,7 @@ class OrderLinesTableSeeder extends Seeder
                 'book_id' => 1,
                 'price' => 10.00,
                 'total' => 10.00,
+                'type' => 'book',
                 'selected' => true,
             ],
         ];

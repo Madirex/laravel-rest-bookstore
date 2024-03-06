@@ -21,7 +21,13 @@ class CategoryController extends Controller
      */
     public function index(Request $request)
     {
-        $categories = Category::search($request->search)->orderBy('name', 'asc')->paginate(8);
+        $cacheKey = 'categories_' . md5($request->fullUrl());
+        if (Cache::has($cacheKey)) {
+            $categories = Cache::get($cacheKey);
+        } else {
+            $categories = Category::search($request->search)->orderBy('name', 'asc')->paginate(8);
+           // Cache::put($cacheKey, $categories, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+        }
 
         if ($request->expectsJson()) {
             return response()->json($categories);
@@ -43,7 +49,7 @@ class CategoryController extends Controller
                 $category = Cache::get($cacheKey);
             } else {
                 $category = Category::findOrFail($id);
-                Cache::put($cacheKey, $category, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+               // Cache::put($cacheKey, $category, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
             }
         } catch (\Exception $e) {
             if (request()->expectsJson()) {
@@ -93,10 +99,6 @@ class CategoryController extends Controller
         $category = new Category();
         $category->name = $request->input('name');
 
-        $cacheKey = 'categories_' . $category->id;
-        if (Cache::has($cacheKey)) {
-            Cache::forget($cacheKey);
-        }
         $category->save();
 
         if ($request->expectsJson()) {
@@ -151,17 +153,9 @@ class CategoryController extends Controller
         // Actualizar el nombre de la categoría en los books relacionados
         foreach ($books as $book) {
             $book->category_name = $category->name;
-            $cacheKey = 'book_' . $book->id;
-            if (Cache::has($cacheKey)) {
-                Cache::forget($cacheKey);
-            }
             $book->save();
         }
 
-        $cacheKey = 'categories_' . $id;
-        if (Cache::has($cacheKey)) {
-            Cache::forget($cacheKey);
-        }
         $category->save();
 
         if ($request->expectsJson()) {
@@ -186,10 +180,6 @@ class CategoryController extends Controller
             }
             flash('Categoría no encontrada')->error()->important();
             return redirect()->back()->withInput();
-        }
-        $cacheKey = 'categories_' . $id;
-        if (Cache::has($cacheKey)) {
-            Cache::forget($cacheKey);
         }
         $category->delete();
 

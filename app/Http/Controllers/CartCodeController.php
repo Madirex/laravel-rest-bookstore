@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\CartCode;
 use App\Rules\CartCodeCodeExists;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 
 /**
@@ -20,11 +21,14 @@ class CartCodeController extends Controller
      */
     public function index(Request $request)
     {
-        // Buscar por nombre y que is_deleted false
-        $cartcodes = CartCode::where('is_deleted', false)
-            ->search($request->search)
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+        $cacheKey = 'cartcodes_' . md5($request->fullUrl());
+
+        if (Cache::has($cacheKey)) {
+            $cartcodes = Cache::get($cacheKey);
+        } else {
+            $cartcodes = CartCode::search($request->search)->orderBy('code', 'asc')->paginate(10);
+          //  Cache::put($cacheKey, $cartcodes, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+        }
 
         // Convertir los valores a números flotantes
         foreach ($cartcodes as $cartcode) {
@@ -47,7 +51,13 @@ class CartCodeController extends Controller
     public function show(string $id)
     {
         try {
-            $cartcode = CartCode::findOrFail($id);
+            $cacheKey = 'address_' . $id;
+            if (Cache::has($cacheKey)) {
+                $cartcode = Cache::get($cacheKey);
+            } else {
+                $cartcode = CartCode::findOrFail($id);
+              //  Cache::put($cacheKey, $cartcode, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+            }
         } catch (\Exception $e) {
             if (request()->expectsJson()) {
                 return response()->json(['message' => 'CartCode no encontrado'], 404);
@@ -149,6 +159,7 @@ class CartCodeController extends Controller
             flash('Debe de haber un descuento')->error()->important();
             return redirect()->back()->withInput();
         }
+
         $cartcode->save();
 
         // Convertir los valores a números flotantes
@@ -179,10 +190,7 @@ class CartCodeController extends Controller
             flash('Código de tienda no encontrado')->error()->important();
             return redirect()->back()->withInput();
         }
-
-        //borrado lógico
-        $cartcode->is_deleted = true;
-        $cartcode->save();
+        $cartcode->delete();
 
         if (request()->expectsJson()) {
             return response()->json(null, 204);

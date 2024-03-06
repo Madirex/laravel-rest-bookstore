@@ -55,7 +55,6 @@ class BookControllerTest extends TestCase
     public function testStoreJsonResponse()
     {
         $bookMock = Mockery::mock('overload:App\Models\Book');
-        $bookMock->id = 1;
         $bookMock->shouldReceive('__get')
             ->with('name')
             ->andReturn('mocked-name');

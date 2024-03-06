@@ -14,36 +14,6 @@
 					"item": [
 						{
 							"name": "Get By Id CartCode - Bad Id",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"Response status code is 404\", function () {",
-											"    pm.expect(pm.response.code).to.equal(404);",
-											"});",
-											"",
-											"pm.test(\"Content-Type header is application/json\", function () {",
-											"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
-											"});",
-											"",
-											"pm.test(\"Message field is present in the response and is a non-empty string\", function () {",
-											"    const responseData = pm.response.json();",
-											"    pm.expect(responseData).to.have.property('message').that.is.a('string').and.to.have.lengthOf.at.least(1, \"Message should not be empty\");",
-											"});",
-											"",
-											"pm.test(\"Response body is not empty\", function () {",
-											"    const responseData = pm.response.json();",
-											"    pm.expect(responseData).to.not.be.empty;",
-											"});",
-											"// Stores the message from the response in an environment or global variable",
-											"var message = pm.response.json().message;",
-											"pm.globals.set(\"errorMessage\", message);"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -1155,48 +1125,6 @@
 							],
 							"path": [
 								"c5944365-d957-4221-a743-778c507a5397"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "orders",
-			"item": [
-				{
-					"name": "Get All Orders",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url}}orders?search=enviado",
-							"host": [
-								"{{url}}orders"
-							],
-							"query": [
-								{
-									"key": "search",
-									"value": "enviado"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get By Id",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url}}orders/9b804716-a84e-4b31-ba2a-29738860cb05",
-							"host": [
-								"{{url}}orders"
-							],
-							"path": [
-								"9b804716-a84e-4b31-ba2a-29738860cb05"
 							]
 						}
 					},

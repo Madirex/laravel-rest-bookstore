@@ -135,7 +135,7 @@
             action: 'update',
         };
         calculateTotal();
-        fetch("{{ route('cart.handle') }}", {
+        fetch("{{ route('cart.handle') }}", { 
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

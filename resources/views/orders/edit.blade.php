@@ -11,23 +11,36 @@
 
     <section>
         <br/>
-        <button type="button" class="btn btn-primary" style="display: none" id="add_order_line">Añadir Línea</button>
-        <button type="button" class="btn btn-primary" style="display: none" id="add_cart_code">Editar código de descuento</button>
-        <br/>
-        <br/>
-        <!-- en el caso de que haya un cart_code que no sea null, agregar botón eliminar a ruta removeCoupon -->
-        @if($order->cartCode)
-            <form action="{{ route('orders.removeCoupon', $order->id) }}" method="POST">
-                @csrf
-                @method('PUT')
-                <button type="submit" class="btn btn-danger" id="remove_cart_code">Eliminar código de descuento</button>
-            </form>
-        @endif
+        <button type="button" class="btn btn-primary" id="add_order_line">Añadir Línea</button>
+
+        <script>
+            document.getElementById('status').addEventListener('change', function () {
+                if (this.value === 'pending') {
+                    document.getElementById('actionsColumn').style.display = 'table-cell';
+                    document.getElementById('add_order_line').style.display = 'block';
+                } else {
+                    document.getElementById('actionsColumn').style.display = 'none';
+                    document.getElementById('add_order_line').style.display = 'none';
+                }
+            });
+        </script>
+
         <article class="add_order_line" style="display: none">
             <h3>Añadir línea de pedido</h3>
             <form action="{{ route('orders.addOrderLine', $order->id) }}" method="POST" class="book_form">
                 @csrf
                 @method('PATCH')
+                <div class="form-group">
+                    <label for="type">Tipo</label>
+                    <select class="form-control" id="type" name="type">
+                        <option value="book">Libro</option>
+                        <option value="coupon">Cupón</option>
+                    </select>
+                </div>
+                <div class="form-group cupon_form" style="display: none;">
+                    <label for="coupon">Cupón</label>
+                    <input type="text" class="form-control" id="coupon" name="coupon">
+                </div>
                 <div class="form-group book_form control">
                     <div class="form_field">
                         <label for="book_id">Libro</label>
@@ -37,7 +50,6 @@
                             @endforeach
                         </select>
                     </div>
-                    <br/>
                     <div class="form_field">
                         <label for="quantity">Cantidad</label>
                         <input type="number" class="form-control" id="quantity" name="quantity">
@@ -46,29 +58,6 @@
                 <input type="hidden" name="order_id" value="{{ $order->id }}">
                 <button type="submit" class="btn btn-primary">Añadir Línea</button>
                 <button type="button" class="btn btn-danger" id="cancel_add_order_line">Cancelar</button>
-            </form>
-
-
-        </article>
-
-
-
-        <article class="add_cart_code" style="display: none">
-            <h3>Editar código de descuento</h3>
-            <form action="{{ route('orders.addCouponToOrder', $order->id) }}" method="POST" class="book_form">
-                @csrf
-                @method('PUT')
-                <div class="form-group book_form control">
-                    <div class="form-group">
-                        <label for="cart_code">Código de descuento</label>
-                        <input type="text" class="form-control" id="cart_code" name="cart_code"
-                               value="{{ old('cart_code', $order->cartCode ? $order->cartCode->code : '') }}">
-                        <br/>
-                    </div>
-                </div>
-                <input type="hidden" name="order_id" value="{{ $order->id }}">
-                <button type="submit" class="btn btn-primary">Aplicar Código</button>
-                <button type="button" class="btn btn-danger" id="cancel_add_cart_code">Cancelar</button>
             </form>
 
 
@@ -85,7 +74,7 @@
                         <option value="coupon">Cupón</option>
                     </select>
                 </div>
-                <div class="form-group coupon_form" style="display: none;">
+                <div class="form-group cupon_form" style="display: none;">
                     <label for="coupon_edit">Cupón</label>
                     <input type="text" class="form-control" id="coupon_edit" name="coupon">
                 </div>
@@ -111,16 +100,15 @@
         </article>
     </section>
     <br>
-    <form action="{{ route('orders.update', $order->id) }}" method="POST">
+    <form action="{{ route('orders.update', $order->id) }}" method="PUT">
         @csrf
         @method('PUT')
         <div class="form-group">
             <label for="status">Estado</label>
             <select class="form-control" id="status" name="status">
-                <option value="pendiente" {{ $order->status == 'pendiente' ? 'selected' : '' }}>Pendiente</option>
-                <option value="enviado" {{ $order->status == 'shipping' ? 'selected' : '' }}>Enviado</option>
-                <option value="entregado" {{ $order->status == 'entregado' ? 'selected' : '' }}>Entregado</option>
-                <option value="cancelado" {{ $order->status == 'entregado' ? 'selected' : '' }}>Cancelado</option>
+                <option value="pending" {{ $order->status == 'Pendiente' ? 'selected' : '' }}>Pendiente</option>
+                <option value="shipping" {{ $order->status == 'Enviado' ? 'selected' : '' }}>Enviado</option>
+                <option value="delivered" {{ $order->status == 'Entregado' ? 'selected' : '' }}>Entregado</option>
             </select>
         </div>
 
@@ -160,45 +148,36 @@
                 <tr>
                     <th>{{ $orderLine->id }}</th>
                     <td>{{ $orderLine->type }}</td>
-                    <td>{{ $orderLine->book->name }}</td>
+                    @if($orderLine->type == 'coupon')
+                        <td>{{ $orderLine->cartCode }}</td>
+                    @else
+                        <td>{{ $orderLine->book->name }}</td>
+                    @endif
                     <td>{{ $orderLine->price }} €</td>
                     <td>{{ $orderLine->quantity }}</td>
                     <td>{{ $orderLine->subtotal }} €</td>
                     <td>
-                        <form></form> <!-- FIXME: form vacío necesario para eliminación de primer pedido, mejorar estructura -->
-                        @if($order->status == 'pendiente')
-                            <!-- Enlace de eliminación con modal de confirmación -->
-                            <a href="#" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#confirmDeleteModal{{ $orderLine->id }}">
-                                <i class="fas fa-trash-alt"></i>
-                            </a>
+                        @if($order->status == 'pending')
+                            @csrf
+                            @method('DELETE')
+                            <form action="{{ route('orders.destroyOrderLine',[ $order->id, $orderLine->id]) }}"
+                                  method="POST"
+                                  style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
+                            <form action="{{ route('orders.destroyOrderLine',[ $order->id, $orderLine->id]) }}"
+                                  method="POST"
+                                  style="display:inline;">
+                                <button type="submit" style="display: contents;"><a
+                                        class="btn btn-secondary btn-sm edit-btn edit_order_line_button"
+                                        data-order-line-id="{{ $orderLine->id }}"
+                                        data-order-line-type="{{ $orderLine->type }}"
+                                        data-order-line-book-id="{{ $orderLine->book_id }}"
+                                        data-order-line-quantity="{{ $orderLine->quantity }}"
+                                    ><i class="fas fa-edit"></i></a></button>
+                            </form>
 
-                            <!-- Modal de Confirmación de eliminación -->
-                            <div class="modal fade" id="confirmDeleteModal{{ $orderLine->id }}" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar Eliminación</h5>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                            ¿Estás seguro de que deseas eliminar esta línea de pedido?
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-
-                                            <!-- Formulario para eliminar el elemento -->
-                                            <form id="delete-form-{{ $orderLine->id }}" action="{{ route('orders.destroyOrderLine', ['order' => $orderLine->order->id, 'orderLine' => $orderLine->id]) }}" method="POST" style="display: none;">
-                                                @csrf
-                                                @method('DELETE')
-                                            </form>
-
-                                            <button type="button" class="btn btn-danger" onclick="event.preventDefault(); document.getElementById('delete-form-{{ $orderLine->id }}').submit();">Borrar</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         @endif
                     </td>
                 </tr>
@@ -212,70 +191,34 @@
 
 
     <script>
-        document.getElementById('status').addEventListener('change', function () {
-            if (this.value === 'pendiente') {
-                document.getElementById('actionsColumn').style.display = 'table-cell';
-                document.getElementById('add_order_line').style.display = 'inline-block';
-                document.getElementById('add_cart_code').style.display = 'inline-block';
+        document.getElementById('type').addEventListener('change', function () {
+            if (this.value === 'coupon') {
+                document.querySelector('.book_form.control').style.display = 'none';
+                document.querySelector('.cupon_form').style.display = 'block';
             } else {
-                document.getElementById('actionsColumn').style.display = 'none';
-                document.getElementById('add_order_line').style.display = 'none';
-                document.getElementById('add_cart_code').style.display = 'none';
+                document.querySelector('.book_form').style.display = 'block';
+                document.querySelector('.cupon_form').style.display = 'none';
             }
         });
 
-        document.addEventListener('DOMContentLoaded', function () {
-            document.querySelector('.book_form.control').style.display = 'block';
-            if (document.getElementById('status').value === 'pendiente') {
-                document.getElementById('actionsColumn').style.display = 'table-cell';
-                document.getElementById('add_order_line').style.display = 'inline-block';
-                document.getElementById('add_cart_code').style.display = 'inline-block';
-            } else {
-                document.getElementById('actionsColumn').style.display = 'none';
-                document.getElementById('add_order_line').style.display = 'none';
-                document.getElementById('add_cart_code').style.display = 'none';
-            }
-        })
-
-        /* add */
         document.getElementById('add_order_line').addEventListener('click', function () {
-            document.querySelector('.add_order_line').style.display = 'inline-block';
+            document.querySelector('.add_order_line').style.display = 'block';
             document.querySelector('#add_order_line').style.display = 'none';
-            document.querySelector('#add_cart_code').style.display = 'none';
-            document.querySelector('#remove_cart_code').style.display = 'none';
             document.querySelector('.edit_order_line').style.display = 'none';
         });
 
-        document.getElementById('add_cart_code').addEventListener('click', function () {
-            document.querySelector('.add_cart_code').style.display = 'inline-block';
-            document.querySelector('#add_cart_code').style.display = 'none';
-            document.querySelector('#remove_cart_code').style.display = 'none';
-            document.querySelector('#add_order_line').style.display = 'none';
-        });
-
-        /* cancel */
         document.getElementById('cancel_add_order_line').addEventListener('click', function () {
             document.querySelector('.add_order_line').style.display = 'none';
-            document.querySelector('#add_order_line').style.display = 'inline-block';
-            document.querySelector('#add_cart_code').style.display = 'inline-block';
-            document.querySelector('#remove_cart_code').style.display = 'inline-block';
+            document.querySelector('#add_order_line').style.display = 'block';
         });
 
-        document.getElementById('cancel_add_cart_code').addEventListener('click', function () {
-            document.querySelector('.add_cart_code').style.display = 'none';
-            document.querySelector('#add_cart_code').style.display = 'inline-block';
-            document.querySelector('#remove_cart_code').style.display = 'inline-block';
-            document.querySelector('#add_order_line').style.display = 'inline-block';
-        });
-
-        /* edit */
         document.querySelectorAll('.edit_order_line_button').forEach(function (element) {
             element.addEventListener('click', function () {
                 document.querySelector('.edit_order_line').style.display = 'block';
                 document.querySelector('.add_order_line').style.display = 'none';
                 document.querySelector('#add_order_line').style.display = 'block';
                 document.querySelector('.book_form').style.display = 'block';
-                document.querySelector('.coupon_form').style.display = 'none';
+                document.querySelector('.cupon_form').style.display = 'none';
                 document.querySelector('#type_edit').value = element.getAttribute('data-order-line-type');
                 document.querySelector('#quantity_edit').value = element.getAttribute('data-order-line-quantity');
                 document.querySelector('#book_id_edit').value = element.getAttribute('data-order-line-book-id');
@@ -283,5 +226,7 @@
 
             });
         });
+
+
     </script>
 @endsection

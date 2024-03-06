@@ -33,6 +33,8 @@ Route::get('/cart', [CartController::class, 'getCart'])->name('cart.cart')->midd
 Route::delete('/cart', [CartController::class, 'removeFromCart'])->name('cart.remove')->middleware('auth');
 Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout')->middleware('auth');
 Route::post('/cart', [CartController::class, 'handleCart'])->name('cart.handle')->middleware('auth');
+Route::get('/success', [CartController::class, 'success'])->name('cart.success')->middleware('auth');
+Route::get('/cancel', [CartController::class, 'cancel'])->name('cart.cancel')->middleware('auth');
 
 Route::group(['prefix' => 'cartcodes'], function () {
     Route::get('/', [CartCodeController::class, 'index'])->name('cartcodes.index')->middleware(['auth', 'admin']);
@@ -131,13 +133,11 @@ Route::post('/email/verification-resend', function (Request $request) {
     return back()->with('message', 'Email de verificación reenviado');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.resend');
 
-
-
-/* Rutas de pedidos para usuarios autenticados */
-Route::group(['prefix' => 'users/profile/orders', 'middleware' => ['auth']], function () {
-    Route::get('/', [OrdersController::class, 'indexOrderUser'])->name('user.orders.index');
-    Route::get('/{id}', [OrdersController::class, 'showOrderUser'])->name('user.orders.show');
-    Route::get('/{id}/cancel_invoice', [OrdersController::class, 'cancelInvoice'])->name('orders.cancel_invoice');
+/* Rutas de pedidos */
+Route::group(['prefix' => 'orders'], function () {
+    Route::patch('/{order}/addOrderLine', [OrdersController::class, 'addOrderLine'])->name('orders.addOrderLine')->middleware(['auth']);
+    Route::put('/{order}/editOrderLine', [OrdersController::class, 'updateOrderLine'])->name('orders.editOrderLine')->middleware(['auth']);
+    Route::delete('/{order}/removeOrderLine/{orderLine}', [OrdersController::class, 'destroyOrderLine'])->name('orders.destroyOrderLine')->middleware(['auth']);
 });
 
 Route::get('/orders/{id}/email_invoice', [OrdersController::class, 'generateInvoiceToEmail'])->name('orders.email_invoice')->middleware(['auth']);
@@ -198,15 +198,6 @@ Route::group(['prefix' => 'categories', 'middleware' => ['auth', 'admin']], func
     Route::get('/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
     Route::put('/{category}', [CategoryController::class, 'update'])->name('categories.update');
     Route::delete('/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
-});
-
-/* Rutas de pedidos */
-Route::group(['prefix' => 'orders', 'middleware' => ['auth', 'admin']], function () {
-    Route::patch('/{order}/addOrderLine', [OrdersController::class, 'addOrderLine'])->name('orders.addOrderLine');
-    Route::put('/{order}/editOrderLine', [OrdersController::class, 'updateOrderLine'])->name('orders.editOrderLine');
-    Route::put('/{order}/addCouponToOrder', [OrdersController::class, 'addCouponToOrder'])->name('orders.addCouponToOrder');
-    Route::put('/{order}/removeCoupon', [OrdersController::class, 'removeCoupon'])->name('orders.removeCoupon');
-    Route::delete('/{order}/removeOrderLine/{orderLine}', [OrdersController::class, 'destroyOrderLine'])->name('orders.destroyOrderLine');
 });
 
 Auth::routes();

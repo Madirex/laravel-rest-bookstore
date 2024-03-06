@@ -19,10 +19,19 @@ class AddressController extends Controller
      */
     public function index(Request $request)
     {
-        $addresses = Address::search($request->search)->orderBy('street', 'asc')->paginate(8);
+        $cacheKey = 'addresses_' . md5($request->fullUrl());
+
+        if (Cache::has($cacheKey)) {
+            $addresses = Cache::get($cacheKey);
+        } else {
+            $addresses = Address::search($request->search)->orderBy('street', 'asc')->paginate(8);
+           // Cache::put($cacheKey, $addresses, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+        }
+
         if ($request->expectsJson()) {
             return response()->json($addresses);
         }
+
         return view('addresses.index', compact('addresses'));
     }
 
@@ -40,7 +49,7 @@ class AddressController extends Controller
                 $address = Cache::get($cacheKey);
             } else {
                 $address = Address::findOrFail($id);
-                Cache::put($cacheKey, $address, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+               // Cache::put($cacheKey, $address, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
             }
 
         } catch (\Exception $e) {
@@ -103,11 +112,6 @@ class AddressController extends Controller
     {
         try {
             $address = Address::findOrFail($id);
-
-            $cacheKey = 'address_' . $id;
-            if (Cache::has($cacheKey)) {
-                Cache::forget($cacheKey);
-            }
         } catch (\Exception $e) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Dirección no encontrada'], 404);
@@ -155,10 +159,6 @@ class AddressController extends Controller
     {
         try {
             $address = Address::findOrFail($id);
-            $cacheKey = 'address_' . $id;
-            if (Cache::has($cacheKey)) {
-                Cache::forget($cacheKey);
-            }
         } catch (\Exception $e) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Dirección no encontrada'], 404);
@@ -327,11 +327,6 @@ class AddressController extends Controller
         $address = new Address($request->all());
         auth()->user()->address()->save($address);
 
-        $cacheKey = 'address_' . $address->id;
-        if (Cache::has($cacheKey)) {
-            Cache::forget($cacheKey);
-        }
-
         flash('Dirección creada correctamente')->success();
         return redirect()->route('users.profile');
     }
@@ -359,11 +354,6 @@ class AddressController extends Controller
         $address->fill($request->all());
         $address->save();
 
-        $cacheKey = 'address_' . $address->id;
-        if (Cache::has($cacheKey)) {
-            Cache::forget($cacheKey);
-        }
-
         flash('Dirección actualizada correctamente')->success();
         return redirect()->route('users.profile');
     }
@@ -383,11 +373,6 @@ class AddressController extends Controller
         }
 
         $address->delete();
-
-        $cacheKey = 'address_' . $address->id;
-        if (Cache::has($cacheKey)) {
-            Cache::forget($cacheKey);
-        }
 
         flash('Dirección eliminada correctamente')->success();
         return redirect()->route('users.profile');
