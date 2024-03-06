@@ -11,8 +11,8 @@
 
     <section>
         <br/>
-        <button type="button" class="btn btn-primary" id="add_order_line">Añadir Línea</button>
-        <button type="button" class="btn btn-primary" id="add_cart_code">Editar código de descuento</button>
+        <button type="button" class="btn btn-primary" style="display: none" id="add_order_line">Añadir Línea</button>
+        <button type="button" class="btn btn-primary" style="display: none" id="add_cart_code">Editar código de descuento</button>
 
         <article class="add_order_line" style="display: none">
             <h3>Añadir línea de pedido</h3>
@@ -99,15 +99,15 @@
         </article>
     </section>
     <br>
-    <form action="{{ route('orders.update', $order->id) }}" method="PUT">
+    <form action="{{ route('orders.update', $order->id) }}" method="POST">
         @csrf
         @method('PUT')
         <div class="form-group">
             <label for="status">Estado</label>
             <select class="form-control" id="status" name="status">
-                <option value="pending" {{ $order->status == 'Pendiente' ? 'selected' : '' }}>Pendiente</option>
-                <option value="shipping" {{ $order->status == 'Enviado' ? 'selected' : '' }}>Enviado</option>
-                <option value="delivered" {{ $order->status == 'Entregado' ? 'selected' : '' }}>Entregado</option>
+                <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Pendiente</option>
+                <option value="shipping" {{ $order->status == 'shipping' ? 'selected' : '' }}>Enviado</option>
+                <option value="delivered" {{ $order->status == 'delivered' ? 'selected' : '' }}>Entregado</option>
             </select>
         </div>
 
@@ -222,6 +222,15 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             document.querySelector('.book_form.control').style.display = 'block';
+            if (document.getElementById('status').value === 'pending') {
+                document.getElementById('actionsColumn').style.display = 'table-cell';
+                document.getElementById('add_order_line').style.display = 'inline-block';
+                document.getElementById('add_cart_code').style.display = 'inline-block';
+            } else {
+                document.getElementById('actionsColumn').style.display = 'none';
+                document.getElementById('add_order_line').style.display = 'none';
+                document.getElementById('add_cart_code').style.display = 'none';
+            }
         })
 
         /* add */
