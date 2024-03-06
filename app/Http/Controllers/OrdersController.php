@@ -491,7 +491,7 @@ class OrdersController extends Controller
 
         $cartCode = $order->cartCode;
         if ($cartCode->percent_discount > 0) {
-            $discountAmount = $order->total_amount * $cartCode->percent_discount / 100;
+            $discountAmount = round($order->total_amount * $cartCode->percent_discount / 100, 2);
             $order->total_amount -= $discountAmount;
         } else {
             $order->total_amount = $order->total_amount - $cartCode->fixed_discount;
