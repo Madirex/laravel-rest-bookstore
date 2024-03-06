@@ -89,6 +89,7 @@ class ShopControllerTest extends TestCase
     public function testStoreJsonResponse()
     {
         $shopMock = Mockery::mock('overload:App\Models\Shop');
+        $shopMock->id = 1;
         $shopMock->shouldReceive('__get')
             ->with('name')
             ->andReturn('mocked-name');
