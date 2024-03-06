@@ -20,7 +20,11 @@ class CartCodeController extends Controller
      */
     public function index(Request $request)
     {
-        $cartcodes = CartCode::search($request->search)->orderBy('code', 'asc')->paginate(10);
+        // Buscar por nombre y que is_deleted false
+        $cartcodes = CartCode::where('is_deleted', false)
+            ->search($request->search)
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
 
         // Convertir los valores a números flotantes
         foreach ($cartcodes as $cartcode) {
@@ -175,7 +179,10 @@ class CartCodeController extends Controller
             flash('Código de tienda no encontrado')->error()->important();
             return redirect()->back()->withInput();
         }
-        $cartcode->delete();
+
+        //borrado lógico
+        $cartcode->is_deleted = true;
+        $cartcode->save();
 
         if (request()->expectsJson()) {
             return response()->json(null, 204);
