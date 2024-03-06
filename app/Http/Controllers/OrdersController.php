@@ -138,7 +138,7 @@ class OrdersController extends Controller
         $order = Order::find($id);
         $order->status = $request->status;
 
-        if ($order->status == 'delivered') {
+        if ($order->status == 'entregado') {
             $order->finished_at = now();
         } else {
             $order->finished_at = null;
@@ -438,7 +438,7 @@ class OrdersController extends Controller
     public function store(Request $request)
     {
         $order = new Order();
-        $order->status = 'pending';
+        $order->status = 'pendiente';
         $order->user_id = $request->user_id;
         $order->total_amount = 0;
         $order->total_lines = 0;
@@ -520,5 +520,87 @@ class OrdersController extends Controller
 
         //ahora aplicar cupón al total
         $this->aplicateCoupon($order);
+    }
+
+
+    /** ******************************* *
+     * PARA USUARIOS NORMALES LOGUEADOS *
+     * ******************************* **/
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\View\View
+     */
+    public function indexOrderUser(Request $request)
+    {
+        if (auth()->check()) {
+            $orders = Order::search($request->search)
+                ->orderBy($request->order ?? 'id', $request->direction ?? 'asc')
+                ->where('user_id', auth()->user()->id) // IMPORTANTE - SOLO MOSTRARÁ LOS PEDIDOS DEL USUARIO LOGUEADO
+                ->where('is_deleted', false)
+                ->paginate(10);
+            if ($request->expectsJson()) {
+                return response()->json($orders);
+            }
+            return view('orders.index')->with('orders', $orders);
+        }
+        return redirect()->route('login');
+    }
+
+    /**
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\View\View
+     */
+    public function showOrderUser(Request $request, $id)
+    {
+        if (auth()->check()) {
+            $order = Order::find($id);
+            if ($order->user_id != auth()->user()->id) {
+                if ($request->expectsJson()) {
+                    return response()->json(['message' => 'No tienes permisos para ver este pedido'], 400);
+                }
+                flash('No tienes permisos para ver este pedido')->error();
+                return redirect()->route('orders.index')->with('error', 'No tienes permisos para ver este pedido');
+            }
+            if ($request->expectsJson()) {
+                return response()->json($order);
+            }
+            return view('orders.show')->with('order', $order);
+        }
+        return redirect()->route('login');
+    }
+
+    /**
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\View\View
+     */
+    public function cancelInvoice(Request $request, $id){
+        if (auth()->check()) {
+            $order = Order::find($id);
+            if ($order->user_id != auth()->user()->id) {
+                if ($request->expectsJson()) {
+                    return response()->json(['message' => 'No tienes permisos para cancelar este pedido'], 400);
+                }
+                flash('No tienes permisos para cancelar este pedido')->error();
+                return redirect()->route('orders.index')->with('error', 'No tienes permisos para cancelar este pedido');
+            }
+            if ($order->status == 'pendiente') {
+                $order->status = 'cancelado';
+                $order->save();
+                if ($request->expectsJson()) {
+                    return response()->json($order);
+                }
+                flash('Pedido cancelado correctamente')->success();
+                return redirect()->route('user.orders.index');
+            }
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'No se puede cancelar el pedido'], 400);
+            }
+            flash('No se puede cancelar el pedido')->error();
+            return redirect()->route('orders.index')->with('error', 'No se puede cancelar el pedido');
+        }
+        return redirect()->route('login');
     }
 }
