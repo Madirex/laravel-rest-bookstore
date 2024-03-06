@@ -70,7 +70,7 @@
         <!-- editar este pedido -->
         <div class="card-footer">
             @if ($order->status == 'pendiente')
-            <a href="{{ route('orders.cancel_invoice', ['id' => $order->id]) }}" class="btn btn-danger">Cancelar Pedido</a>
+                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#cancelOrderModal{{ $order->id }}">Cancelar Pedido</button>
             @endif
 
             @if (auth()->check() && auth()->user()->hasRole('admin'))
@@ -82,6 +82,28 @@
 
             <!-- enviar por email -->
             <a href="{{ route('orders.email_invoice', ['id' => $order->id]) }}" class="btn btn-primary">Enviar factura por email</a>
+        </div>
+
+        <!-- modal de confirmación para cancelar pedido -->
+        <!-- Modal de Confirmación de cancelación -->
+        <div class="modal fade" id="cancelOrderModal{{ $order->id }}" tabindex="-1" role="dialog" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="cancelOrderModalLabel">Confirmar Cancelación</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        ¿Estás seguro de que deseas cancelar este pedido?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                        <a href="{{ route('orders.cancel_invoice', ['id' => $order->id]) }}" class="btn btn-danger">Sí, cancelar</a>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- fecha de finalizción si está finalizado -->
