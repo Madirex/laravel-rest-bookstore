@@ -22,7 +22,6 @@ return new class extends Migration
             $table->double('total', 8, 2);
             $table->double('subtotal', 8, 2);
             $table->boolean('selected');
-            $table->string('type');
             $table->timestamps();
         });
     }

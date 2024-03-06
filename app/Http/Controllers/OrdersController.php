@@ -112,8 +112,6 @@ class OrdersController extends Controller
     {
         $order = Order::find($id);
 
-        $type = $request->type;
-
         if ($errorResponse = $this->validateOrderLine($request)) {
             if ($request->expectsJson()) {
                 return $errorResponse;
@@ -233,11 +231,7 @@ class OrdersController extends Controller
             return response()->json(['message' => 'Línea de pedido eliminada correctamente'], 200);
         }
 
-        if ($orderLine->type == 'book') {
-            flash('Línea de pedido eliminada correctamente')->success();
-        } elseif ($orderLine->type == 'coupon') {
-            flash('Cupón eliminado correctamente')->success();
-        }
+        flash('Línea de pedido eliminada correctamente')->success();
         return redirect()->route('orders.edit', $order->id);
     }
 

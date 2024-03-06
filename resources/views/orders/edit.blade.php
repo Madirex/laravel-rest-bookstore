@@ -18,17 +18,6 @@
             <form action="{{ route('orders.addOrderLine', $order->id) }}" method="POST" class="book_form">
                 @csrf
                 @method('PATCH')
-                <div class="form-group">
-                    <label for="type">Tipo</label>
-                    <select class="form-control" id="type" name="type">
-                        <option value="book">Libro</option>
-                        <option value="coupon">Cupón</option>
-                    </select>
-                </div>
-                <div class="form-group coupon_form" style="display: none;">
-                    <label for="coupon">Cupón</label>
-                    <input type="text" class="form-control" id="coupon" name="coupon">
-                </div>
                 <div class="form-group book_form control">
                     <div class="form_field">
                         <label for="book_id">Libro</label>
@@ -38,6 +27,7 @@
                             @endforeach
                         </select>
                     </div>
+                    <br/>
                     <div class="form_field">
                         <label for="quantity">Cantidad</label>
                         <input type="number" class="form-control" id="quantity" name="quantity">
@@ -145,6 +135,7 @@
                     <td>{{ $orderLine->quantity }}</td>
                     <td>{{ $orderLine->subtotal }} €</td>
                     <td>
+                        <form></form> <!-- form vacío necesario para eliminación de primer pedido -->
                         @if($order->status == 'pending')
                             <form id="delete-form-{{ $orderLine->id }}" action="{{ route('orders.destroyOrderLine', [$order->id, $orderLine->id]) }}" method="POST" style="display: none;">
                                 @csrf
@@ -179,24 +170,8 @@
 
         //al iniciar el documento esperar a values se pongan
         document.addEventListener('DOMContentLoaded', function () {
-            if (document.getElementById('type').value === 'coupon') {
-                document.querySelector('.book_form.control').style.display = 'none';
-                document.querySelector('.coupon_form').style.display = 'block';
-            } else {
-                document.querySelector('.book_form.control').style.display = 'block';
-                document.querySelector('.coupon_form').style.display = 'none';
-            }
+            document.querySelector('.book_form.control').style.display = 'block';
         })
-
-        document.getElementById('type').addEventListener('change', function () {
-            if (this.value === 'coupon') {
-                document.querySelector('.book_form.control').style.display = 'none';
-                document.querySelector('.coupon_form').style.display = 'block';
-            } else {
-                document.querySelector('.book_form.control').style.display = 'block';
-                document.querySelector('.coupon_form').style.display = 'none';
-            }
-        });
 
         document.getElementById('add_order_line').addEventListener('click', function () {
             document.querySelector('.add_order_line').style.display = 'block';
