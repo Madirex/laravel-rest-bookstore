@@ -159,19 +159,13 @@
                 <tr>
                     <th>{{ $orderLine->id }}</th>
                     <td>{{ $orderLine->type }}</td>
-                    @if($orderLine->type == 'coupon')
-                        <td>{{ $orderLine->cartCode }}</td>
-                    @else
-                        <td>{{ $orderLine->book->name }}</td>
-                    @endif
+                    <td>{{ $orderLine->book->name }}</td>
                     <td>{{ $orderLine->price }} €</td>
                     <td>{{ $orderLine->quantity }}</td>
                     <td>{{ $orderLine->subtotal }} €</td>
                     <td>
                         <form></form> <!-- FIXME: form vacío necesario para eliminación de primer pedido, mejorar estructura -->
                         @if($order->status == 'pending')
-
-
                             <!-- Enlace de eliminación con modal de confirmación -->
                             <a href="#" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#confirmDeleteModal{{ $orderLine->id }}">
                                 <i class="fas fa-trash-alt"></i>
@@ -204,9 +198,6 @@
                                     </div>
                                 </div>
                             </div>
-
-
-
                         @endif
                     </td>
                 </tr>

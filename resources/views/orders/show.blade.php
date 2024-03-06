@@ -48,6 +48,24 @@
                 </tbody>
             </table>
         </div>
+        <!-- cupón de descuento -->
+        @if($order->cartCode)
+        <div class="card-body">
+            <h4>Cupón de descuento aplicado</h4>
+            <p>Código: {{ $order->cartCode->code }}</p>
+
+            @if($order->cartCode->percent_discount > 0)
+                <p>Descuento: {{ $order->cartCode->percent_discount }} %</p>
+            @else
+                <p>Descuento fijo: {{ $order->cartCode->fixed_discount }} €</p>
+            @endif
+        </div>
+        @endif
+
+        <!-- TOTAL -->
+        <div class="card-body">
+            <h5 style="font-weight: bold">Total: {{ $order->total_amount }} €</h5>
+        </div>
 
         <!-- editar este pedido -->
         <div class="card-footer">
@@ -60,6 +78,12 @@
             <a href="{{ route('orders.email_invoice', ['id' => $order->id]) }}" class="btn btn-primary">Enviar factura por email</a>
         </div>
 
+        <!-- fecha de finalizción si está finalizado -->
+        @if($order->status == 'delivered')
+            <div class="card-footer">
+                <p>Fecha de finalización del pedido: {{ $order->finished_at }}</p>
+            </div>
+        @endif
 
     </div>
 @endsection
