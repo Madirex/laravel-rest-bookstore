@@ -12,6 +12,7 @@
     <section>
         <br/>
         <button type="button" class="btn btn-primary" id="add_order_line">Añadir Línea</button>
+        <button type="button" class="btn btn-primary" id="add_cart_code">Añadir código de descuento</button>
 
         <article class="add_order_line" style="display: none">
             <h3>Añadir línea de pedido</h3>
@@ -36,6 +37,26 @@
                 <input type="hidden" name="order_id" value="{{ $order->id }}">
                 <button type="submit" class="btn btn-primary">Añadir Línea</button>
                 <button type="button" class="btn btn-danger" id="cancel_add_order_line">Cancelar</button>
+            </form>
+
+
+        </article>
+        <article class="add_cart_code" style="display: none">
+            <h3>Añadir código de descuento</h3>
+            <form action="{{ route('orders.addOrderLine', $order->id) }}" method="POST" class="book_form">
+                @csrf
+                @method('PATCH')
+                <div class="form-group book_form control">
+                    <div class="form-group">
+                        <label for="cart_code">Código de descuento</label>
+                        <input type="text" class="form-control" id="cart_code" name="cart_code"
+                               value="{{ old('cart_code', $order->cart_code) }}">
+                        <br/>
+                    </div>
+                </div>
+                <input type="hidden" name="order_id" value="{{ $order->id }}">
+                <button type="submit" class="btn btn-primary">Aplicar Código</button>
+                <button type="button" class="btn btn-danger" id="cancel_add_cart_code">Cancelar</button>
             </form>
 
 
@@ -135,16 +156,45 @@
                     <td>{{ $orderLine->quantity }}</td>
                     <td>{{ $orderLine->subtotal }} €</td>
                     <td>
-                        <form></form> <!-- form vacío necesario para eliminación de primer pedido -->
+                        <form></form> <!-- FIXME: form vacío necesario para eliminación de primer pedido, mejorar estructura -->
                         @if($order->status == 'pending')
-                            <form id="delete-form-{{ $orderLine->id }}" action="{{ route('orders.destroyOrderLine', [$order->id, $orderLine->id]) }}" method="POST" style="display: none;">
-                                @csrf
-                                @method('DELETE')
-                            </form>
+                           
 
-                            <a href="#" class="btn btn-danger btn-sm" onclick="event.preventDefault(); console.log('delete-form-{{ $orderLine->id }}'); document.getElementById('delete-form-{{ $orderLine->id }}').submit();">
+                            <!-- Enlace de eliminación con modal de confirmación -->
+                            <a href="#" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#confirmDeleteModal{{ $orderLine->id }}">
                                 <i class="fas fa-trash-alt"></i>
                             </a>
+
+                            <!-- Modal de Confirmación de eliminación -->
+                            <div class="modal fade" id="confirmDeleteModal{{ $orderLine->id }}" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar Eliminación</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            ¿Estás seguro de que deseas eliminar esta línea de pedido?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+
+                                            <!-- Formulario para eliminar el elemento -->
+                                            <form id="delete-form-{{ $orderLine->id }}" action="{{ route('orders.destroyOrderLine', ['order' => $orderLine->order->id, 'orderLine' => $orderLine->id]) }}" method="POST" style="display: none;">
+                                                @csrf
+                                                @method('DELETE')
+                                            </form>
+
+                                            <button type="button" class="btn btn-danger" onclick="event.preventDefault(); document.getElementById('delete-form-{{ $orderLine->id }}').submit();">Borrar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
                         @endif
                     </td>
                 </tr>
@@ -161,29 +211,47 @@
         document.getElementById('status').addEventListener('change', function () {
             if (this.value === 'pending') {
                 document.getElementById('actionsColumn').style.display = 'table-cell';
-                document.getElementById('add_order_line').style.display = 'block';
+                document.getElementById('add_order_line').style.display = 'inline-block';
+                document.getElementById('add_cart_code').style.display = 'inline-block';
             } else {
                 document.getElementById('actionsColumn').style.display = 'none';
                 document.getElementById('add_order_line').style.display = 'none';
+                document.getElementById('add_cart_code').style.display = 'none';
             }
         });
 
-        //al iniciar el documento esperar a values se pongan
         document.addEventListener('DOMContentLoaded', function () {
             document.querySelector('.book_form.control').style.display = 'block';
         })
 
+        /* add */
         document.getElementById('add_order_line').addEventListener('click', function () {
-            document.querySelector('.add_order_line').style.display = 'block';
+            document.querySelector('.add_order_line').style.display = 'inline-block';
             document.querySelector('#add_order_line').style.display = 'none';
+            document.querySelector('#add_cart_code').style.display = 'none';
             document.querySelector('.edit_order_line').style.display = 'none';
         });
 
-        document.getElementById('cancel_add_order_line').addEventListener('click', function () {
-            document.querySelector('.add_order_line').style.display = 'none';
-            document.querySelector('#add_order_line').style.display = 'block';
+        document.getElementById('add_cart_code').addEventListener('click', function () {
+            document.querySelector('.add_cart_code').style.display = 'inline-block';
+            document.querySelector('#add_cart_code').style.display = 'none';
+            document.querySelector('#add_order_line').style.display = 'none';
         });
 
+        /* cancel */
+        document.getElementById('cancel_add_order_line').addEventListener('click', function () {
+            document.querySelector('.add_order_line').style.display = 'none';
+            document.querySelector('#add_order_line').style.display = 'inline-block';
+            document.querySelector('#add_cart_code').style.display = 'inline-block';
+        });
+
+        document.getElementById('cancel_add_cart_code').addEventListener('click', function () {
+            document.querySelector('.add_cart_code').style.display = 'none';
+            document.querySelector('#add_cart_code').style.display = 'inline-block';
+            document.querySelector('#add_order_line').style.display = 'inline-block';
+        });
+
+        /* edit */
         document.querySelectorAll('.edit_order_line_button').forEach(function (element) {
             element.addEventListener('click', function () {
                 document.querySelector('.edit_order_line').style.display = 'block';
