@@ -36,7 +36,7 @@
                     <th scope="row">{{ $order->id }}</th>
                     <td>{{ $order->user->name }}</td>
                     <td>{{ $order->created_at }}</td>
-                    <td>{{ $order->total_amount }} €</td>
+                    <td>{{ number_format($order->total_amount, 2, ',', ' ') }} €</td>
                     <td>{{ $order->status }}</td>
                     <td>
                         @if (auth()->check() && auth()->user()->hasRole('admin'))

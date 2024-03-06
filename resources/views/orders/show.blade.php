@@ -21,7 +21,6 @@
             <h2>Usuario: {{ $order->user->name }}</h2>
             <p>Email: {{ $order->user->email }}</p>
             <p>Fecha: {{ $order->created_at }}</p>
-            <p>Total: {{ $order->total_amount }} €</p>
             <p>Estado: {{ $order->status }}</p>
             <h3>Pedidos</h3>
             <table class="table table-striped">
@@ -62,9 +61,10 @@
         </div>
         @endif
 
-        <!-- TOTAL -->
+        <!-- TOTAL Y SUBTOTAL-->
         <div class="card-body">
-            <h5 style="font-weight: bold">Total: {{ $order->total_amount }} €</h5>
+            <h5 style="font-weight: bold">Total: {{ number_format($order->total_amount, 2, ',', ' ') }} €</h5>
+            <h5 style="font-weight: bold">Subtotal: {{ number_format($order->subtotal, 2, ',', ' ') }} €</h5>
         </div>
 
         <!-- editar este pedido -->
