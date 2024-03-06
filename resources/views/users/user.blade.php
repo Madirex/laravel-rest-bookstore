@@ -107,7 +107,13 @@
         </div>
     </div>
 
-    <!-- TODO: VER ORDERS (facturas) -->
+    <!-- Ver orders -->
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title"><i class="fas fa-receipt"></i> Pedidos</h5>
+            <a href="{{ route('user.orders.index') }}" class="btn btn-primary">Ver pedidos</a>
+        </div>
+    </div>
 
     <br/>
 
