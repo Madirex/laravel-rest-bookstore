@@ -100,6 +100,7 @@ class OrdersController extends Controller
 
         $order->cart_code = $cartCode->id;
         $order->save();
+        $this->calculateTotalAmount($order);
         flash('Cupón añadido correctamente')->success();
         return redirect()->route('orders.edit', $order->id);
     }
@@ -122,6 +123,7 @@ class OrdersController extends Controller
         }
         $order->cart_code = null;
         $order->save();
+        $this->calculateTotalAmount($order);
         flash('Cupón eliminado correctamente')->success();
         return redirect()->route('orders.edit', $order->id);
     }
@@ -135,7 +137,15 @@ class OrdersController extends Controller
     {
         $order = Order::find($id);
         $order->status = $request->status;
+
+        if ($order->status == 'delivered') {
+            $order->finished_at = now();
+        } else {
+            $order->finished_at = null;
+        }
+
         $order->save();
+        $this->calculateTotalAmount($order);
 
         if ($request->expectsJson()) {
             return response()->json($order);
@@ -227,6 +237,8 @@ class OrdersController extends Controller
         $order->orderLines()->save($orderLine);
         $order->save();
 
+        $this->calculateTotalAmount($order);
+
         $book->stock -= $request->quantity;
         $cacheKey = 'book_' . $book->id;
         if (Cache::has($cacheKey)) {
@@ -317,6 +329,7 @@ class OrdersController extends Controller
         }
         $book->save();
 
+        $this->calculateTotalAmount($order);
         $orderLine->delete();
 
         if ($request->expectsJson()) {
@@ -370,6 +383,7 @@ class OrdersController extends Controller
 
         $order->subtotal -= $orderLine->total;
         $order->total_lines -= $orderLine->quantity;
+        $this->calculateTotalAmount($order);
         $order->save();
 
         $book->stock += $orderLine->quantity;
@@ -398,6 +412,7 @@ class OrdersController extends Controller
         }
         $book->save();
 
+        $this->calculateTotalAmount($order);
 
         if ($request->expectsJson()) {
             return response()->json($orderLine);
@@ -465,68 +480,45 @@ class OrdersController extends Controller
         return redirect()->route('orders.index');
     }
 
-
-    /**
-     * @param $request
-     * @param $id
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
-     */
-    public function removeCartCode($request, $id) //TODO: DO
-    {
-        $order = Order::find($id);
-        if ($order == null) {
-            if ($request->expectsJson()) {
-                return response()->json(['message' => 'No se ha encontrado el pedido'], 400);
-            }
-            flash('No se ha encontrado el pedido')->error();
-            return redirect()->route('orders.index')->with('error', 'No se ha encontrado el pedido');
-        }
-        $cartCode = CartCode::find($order->cart_code);
-        if ($cartCode == null) {
-            if ($request->expectsJson()) {
-                return response()->json(['message' => 'No se ha encontrado el cupón'], 400);
-            }
-            flash('No se ha encontrado el cupón')->error();
-            return redirect()->route('orders.edit', $order->id);
-        }
-
-        $order->total_amount = $order->subtotal;
-
-        $cartCode->available_uses += 1;
-
-        $order->cart_code = null;
-
-        $cartCode->save();
-        $order->save();
-        if ($request->expectsJson()) {
-            return response()->json(['message' => 'Cupón eliminado correctamente'], 200);
-        }
-        flash('Cupón eliminado correctamente')->success();
-        return redirect()->route('orders.edit', $order->id);
-    }
-
     /**
      * @param $order
-     * @param $cart_code
      */
-    private function aplicateCoupon($order, $cart_code) //TODO: DO
+    private function aplicateCoupon($order)
     {
-
-        if ($cart_code == null) {
+        if ($order->cartCode == null) {
             return;
         }
 
-        $cartCode = CartCode::find($cart_code);
-
+        $cartCode = $order->cartCode;
         if ($cartCode->percent_discount > 0) {
-            $order->total_amount = $order->total_amount - ($order->total_amount * $cartCode->percent_discount / 100);
+            $discountAmount = $order->total_amount * $cartCode->percent_discount / 100;
+            $order->total_amount -= $discountAmount;
         } else {
             $order->total_amount = $order->total_amount - $cartCode->fixed_discount;
         }
-        $order->total_amount = ($order->total_amount <= 0) ? 0 : $order->total_amount;
 
         $cartCode->available_uses -= 1;
         $order->save();
         $cartCode->save();
+    }
+
+
+    /**
+     * @param $order
+     */
+    private function calculateTotalAmount($order)
+    {
+        $orderLines = $order->orderLines;
+        $totalAmount = 0;
+        foreach ($orderLines as $orderLine) {
+            $totalAmount += $orderLine->total;
+        }
+
+        $order->total_amount = $totalAmount;
+        $order->subtotal = $order->total_amount;
+        $order->save();
+
+        //ahora aplicar cupón al total
+        $this->aplicateCoupon($order);
     }
 }
