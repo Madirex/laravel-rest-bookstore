@@ -92,7 +92,7 @@
         <div class="invoice-details">
             <p><b>Fecha del pedido:</b> {{ $order->created_at }}</p>
             <p><b>Estado:</b> {{ $order->status }}</p>
-            @if($order->status == 'delivered')
+            @if($order->status == 'entregado')
                     <p><b>Fecha de finalización del pedido:</b> {{ $order->finished_at }}</p>
             @endif
         </div>
