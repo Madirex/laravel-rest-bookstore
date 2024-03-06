@@ -58,6 +58,15 @@
 
             <!-- enviar por email -->
             <a href="{{ route('orders.email_invoice', ['id' => $order->id]) }}" class="btn btn-primary">Enviar factura por email</a>
+            <!--terminar el checkout si pedido es unpaid-->
+            @if($order->status == 'unpaid')
+            <form action="{{ route('cart.checkout') }}" method="POST">
+                @csrf
+                <input type="hidden" name="order_id" value="{{ $order->id }}">
+                <button type="submit" class="btn btn-primary">Terminar Pedido</button>
+            </form>
+            @endif
+
         </div>
 
 
