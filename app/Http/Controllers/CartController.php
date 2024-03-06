@@ -181,6 +181,15 @@ class CartController extends Controller
                         'quantity' => $orderLine->quantity,
                     ];
                 }
+                // Crea la sesión de pago con Stripe y redirige al usuario para completar el pago.
+                $session = Session::create([
+                    'line_items' => $lineItems,
+                    'mode' => 'payment',
+                    'success_url' => route('cart.success', ['order_id' => $order->id], true),
+                    'cancel_url' => route('cart.cancel', [], true),
+                ]);
+
+                return redirect($session->url);
             }
         }
 
@@ -233,20 +242,34 @@ class CartController extends Controller
                 ]);
                 $order->save();
                 // Debes guardar las líneas del pedido (OrderLine) aquí, usando el objeto $order recién creado.
+                foreach ($lineItems as $lineItem) {
+                    $bookId = $lineItem['price_data']['product_data']['metadata']['book_id'];
+                    $book = Book::find($bookId);
+                    $orderLine = new OrderLine([
+                        'order_id' => $order->id,
+                        'book_id' => $bookId,
+                        'price' => $book->price,
+                        'quantity' => $lineItem['quantity'],
+                        'subtotal' => $book->price * $lineItem['quantity'],
+                        'total' => $totalPrice,
+                        'total_lines' => count($lineItems),
+                        'selected' => true,
+                    ]);
+                    $orderLine->save();
+                }
             }
+
+            // Crea la sesión de pago con Stripe y redirige al usuario para completar el pago.
+            $session = Session::create([
+                'line_items' => $lineItems,
+                'mode' => 'payment',
+                'success_url' => route('cart.success', ['order_id' => $order->id], true),
+                'cancel_url' => route('cart.cancel', [], true),
+            ]);
+
+            return redirect($session->url);
         }
-
-        // Crea la sesión de pago con Stripe y redirige al usuario para completar el pago.
-        $session = Session::create([
-            'line_items' => $lineItems,
-            'mode' => 'payment',
-            'success_url' => route('cart.success', ['order_id' => $order->id], true),
-            'cancel_url' => route('cart.cancel', [], true),
-        ]);
-
-        return redirect($session->url);
     }
-
 
 
     public function success(Request $request)
@@ -262,17 +285,18 @@ class CartController extends Controller
         $order->finished_at = now();
         $order->save();
 
-        if($order->status == 'paid'){
             $userId = $request->user()->id;
             $cartKey = "cart:$userId";
             Redis::del($cartKey);
-        }
         flash('Pago realizado con éxito')->success()->important();
         return view('cart.checkout-success', compact('order'));
     }
 
-    public function cancel()
+    public function cancel(Request $request)
     {
+        $userId = $request->user()->id;
+        $cartKey = "cart:$userId";
+        Redis::del($cartKey);
         flash('Pago cancelado')->error()->important();
         return view('cart.checkout-cancel');
     }
