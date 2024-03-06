@@ -37,10 +37,12 @@
                         <input type="hidden" name="book_id" value="{{ $book->id }}">
                         <input type="hidden" name="action" value="add">
                         <button type="submit" class="btn btn-success btn-lg">Agregar al carrito <i class="fas fa-cart-plus"></i></button>
+                        <br/>
+                        <br/>
+                        <br/>
                     </form>
                 @endif
             </div>
-
         </div>
     </div>
 

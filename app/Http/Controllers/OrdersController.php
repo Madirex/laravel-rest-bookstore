@@ -19,18 +19,10 @@ class OrdersController extends Controller
 
     public function index(Request $request)
     {
-        $cacheKey = 'orders_' . md5($request->fullUrl());
-        if (Cache::has($cacheKey)) {
-            $orders = Cache::get($cacheKey);
-        } else {
-            $orders = Order::search($request->search)
-                ->orderBy($request->order ?? 'id', $request->direction ?? 'asc')
-                ->where('is_deleted', false)
-                ->paginate(10);
-
-            //  Cache::put($cacheKey, $orders, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
-        }
-
+        $orders = Order::search($request->search)
+            ->orderBy($request->order ?? 'id', $request->direction ?? 'asc')
+            ->where('is_deleted', false)
+            ->paginate(10);
         if ($request->expectsJson()) {
             return response()->json($orders);
         }
@@ -39,14 +31,7 @@ class OrdersController extends Controller
 
     public function show(Request $request, $id)
     {
-        $cacheKey = 'category_' . $id;
-        if (Cache::has($cacheKey)) {
-            $order = Cache::get($cacheKey);
-        } else {
-            $order = Order::find($id);
-            // Cache::put($cacheKey, $order, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
-        }
-
+        $order = Order::find($id);
         if ($request->expectsJson()) {
             return response()->json($order);
         }
@@ -84,7 +69,7 @@ class OrdersController extends Controller
 
     public function validateOrderLine(Request $request)
     {
-        try{
+        try {
             $validator = Validator::make($request->all(), [
                 'quantity' => 'required|numeric|min:1',
                 'book_id' => 'required|numeric',
@@ -157,6 +142,10 @@ class OrdersController extends Controller
         $order->save();
 
         $book->stock -= $request->quantity;
+        $cacheKey = 'book_' . $book->id;
+        if (Cache::has($cacheKey)) {
+            Cache::forget($cacheKey);
+        }
         $book->save();
 
 
@@ -223,6 +212,10 @@ class OrdersController extends Controller
         $order->save();
 
         $book->stock += $orderLine->quantity;
+        $cacheKey = 'book_' . $book->id;
+        if (Cache::has($cacheKey)) {
+            Cache::forget($cacheKey);
+        }
         $book->save();
 
         $orderLine->delete();
@@ -276,6 +269,10 @@ class OrdersController extends Controller
         $order->save();
 
         $book->stock += $orderLine->quantity;
+        $cacheKey = 'book_' . $book->id;
+        if (Cache::has($cacheKey)) {
+            Cache::forget($cacheKey);
+        }
         $book->save();
 
         $orderLine->quantity = $request->quantity;
@@ -292,6 +289,10 @@ class OrdersController extends Controller
         $order->save();
 
         $book->stock -= $request->quantity;
+        $cacheKey = 'book_' . $book->id;
+        if (Cache::has($cacheKey)) {
+            Cache::forget($cacheKey);
+        }
         $book->save();
 
 
@@ -368,7 +369,7 @@ class OrdersController extends Controller
             return redirect()->route('orders.edit', $order->id);
         }
 
-        if($cartCode->available_uses <= 0){
+        if ($cartCode->available_uses <= 0) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Código no disponible'], 400);
             }
@@ -376,7 +377,7 @@ class OrdersController extends Controller
             return redirect()->route('orders.edit', $order->id);
         }
 
-        if($cartCode->expiration_date < date('Y-m-d')){
+        if ($cartCode->expiration_date < date('Y-m-d')) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Código expirado'], 400);
             }
@@ -384,7 +385,7 @@ class OrdersController extends Controller
             return redirect()->route('orders.edit', $order->id);
         }
 
-        if($order->cartCodeId != null){
+        if ($order->cartCodeId != null) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Ya hay un cupón aplicado'], 400);
             }
@@ -392,7 +393,7 @@ class OrdersController extends Controller
             return redirect()->route('orders.edit', $order->id);
         }
 
-        if($order->total_amount == 0){
+        if ($order->total_amount == 0) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'No se puede aplicar un cupón a un pedido sin importe'], 400);
             }
@@ -402,9 +403,9 @@ class OrdersController extends Controller
 
         $order->cartCodeId = $cartCode->id;
 
-        if($cartCode->percent_discount > 0){
+        if ($cartCode->percent_discount > 0) {
             $order->total_amount = $order->total_amount - ($order->total_amount * $cartCode->percent_discount / 100);
-        }else{
+        } else {
             $order->total_amount = $order->total_amount - $cartCode->fixed_discount;
         }
 
@@ -456,17 +457,18 @@ class OrdersController extends Controller
         return redirect()->route('orders.edit', $order->id);
     }
 
-    private function aplicateCoupon($order, $cartCodeId){
+    private function aplicateCoupon($order, $cartCodeId)
+    {
 
-        if($cartCodeId == null){
+        if ($cartCodeId == null) {
             return;
         }
 
         $cartCode = CartCode::find($cartCodeId);
 
-        if ($cartCode->percent_discount > 0){
+        if ($cartCode->percent_discount > 0) {
             $order->total_amount = $order->total_amount - ($order->total_amount * $cartCode->percent_discount / 100);
-        }else{
+        } else {
             $order->total_amount = $order->total_amount - $cartCode->fixed_discount;
         }
         $order->total_amount = ($order->total_amount <= 0) ? 0 : $order->total_amount;

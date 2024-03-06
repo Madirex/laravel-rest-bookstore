@@ -23,28 +23,15 @@ class BookController extends Controller
      */
     public function index(Request $request)
     {
-        $cacheKey = 'books_' . md5($request->fullUrl());
         if ($request->expectsJson()) {
-
-            if (Cache::has($cacheKey)) {
-                $books = Cache::get($cacheKey);
-            }else{
-                $books = Book::search($request->search)->orderBy('id', 'asc')->paginate(8);
-              //  Cache::put($cacheKey, $books, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
-            }
+            $books = Book::search($request->search)->orderBy('id', 'asc')->paginate(8);
             return response()->json($books);
         }
-
-        if (Cache::has($cacheKey)) {
-            $books = Cache::get($cacheKey);
-        }else {
-            $books = Book::where('active', true)
-                ->where('stock', '>', 0)
-                ->search($request->search)
-                ->orderBy('id', 'asc')
-                ->paginate(8);
-           // Cache::put($cacheKey, $books, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
-        }
+        $books = Book::where('active', true)
+            ->where('stock', '>', 0)
+            ->search($request->search)
+            ->orderBy('id', 'asc')
+            ->paginate(8);
         return view('books.index')->with('books', $books);
     }
 
@@ -62,7 +49,7 @@ class BookController extends Controller
                 $book = Cache::get($cacheKey);
             } else {
                 $book = Book::findOrFail($id);
-              //  Cache::put($cacheKey, $book, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+                Cache::put($cacheKey, $book, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
             }
         } catch (\Exception $e) {
             if (request()->expectsJson()) {
@@ -99,6 +86,11 @@ class BookController extends Controller
             return redirect()->back()->withInput();
         }
         $book = $this->getBookStore($request);
+
+        $cacheKey = 'book_' . $book->id;
+        if (Cache::has($cacheKey)) {
+            Cache::forget($cacheKey);
+        }
         $book->save();
 
         //comprobar si espera json
@@ -143,6 +135,11 @@ class BookController extends Controller
         $book->price = $request->input('price');
         $book->stock = $request->input('stock');
         $book->category_name = $request->input('category_name');
+
+        $cacheKey = 'book_' . $id;
+        if (Cache::has($cacheKey)) {
+            Cache::forget($cacheKey);
+        }
         $book->save();
 
         if ($request->expectsJson()) {
@@ -173,6 +170,12 @@ class BookController extends Controller
             return redirect()->back()->withInput();
         }
         $this->removeBookImage($book);
+
+        $cacheKey = 'book_' . $id;
+        if (Cache::has($cacheKey)) {
+            Cache::forget($cacheKey);
+        }
+
         $book->delete();
 
         if (request()->expectsJson()) {
@@ -201,6 +204,11 @@ class BookController extends Controller
             $extension = $image->getClientOriginalExtension();
             $fileToSave = $book->id . '.' . $extension;
             $book->image = $image->storeAs('books', $fileToSave, 'public'); // Guardamos en storage/app/public/books
+
+            $cacheKey = 'book_' . $id;
+            if (Cache::has($cacheKey)) {
+                Cache::forget($cacheKey);
+            }
             $book->save();
 
             if ($request->expectsJson()) {
