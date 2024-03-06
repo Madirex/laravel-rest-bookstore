@@ -34,7 +34,6 @@
         </div>
         <div class="invoice-details">
             <p>Usuario: {{ $order->user->name }}</p>
-            <p>Total: {{ $order->total_amount }} €</p>
             <table>
                 <thead>
                     <tr>
@@ -75,7 +74,8 @@
         <!-- Total -->
         <div class="invoice-details">
             <h2>Total</h2>
-            <p>{{ $order->total_amount }} €</p>
+            <p>Total: {{ number_format($order->total_amount, 2, ',', ' ') }} €</p>
+            <p>Subtotal: {{ number_format($order->subtotal, 2, ',', ' ') }} €</p>
         </div>
 
         @if ($order->address)
