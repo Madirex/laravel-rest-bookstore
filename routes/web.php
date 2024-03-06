@@ -135,8 +135,11 @@ Route::post('/email/verification-resend', function (Request $request) {
 Route::group(['prefix' => 'orders'], function () {
     Route::patch('/{order}/addOrderLine', [OrdersController::class, 'addOrderLine'])->name('orders.addOrderLine')->middleware(['auth']);
     Route::put('/{order}/editOrderLine', [OrdersController::class, 'updateOrderLine'])->name('orders.editOrderLine')->middleware(['auth']);
+    Route::put('/{order}/addCouponToOrder', [OrdersController::class, 'addCouponToOrder'])->name('orders.addCouponToOrder')->middleware(['auth']);
     Route::delete('/{order}/removeOrderLine/{orderLine}', [OrdersController::class, 'destroyOrderLine'])->name('orders.destroyOrderLine')->middleware(['auth']);
 });
+
+
 
 Route::get('/orders/{id}/email_invoice', [OrdersController::class, 'generateInvoiceToEmail'])->name('orders.email_invoice')->middleware(['auth']);
 Route::get('/orders/{id}/invoice', [OrdersController::class, 'generateInvoice'])->name('orders.invoice')->middleware(['auth']);
@@ -152,8 +155,6 @@ Route::group(['prefix' => 'orders', 'middleware' => ['auth', 'admin']], function
     Route::get('/{order}/edit', [OrdersController::class, 'edit'])->name('orders.edit');
     Route::put('/{order}', [OrdersController::class, 'update'])->name('orders.update');
     Route::delete('/{order}', [OrdersController::class, 'destroy'])->name('orders.destroy');
-    Route::patch('/{order}/addCartCode', [OrdersController::class, 'addCartCode'])->name('orders.addCartCode');
-    Route::patch('/{order}/removeCartCode', [OrdersController::class, 'removeCartCode'])->name('orders.removeCartCode');
 });
 
 Route::group(['prefix' => 'cartcodes', 'middleware' => ['auth', 'admin']], function () {

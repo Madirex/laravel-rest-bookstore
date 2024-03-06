@@ -20,8 +20,8 @@ return new class extends Migration
             $table->double('total_amount', 8, 2);
             $table->integer('total_lines');
             $table->boolean('is_deleted');
-            $table->uuid('cartCodeId')->nullable();
-            $table->foreign('cartCodeId')->references('id')->on('cart_codes');
+            $table->uuid('cart_code')->nullable();
+            $table->foreign('cart_code')->references('id')->on('cart_codes');
             $table->dateTime('finished_at')->nullable();
             $table->timestamps();
         });

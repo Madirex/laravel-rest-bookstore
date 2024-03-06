@@ -12,7 +12,7 @@
     <section>
         <br/>
         <button type="button" class="btn btn-primary" id="add_order_line">Añadir Línea</button>
-        <button type="button" class="btn btn-primary" id="add_cart_code">Añadir código de descuento</button>
+        <button type="button" class="btn btn-primary" id="add_cart_code">Editar código de descuento</button>
 
         <article class="add_order_line" style="display: none">
             <h3>Añadir línea de pedido</h3>
@@ -42,15 +42,15 @@
 
         </article>
         <article class="add_cart_code" style="display: none">
-            <h3>Añadir código de descuento</h3>
-            <form action="{{ route('orders.addOrderLine', $order->id) }}" method="POST" class="book_form">
+            <h3>Editar código de descuento</h3>
+            <form action="{{ route('orders.addCouponToOrder', $order->id) }}" method="POST" class="book_form">
                 @csrf
-                @method('PATCH')
+                @method('PUT')
                 <div class="form-group book_form control">
                     <div class="form-group">
                         <label for="cart_code">Código de descuento</label>
                         <input type="text" class="form-control" id="cart_code" name="cart_code"
-                               value="{{ old('cart_code', $order->cart_code) }}">
+                               value="{{ old('cart_code', $order->cartCode->code) }}">
                         <br/>
                     </div>
                 </div>
@@ -158,7 +158,7 @@
                     <td>
                         <form></form> <!-- FIXME: form vacío necesario para eliminación de primer pedido, mejorar estructura -->
                         @if($order->status == 'pending')
-                           
+
 
                             <!-- Enlace de eliminación con modal de confirmación -->
                             <a href="#" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#confirmDeleteModal{{ $orderLine->id }}">
