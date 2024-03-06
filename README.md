@@ -47,7 +47,7 @@ Por último, si te da fallos de permisos, ejecuta esto para cambiar los permisos
 
 ## Diagrama UML
 <p align="center">
-  <img src="https://i.imgur.com/HbmhQMF.png"/>
+  <img src="https://i.imgur.com/Mligyx8.png"/>
 </p>
 
 ## Diagrama de casos de uso
