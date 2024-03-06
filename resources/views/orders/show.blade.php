@@ -51,6 +51,17 @@
 
     <!-- editar este pedido -->
     <div class="card-footer">
+        <!-- TOTAL Y SUBTOTAL-->
+        <div class="card-body">
+            <h5 style="font-weight: bold">Total: {{ number_format($order->total_amount, 2, ',', ' ') }} €</h5>
+            <h5 style="font-weight: bold">Subtotal: {{ number_format($order->subtotal, 2, ',', ' ') }} €</h5>
+        </div>
+
+        <!-- editar este pedido -->
+        <div class="card-footer">
+            @if ($order->status == 'pendiente')
+                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#cancelOrderModal{{ $order->id }}">Cancelar Pedido</button>
+            @endif
 
         <!--terminar el checkout si pedido es unpaid-->
         @if($order->status == 'unpaid')
@@ -67,6 +78,37 @@
             <input type="hidden" name="order_id" value="{{ $order->id }}">
             <button type="submit" class="btn btn-primary">Terminar Pedido</button>
         </form>
+
+            <a href="{{ route('orders.email_invoice', ['id' => $order->id]) }}" class="btn btn-primary">Enviar factura por email</a>
+        </div>
+
+        <!-- modal de confirmación para cancelar pedido -->
+        <!-- Modal de Confirmación de cancelación -->
+        <div class="modal fade" id="cancelOrderModal{{ $order->id }}" tabindex="-1" role="dialog" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="cancelOrderModalLabel">Confirmar Cancelación</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        ¿Estás seguro de que deseas cancelar este pedido?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                        <a href="{{ route('orders.cancel_invoice', ['id' => $order->id]) }}" class="btn btn-danger">Sí, cancelar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- fecha de finalizción si está finalizado -->
+        @if($order->status == 'entregado')
+            <div class="card-footer">
+                <p>Fecha de finalización del pedido: {{ $order->finished_at }}</p>
+            </div>
         @endif
     </div>
 </div>
