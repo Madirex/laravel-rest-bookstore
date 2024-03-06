@@ -117,9 +117,10 @@
         <div class="form-group">
             <label for="status">Estado</label>
             <select class="form-control" id="status" name="status">
-                <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Pendiente</option>
-                <option value="shipping" {{ $order->status == 'shipping' ? 'selected' : '' }}>Enviado</option>
-                <option value="delivered" {{ $order->status == 'delivered' ? 'selected' : '' }}>Entregado</option>
+                <option value="pendiente" {{ $order->status == 'pendiente' ? 'selected' : '' }}>Pendiente</option>
+                <option value="enviado" {{ $order->status == 'shipping' ? 'selected' : '' }}>Enviado</option>
+                <option value="entregado" {{ $order->status == 'entregado' ? 'selected' : '' }}>Entregado</option>
+                <option value="cancelado" {{ $order->status == 'entregado' ? 'selected' : '' }}>Cancelado</option>
             </select>
         </div>
 
@@ -165,7 +166,7 @@
                     <td>{{ $orderLine->subtotal }} €</td>
                     <td>
                         <form></form> <!-- FIXME: form vacío necesario para eliminación de primer pedido, mejorar estructura -->
-                        @if($order->status == 'pending')
+                        @if($order->status == 'pendiente')
                             <!-- Enlace de eliminación con modal de confirmación -->
                             <a href="#" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#confirmDeleteModal{{ $orderLine->id }}">
                                 <i class="fas fa-trash-alt"></i>
@@ -212,7 +213,7 @@
 
     <script>
         document.getElementById('status').addEventListener('change', function () {
-            if (this.value === 'pending') {
+            if (this.value === 'pendiente') {
                 document.getElementById('actionsColumn').style.display = 'table-cell';
                 document.getElementById('add_order_line').style.display = 'inline-block';
                 document.getElementById('add_cart_code').style.display = 'inline-block';
@@ -225,7 +226,7 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             document.querySelector('.book_form.control').style.display = 'block';
-            if (document.getElementById('status').value === 'pending') {
+            if (document.getElementById('status').value === 'pendiente') {
                 document.getElementById('actionsColumn').style.display = 'table-cell';
                 document.getElementById('add_order_line').style.display = 'inline-block';
                 document.getElementById('add_cart_code').style.display = 'inline-block';

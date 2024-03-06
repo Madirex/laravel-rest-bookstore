@@ -69,8 +69,14 @@
 
         <!-- editar este pedido -->
         <div class="card-footer">
+            @if ($order->status == 'pendiente')
+            <a href="{{ route('orders.cancel_invoice', ['id' => $order->id]) }}" class="btn btn-danger">Cancelar Pedido</a>
+            @endif
+
+            @if (auth()->check() && auth()->user()->hasRole('admin'))
             <a class="btn btn-secondary" href="{{ route('orders.edit', $order->id) }}"><i class="fas fa-edit"></i>
                 Editar</a>
+            @endif
             <!-- imprimir factura -->
             <a href="{{ route('orders.invoice', ['id' => $order->id]) }}" class="btn btn-primary">Descargar Factura</a>
 
@@ -79,7 +85,7 @@
         </div>
 
         <!-- fecha de finalizción si está finalizado -->
-        @if($order->status == 'delivered')
+        @if($order->status == 'entregado')
             <div class="card-footer">
                 <p>Fecha de finalización del pedido: {{ $order->finished_at }}</p>
             </div>
