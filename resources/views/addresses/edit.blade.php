@@ -22,41 +22,48 @@
         @method('PUT')
         <div class="form-group">
             <label for="street">Calle:</label>
-            <input class="form-control" id="street" name="street" type="text" required value="{{$address->street}}">
+            <input class="form-control" id="street" name="street" type="text" required
+                   value="{{ old('street', $address->street) }}">
         </div>
         <div class="form-group">
             <label for="number">Número:</label>
-            <input class="form-control" id="number" name="number" type="text" required value="{{$address->number}}">
+            <input class="form-control" id="number" name="number" type="text" required
+                   value="{{ old('number', $address->number) }}">
         </div>
         <div class="form-group">
             <label for="city">Ciudad:</label>
-            <input class="form-control" id="city" name="city" type="text" required value="{{$address->city}}">
-        </div>
-        <div class="form-group">
-            <label for="province">Provincia:</label>
-            <input class="form-control" id="province" name="province" type="text" required value="{{$address->province}}">
-        </div>
-        <div class="form-group">
-            <label for="country">País:</label>
-            <input class="form-control" id="country" name="country" type="text" required value="{{$address->country}}">
+            <input class="form-control" id="city" name="city" type="text" required
+                   value="{{ old('city', $address->city) }}">
         </div>
         <div class="form-group">
             <label for="postal_code">Código Postal:</label>
-            <input class="form-control" id="postal_code" name="postal_code" type="text" required value="{{$address->postal_code}}">
+            <input class="form-control" id="postal_code" name="postal_code" type="text" required
+                   value="{{ old('postal_code', $address->postal_code) }}">
         </div>
         <div class="form-group">
             <label for="addressable_type">Asignar dirección:</label>
             <select class="form-control" id="addressable_type" name="addressable_type" required>
                 <option value="">Selecciona el tipo</option>
-                <option value="App\Models\User" @if($address->addressable_type == 'App\Models\User') selected @endif>Usuario</option>
+                <option
+                    value="App\Models\User" {{ old('addressable_type', $address->addressable_type) == 'App\Models\User' ? 'selected' : '' }}>
+                    Usuario
+                </option>
+                <option
+                    value="App\Models\Shop" {{ old('addressable_type', $address->addressable_type) == 'App\Models\Shop' ? 'selected' : '' }}>
+                    Tienda
+                </option>
+                <option
+                    value="App\Models\Order" {{ old('addressable_type', $address->addressable_type) == 'App\Models\Order' ? 'selected' : '' }}>
+                    Pedido
+                </option>
             </select>
         </div>
         <div class="form-group">
             <label for="addressable_id">ID:</label>
-            <input class="form-control" id="addressable_id" name="addressable_id" type="text" required value="{{$address->addressable_id}}">
+            <input class="form-control" id="addressable_id" name="addressable_id" type="text" required
+                   value="{{ old('addressable_id', $address->addressable_id) }}">
         </div>
         <button class="btn btn-primary" type="submit">Actualizar</button>
-        <a class="btn btn-secondary mx-2" href="{{ route('addresses.index') }}">Volver</a>
     </form>
 
 @endsection

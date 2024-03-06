@@ -141,6 +141,15 @@ body {
     margin-top: 20px;
 }
 
+/* categories y shop */
+.category-info > a, .shop-info > a {
+    text-decoration: none;
+}
+
+/* estilo card */
+.card{
+    margin-top: 20px;
+}
 
 /* BASE */
 footer {
@@ -212,13 +221,13 @@ div.nav-username {
 }
 
 /* categories, address, user, cartcode */
-.category-container, .address-container, .user-container, .cartcode-container{
+.category-container, .address-container, .user-container, .cartcode-container, .shop-container{
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-.category-card, .address-card, .user-card, .cartcode-card{
+.category-card, .address-card, .user-card, .cartcode-card, .shop-card{
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -228,13 +237,13 @@ div.nav-username {
     background-color: #fff;
 }
 
-.category-info, .address-info, .user-info, .cartcode-info {
+.category_info, .address-info, .user-info, .cartcode-info, .shop-info {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-.category-actions, .address-actions, .user-actions, .cartcode-actions {
+.category-actions, .address-actions, .user-actions, .cartcode-actions, .shop-actions  {
     display: flex;
     gap: 10px;
 }
@@ -293,4 +302,87 @@ div.nav-username {
 
 .hide-banner {
     animation: slideOut 0.5s ease-in;
+}
+
+/* table */
+/* tabla responsive */
+table {
+    border: 1px solid #ccc;
+    border-collapse: collapse;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    table-layout: fixed;
+}
+
+table caption {
+    font-size: 1.5em;
+    margin: .5em 0 .75em;
+}
+
+table tr {
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    padding: .35em;
+}
+
+table th,
+table td {
+    padding: .625em;
+    text-align: center;
+}
+
+table th {
+    font-size: .85em;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    word-wrap: break-word;
+}
+
+@media screen and (max-width: 600px) {
+    table th{
+        word-wrap: break-word;
+    }
+    table {
+        border: 0;
+    }
+
+    table caption {
+        font-size: 1.3em;
+    }
+
+    table thead {
+        border: none;
+        clip: rect(0 0 0 0);
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        padding: 0;
+        position: absolute;
+        width: 1px;
+    }
+
+    table tr {
+        border-bottom: 3px solid #ddd;
+        display: block;
+        margin-bottom: .625em;
+    }
+
+    table td {
+        border-bottom: 1px solid #ddd;
+        display: block;
+        font-size: .8em;
+        text-align: right;
+    }
+
+    table td::before {
+        content: attr(data-label);
+        float: left;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    table td:last-child {
+        border-bottom: 0;
+    }
 }

@@ -41,8 +41,6 @@
 
     <br/>
 
-    <a class="btn btn-primary" href="{{ route('users.admin.index') }}"><i class="fas fa-arrow-left"></i> Volver</a>
-
     <!-- Modal de Confirmación de actualización -->
     <div class="modal fade" id="confirmUpdateModal" tabindex="-1" role="dialog" aria-labelledby="confirmUpdateModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">

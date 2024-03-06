@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Book;
 use App\Models\Category;
 use App\Rules\CategoryNameNotExists;
-use App\Rules\ISBNNameExists;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -23,12 +23,28 @@ class BookController extends Controller
      */
     public function index(Request $request)
     {
-        $books = Book::search($request->search)->orderBy('id', 'asc')->paginate(8);
-
+        $cacheKey = 'books_' . md5($request->fullUrl());
         if ($request->expectsJson()) {
+
+            if (Cache::has($cacheKey)) {
+                $books = Cache::get($cacheKey);
+            }else{
+                $books = Book::search($request->search)->orderBy('id', 'asc')->paginate(8);
+              //  Cache::put($cacheKey, $books, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+            }
             return response()->json($books);
         }
 
+        if (Cache::has($cacheKey)) {
+            $books = Cache::get($cacheKey);
+        }else {
+            $books = Book::where('active', true)
+                ->where('stock', '>', 0)
+                ->search($request->search)
+                ->orderBy('id', 'asc')
+                ->paginate(8);
+           // Cache::put($cacheKey, $books, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+        }
         return view('books.index')->with('books', $books);
     }
 
@@ -39,18 +55,30 @@ class BookController extends Controller
      */
     public function show($id)
     {
+        $cacheKey = 'book_' . $id;
+
         try {
-            $book = Book::findOrFail($id);
+            if (Cache::has($cacheKey)) {
+                $book = Cache::get($cacheKey);
+            } else {
+                $book = Book::findOrFail($id);
+              //  Cache::put($cacheKey, $book, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+            }
         } catch (\Exception $e) {
             if (request()->expectsJson()) {
                 return response()->json(['message' => 'Libro no encontrado'], 404);
             }
             flash('Libro no encontrado')->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         if (request()->expectsJson()) {
             return response()->json($book);
+        }
+
+        if ($book->active == false) {
+            flash('Libro no encontrado')->error()->important();
+            return redirect()->back()->withInput();
         }
 
         return view('books.show')->with('book', $book);
@@ -68,7 +96,7 @@ class BookController extends Controller
                 return $errorResponse;
             }
             flash('Error al crear el libro: ' . $errorResponse)->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
         $book = $this->getBookStore($request);
         $book->save();
@@ -96,7 +124,7 @@ class BookController extends Controller
                 return response()->json(['message' => 'Libro no encontrado'], 404);
             }
             flash('Libro no encontrado')->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         if ($errorResponse = $this->validateBook($request, $book->isbn)) {
@@ -104,7 +132,7 @@ class BookController extends Controller
                 return $errorResponse;
             }
             flash('Error al actualizar el libro: ' . $errorResponse)->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         $book->isbn = $request->input('isbn');
@@ -123,6 +151,8 @@ class BookController extends Controller
 
         flash('Libro ' . $book->name . ' actualizado con éxito.')->success()->important();
         return redirect()->route('books.index');
+
+
     }
 
     /**
@@ -140,7 +170,7 @@ class BookController extends Controller
             }
 
             flash('Libro no encontrado')->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
         $this->removeBookImage($book);
         $book->delete();
@@ -184,7 +214,7 @@ class BookController extends Controller
                 return response()->json(['message' => 'Error al actualizar la imagen del libro'], 400);
             }
             flash('Error al actualizar la imagen del libro' . $e->getMessage())->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
     }
 
@@ -197,13 +227,14 @@ class BookController extends Controller
     public function validateBook(Request $request, $bookISBN = null)
     {
         $rulesToAdd = '';
-        if ($bookISBN != null) {
+        // lo comento porque al tener varias tiendas puede haber libros iguales asignados en diferentes tiendas
+        /*if ($bookISBN != null) {
             if (trim(strtolower($request->isbn)) != trim(strtolower($bookISBN))) {
                 $rulesToAdd = new ISBNNameExists;
             }
         } else {
             $rulesToAdd = new ISBNNameExists;
-        }
+        }*/
 
         try {
 
@@ -212,10 +243,11 @@ class BookController extends Controller
                 'name' => ['required', 'string', 'max:255'],
                 'author' => 'required|string|max:255',
                 'publisher' => 'required|string|max:255',
-                'description' => 'required|string|max:255',
+                'description' => 'required|string|max:2040',
                 'price' => 'required|numeric|min:0|max:999999.99|regex:/^\d{1,6}(\.\d{1,2})?$/',
                 'stock' => 'required|integer|min:0|max:1000000000',
                 'category_name' => ['required', 'string', new CategoryNameNotExists],
+                'shop_id' => ['required', 'exists:shops,id'],
             ]);
 
 
@@ -237,15 +269,7 @@ class BookController extends Controller
             return 'Error al procesar una propiedad por no tener un número válido. Evita que exceda del tamaño límite.';
         }
 
-        if ($validator->fails()) {
-
-            if ($request->expectsJson()) {
-                return response()->json(['message' => $validator->errors()->first()], 400);
-            }
-            return $validator->errors()->first();
-        } else {
-            return null;
-        }
+        return null;
     }
 
     /**
@@ -315,8 +339,11 @@ class BookController extends Controller
         $book->description = $request->input('description');
         $book->price = $request->input('price');
         $book->stock = $request->input('stock');
+        $book->shop_id = $request->input('shop_id');
         $book->category_name = $request->input('category_name');
         $book->active = true;
         return $book;
     }
+
+
 }

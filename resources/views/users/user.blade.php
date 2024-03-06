@@ -96,6 +96,17 @@
         </div>
     @endif
 
+    <br/>
+
+    <!-- ver dinero -->
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title"><i class="fas fa-wallet"></i> Dinero</h5>
+            <!-- parseado a formato españa -->
+            <p class="card-text"><i class="fas fa-coins"></i> {{ number_format($user->money, 2, ',', '.') }} €</p>
+        </div>
+    </div>
+
     <!-- TODO: VER ORDERS (facturas) -->
 
     <br/>
@@ -108,7 +119,9 @@
     </button>
     <br/>
     <br/>
+
     <form method="POST" action="{{ route('password.reset.send') }}">
+        <a href="{{ route('user.email.change.form') }}" class="btn btn-secondary">Cambiar correo</a>
         @csrf
         <button type="submit" class="btn btn-secondary">Cambiar contraseña</button>
     </form>

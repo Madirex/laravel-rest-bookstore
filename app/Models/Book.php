@@ -13,7 +13,7 @@ class Book extends Model
     use HasFactory;
 
     public static $IMAGE_DEFAULT = 'images/book.png';
-    protected $fillable = ['isbn', 'name', 'author', 'publisher', 'image', 'description', 'price', 'stock', 'category_name', 'active'];
+    protected $fillable = ['isbn', 'name', 'author', 'publisher', 'image', 'description', 'price', 'stock', 'category_name', 'shop_id', 'active'];
 
     /**
      * Oculta los campos
@@ -22,6 +22,7 @@ class Book extends Model
     protected $hidden = [
         'active',
     ];
+
 
     /**
      * Convierte en tipos nativos
@@ -37,7 +38,7 @@ class Book extends Model
      */
     public function category()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(Category::class, 'category_name', 'name');
     }
 
     /**
@@ -50,5 +51,14 @@ class Book extends Model
     {
         return $query->whereRaw('LOWER(name) LIKE ?', ["%" . strtolower($search) . "%"])
             ->orWhereRaw('LOWER(author) LIKE ?', ["%" . strtolower($search) . "%"]);
+    }
+
+    /**
+     * Relación con la tabla shop
+     * @return mixed mixed
+     */
+    public function shop()
+    {
+        return $this->belongsTo(Shop::class);
     }
 }

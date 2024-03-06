@@ -11,7 +11,7 @@
 ## Instrucciones
 Para empezar, debes de ejecutar este comando para levantar sail
     
-    sudo ./vendor/bin/sail up
+    ./vendor/bin/sail up -d
 
 1. Ejecutar Docker: docker-compose up -d
 2. Ejecutar las migraciones: docker exec laravel-rest-funkos-laravel.test-1 php artisan migrate

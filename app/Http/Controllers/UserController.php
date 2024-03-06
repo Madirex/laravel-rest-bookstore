@@ -2,13 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\EmailChangeMail;
 use App\Models\User;
 use App\Rules\CheckCorrectPassword;
 use App\Rules\UniqueCaseInsensitive;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 /**
  * The UserController class.
@@ -25,7 +31,14 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $users = User::search($request->search)->orderBy('id', 'asc')->paginate(8);
+        $cacheKey = 'users_' . md5($request->fullUrl());
+
+        if (Cache::has($cacheKey)) {
+            $users = Cache::get($cacheKey);
+        } else {
+            $users = User::search($request->search)->orderBy('id', 'asc')->paginate(8);
+          //  Cache::put($cacheKey, $users, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+        }
 
         if ($request->expectsJson()) {
             return response()->json($users);
@@ -153,6 +166,7 @@ class UserController extends Controller
         $user->image = User::$IMAGE_DEFAULT;
         $user->cart = json_encode("");
         $user->orders = json_encode([]);
+        $user->money = 0;
         $user->save();
 
         if ($request->expectsJson()) {
@@ -320,9 +334,8 @@ class UserController extends Controller
     public function update(Request $request)
     {
         $user = Auth::user();
-        $request->validate($this->rules());
+        $request->validate($this->rules(null, false));
         $user->name = $request->name;
-        $user->email = strtolower($request->email);
         $user->username = ucfirst(strtolower($request->username));
         $user->surname = $request->surname;
         $user->phone = $request->phone;
@@ -333,11 +346,83 @@ class UserController extends Controller
     }
 
     /**
+     * Show the form for changing the authenticated user's password.
+     *
+     * @return \Illuminate\View\View The change password view.
+     */
+    public function changeEmailForm()
+    {
+        return view('users.change_email');
+    }
+
+    /**
+     * Show the form for changing the authenticated user's password.
+     * @param Request $request The request
+     * @return \Illuminate\Http\RedirectResponse Redirect to the user details page.
+     */
+    public function requestEmailChange(Request $request)
+    {
+        $user = Auth::user();
+        //comprobar si email es igual
+        if (strtolower($request->new_email) == strtolower($user->email)) {
+            flash('El nuevo correo electrónico no puede ser igual al actual.')->error()->important();
+            return redirect()->back()->withInput();
+        }
+
+        $request->validate([
+            'new_email' => ['required', 'string', 'email', 'max:255', new UniqueCaseInsensitive('El email ya existe en la base de datos.', 'users', 'email')],
+            'password' => 'required',
+        ]);
+
+
+        if (!Hash::check($request->password, $user->password)) {
+            flash('La contraseña proporcionada es incorrecta.')->error()->important();
+            return redirect()->back()->withInput();
+        }
+
+        $newEmail = $request->input('new_email');
+
+        $token = Str::random(60);
+        Redis::set('email_change:' . $token, json_encode(['user_id' => $user->id, 'new_email' => $newEmail]));
+        Redis::expire('email_change:' . $token, 60 * 60 * 24); // 24 horas (tiempo de expiración)
+
+        // Envía el correo electrónico de confirmación
+        Mail::to($newEmail)->send(new EmailChangeMail($token));
+        flash('Se ha enviado un correo electrónico de confirmación a su nuevo correo electrónico.')->success()->important();
+        return redirect()->route('users.profile');
+    }
+
+    /**
+     * Confirm the email change.
+     *
+     * @param string $token The token
+     * @return \Illuminate\Http\RedirectResponse Redirect to the user details page.
+     */
+    public function confirmEmailChange($token)
+    {
+        $emailChange = json_decode(Redis::get('email_change:' . $token));
+
+        if (!$emailChange) {
+            return back()->with('error', 'El token de confirmación es inválido.');
+        }
+
+        $user = User::find($emailChange->user_id);
+        $user->email = strtolower($emailChange->new_email);
+        $user->save();
+
+        // Elimina el token de Redis
+        Redis::del('email_change:' . $token);
+
+        flash('Correo electrónico actualizado con éxito')->success()->important();
+        return redirect()->route('users.profile');
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array
      */
-    public function rules(User $user = null)
+    public function rules(User $user = null, bool $requireEmail = true)
     {
         if ($user == null) {
             $user = Auth::user();
@@ -347,19 +432,25 @@ class UserController extends Controller
         if (request()->expectsJson()) {
             $rules = [
                 'name' => ['required', 'string', 'max:255'],
-                'email' => ['required', 'string', 'email', 'max:255', new UniqueCaseInsensitive('users', 'email')],
-                'username' => ['required', 'string', 'max:255', new UniqueCaseInsensitive('users', 'username')],
+                'username' => ['required', 'string', 'max:255', new UniqueCaseInsensitive('El nombre de usuario (username) ya existe en la base de datos.', 'users', 'username')],
                 'surname' => ['required', 'string', 'max:255'],
-                'phone' => ['required', 'string', 'max:255'],
+                'phone' => ['required', 'string', 'max:255', 'regex:/^[6789][0-9]{8}$/'],
             ];
+
+            if ($requireEmail) {
+                $rules['email'] = ['required', 'string', 'email', 'max:255', new UniqueCaseInsensitive('El email ya existe en la base de datos.', 'users', 'email')];
+            }
         } else {
             $rules = [
                 'name' => ['required', 'string', 'max:255'],
-                'email' => ['required', 'string', 'email', 'max:255', new UniqueCaseInsensitive('users', 'email', $user->id)],
-                'username' => ['required', 'string', 'max:255', new UniqueCaseInsensitive('users', 'username', $user->id)],
+                'username' => ['required', 'string', 'max:255', new UniqueCaseInsensitive('El nombre de usuario (username) ya existe en la base de datos.', 'users', 'username', $user->id)],
                 'surname' => ['required', 'string', 'max:255'],
-                'phone' => ['required', 'string', 'max:255'],
+                'phone' => ['required', 'string', 'max:255', 'regex:/^[6789][0-9]{8}$/'],
             ];
+
+            if ($requireEmail) {
+                $rules['email'] = ['required', 'string', 'email', 'max:255', new UniqueCaseInsensitive('El email ya existe en la base de datos.', 'users', 'email', $user->id)];
+            }
         }
 
         //si espera json

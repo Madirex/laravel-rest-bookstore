@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
 use App\Models\Book;
+use App\Models\Category;
 use App\Rules\CategoryNameExists;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Class CategoryController
@@ -20,8 +21,13 @@ class CategoryController extends Controller
      */
     public function index(Request $request)
     {
-        $categories = Category::search($request->search)->orderBy('name', 'asc')->paginate(8);
-
+        $cacheKey = 'categories_' . md5($request->fullUrl());
+        if (Cache::has($cacheKey)) {
+            $categories = Cache::get($cacheKey);
+        } else {
+            $categories = Category::search($request->search)->orderBy('name', 'asc')->paginate(8);
+           // Cache::put($cacheKey, $categories, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+        }
 
         if ($request->expectsJson()) {
             return response()->json($categories);
@@ -35,23 +41,40 @@ class CategoryController extends Controller
      * @param string $id id
      * @return mixed view or json
      */
-    public function show(string $id)
+    public function show(string $id, Request $request)
     {
         try {
-            $category = Category::findOrFail($id);
+            $cacheKey = 'categories_' . $id;
+            if (Cache::has($cacheKey)) {
+                $category = Cache::get($cacheKey);
+            } else {
+                $category = Category::findOrFail($id);
+               // Cache::put($cacheKey, $category, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+            }
         } catch (\Exception $e) {
             if (request()->expectsJson()) {
                 return response()->json(['message' => 'Categoría no encontrada'], 404);
             }
             flash('Categoría no encontrada')->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
+
+        // Aquí es donde obtenemos los libros de la categoría
+        $query = Book::where('category_name', $category->name);
+
+        // Si hay un término de búsqueda, lo añadimos a la consulta
+        if ($request->has('search')) {
+            $search = trim(strtolower($request->get('search')));
+            $query->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"]);
+        }
+
+        $books = $query->paginate(8);
 
         if (request()->expectsJson()) {
-            return response()->json($category);
+            return response()->json(['category' => $category, 'books' => $books]);
         }
 
-        return view('categories.show')->with('category', $category);;
+        return view('categories.show', compact('category', 'books'));
     }
 
     /**
@@ -71,7 +94,7 @@ class CategoryController extends Controller
             }
 
             flash('Error al crear la categoría: debe ser única, tener máximo 255 caracteres y no debe estar vacía')->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
         $category = new Category();
         $category->name = $request->input('name');
@@ -102,7 +125,7 @@ class CategoryController extends Controller
                 return response()->json(['message' => 'Categoría no encontrada'], 404);
             }
             flash('Categoría no encontrada')->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         try {
@@ -119,7 +142,7 @@ class CategoryController extends Controller
                 return response()->json(['message' => 'Error al crear la categoría: debe ser única, tener máximo 255 caracteres y no debe estar vacía'], 400);
             }
             flash('Error al crear la categoría: debe ser única, tener máximo 255 caracteres y no debe estar vacía')->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         // Obtener todos los books relacionados con la categoría
@@ -156,7 +179,7 @@ class CategoryController extends Controller
                 return response()->json(['message' => 'Categoría no encontrada'], 404);
             }
             flash('Categoría no encontrada')->error()->important();
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
         $category->delete();
 

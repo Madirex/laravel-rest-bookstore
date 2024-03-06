@@ -34,5 +34,17 @@ class AddressTableSeeder extends Seeder
                 'addressable_type' => User::class,
             ]);
         }
+
+        // Crear dirección para tienda
+        Address::create([
+            'street' => 'Calle San Fernando',
+            'number' => '4',
+            'city' => 'Sevilla',
+            'province' => 'Sevilla',
+            'country' => 'España',
+            'postal_code' => '41004',
+            'addressable_id' => 1,
+            'addressable_type' => 'App\Models\Shop',
+        ]);
     }
 }
