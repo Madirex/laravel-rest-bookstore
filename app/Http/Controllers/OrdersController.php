@@ -109,6 +109,28 @@ class OrdersController extends Controller
      * @param $id
      * @return \Illuminate\Http\JsonResponse|\Illuminate\View\View
      */
+    function removeCoupon(Request $request, $id)
+    {
+        try{
+        $order = Order::find($id);
+        } catch (\Exception $e) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'No se ha encontrado el pedido'], 400);
+            }
+            flash('No se ha encontrado el pedido')->error();
+            return redirect()->route('orders.index')->with('error', 'No se ha encontrado el pedido');
+        }
+        $order->cart_code = null;
+        $order->save();
+        flash('Cupón eliminado correctamente')->success();
+        return redirect()->route('orders.edit', $order->id);
+    }
+
+    /**
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\View\View
+     */
     public function update(Request $request, $id)
     {
         $order = Order::find($id);

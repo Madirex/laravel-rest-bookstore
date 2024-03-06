@@ -136,6 +136,7 @@ Route::group(['prefix' => 'orders'], function () {
     Route::patch('/{order}/addOrderLine', [OrdersController::class, 'addOrderLine'])->name('orders.addOrderLine')->middleware(['auth']);
     Route::put('/{order}/editOrderLine', [OrdersController::class, 'updateOrderLine'])->name('orders.editOrderLine')->middleware(['auth']);
     Route::put('/{order}/addCouponToOrder', [OrdersController::class, 'addCouponToOrder'])->name('orders.addCouponToOrder')->middleware(['auth']);
+    Route::put('/{order}/removeCoupon', [OrdersController::class, 'removeCoupon'])->name('orders.removeCoupon')->middleware(['auth']);
     Route::delete('/{order}/removeOrderLine/{orderLine}', [OrdersController::class, 'destroyOrderLine'])->name('orders.destroyOrderLine')->middleware(['auth']);
 });
 

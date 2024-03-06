@@ -13,7 +13,16 @@
         <br/>
         <button type="button" class="btn btn-primary" style="display: none" id="add_order_line">Añadir Línea</button>
         <button type="button" class="btn btn-primary" style="display: none" id="add_cart_code">Editar código de descuento</button>
-
+        <br/>
+        <br/>
+        <!-- en el caso de que haya un cart_code que no sea null, agregar botón eliminar a ruta removeCoupon -->
+        @if($order->cartCode)
+            <form action="{{ route('orders.removeCoupon', $order->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <button type="submit" class="btn btn-danger" id="remove_cart_code">Eliminar código de descuento</button>
+            </form>
+        @endif
         <article class="add_order_line" style="display: none">
             <h3>Añadir línea de pedido</h3>
             <form action="{{ route('orders.addOrderLine', $order->id) }}" method="POST" class="book_form">
@@ -41,6 +50,9 @@
 
 
         </article>
+
+
+
         <article class="add_cart_code" style="display: none">
             <h3>Editar código de descuento</h3>
             <form action="{{ route('orders.addCouponToOrder', $order->id) }}" method="POST" class="book_form">
@@ -50,7 +62,7 @@
                     <div class="form-group">
                         <label for="cart_code">Código de descuento</label>
                         <input type="text" class="form-control" id="cart_code" name="cart_code"
-                               value="{{ old('cart_code', $order->cartCode->code) }}">
+                               value="{{ old('cart_code', $order->cartCode ? $order->cartCode->code : '') }}">
                         <br/>
                     </div>
                 </div>
@@ -238,12 +250,14 @@
             document.querySelector('.add_order_line').style.display = 'inline-block';
             document.querySelector('#add_order_line').style.display = 'none';
             document.querySelector('#add_cart_code').style.display = 'none';
+            document.querySelector('#remove_cart_code').style.display = 'none';
             document.querySelector('.edit_order_line').style.display = 'none';
         });
 
         document.getElementById('add_cart_code').addEventListener('click', function () {
             document.querySelector('.add_cart_code').style.display = 'inline-block';
             document.querySelector('#add_cart_code').style.display = 'none';
+            document.querySelector('#remove_cart_code').style.display = 'none';
             document.querySelector('#add_order_line').style.display = 'none';
         });
 
@@ -252,11 +266,13 @@
             document.querySelector('.add_order_line').style.display = 'none';
             document.querySelector('#add_order_line').style.display = 'inline-block';
             document.querySelector('#add_cart_code').style.display = 'inline-block';
+            document.querySelector('#remove_cart_code').style.display = 'inline-block';
         });
 
         document.getElementById('cancel_add_cart_code').addEventListener('click', function () {
             document.querySelector('.add_cart_code').style.display = 'none';
             document.querySelector('#add_cart_code').style.display = 'inline-block';
+            document.querySelector('#remove_cart_code').style.display = 'inline-block';
             document.querySelector('#add_order_line').style.display = 'inline-block';
         });
 
