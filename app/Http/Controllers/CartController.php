@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use App\Models\Order;
+use App\Models\OrderLine;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 use Stripe\Checkout\Session;
@@ -93,6 +95,7 @@ class CartController extends Controller
      */
     public function itemCount(Request $request)
     {
+        // obtener el carrito
         $userId = $request->user()->id;
         $cartKey = "cart:$userId";
         $cartItems = Redis::hGetAll($cartKey);
@@ -115,14 +118,15 @@ class CartController extends Controller
      */
     public function getCart(Request $request)
     {
+        // obtener el carrito
         $userId = $request->user()->id;
         $cartKey = "cart:$userId";
         $cartItems = Redis::hGetAll($cartKey);
-
+        // si el carrito esta vacio
         if (empty($cartItems)) {
             return view('cart.index', ['cartItems' => []]);
         }
-
+        // obtener los detalles de los libros
         $itemsDetails = [];
         foreach ($cartItems as $itemJson) {
             $item = json_decode($itemJson, true);
@@ -142,52 +146,159 @@ class CartController extends Controller
                 }
             }
         }
-
         return view('cart.index', ['cartItems' => $itemsDetails]);
     }
 
 
     public function checkout(Request $request)
     {
+        // Configura la clave API de Stripe con la variable de entorno correspondiente.
         Stripe::setApiKey(env('STRIPE_SECRET_KEY'));
-        $lineItems = [];
-        $userId = $request->user()->id;
-        $cartKey = "cart:$userId";
-        $cartItems = Redis::hGetAll($cartKey);
 
-        foreach ($cartItems as $itemJson) {
-            $item = json_decode($itemJson, true);
-            if (is_array($item) && isset($item['quantity']) && isset($item['book_id'])) {
-                $book = Book::find($item['book_id']);
-                if ($book) {
+        // Obtiene el ID del usuario actual.
+        $userId = $request->user()->id;
+        // Intenta obtener un order_id del request, si es que el usuario está completando un pedido existente.
+        $orderId = $request->input('order_id');
+        $order = null;
+
+        // Si se proporcionó un order_id, intenta encontrar un pedido existente que coincida.
+        if ($orderId) {
+            $order = Order::where('id', $orderId)->where('user_id', $userId)->where('status', 'unpaid')->first();
+
+            // Si el pedido existe, prepara los items para la sesión de pago de Stripe.
+            if ($order) {
+                foreach ($order->orderLines as $orderLine) {
+                    $lineItems[] = [
+                        'price_data' => [
+                            'currency' => 'eur',
+                            'product_data' => [
+                                'name' => $orderLine->book->name,
+                                'images' => [$orderLine->book->image],
+                                'metadata' => ['book_id' => $orderLine->book->id],
+                            ],
+                            'unit_amount' => $orderLine->price * 100, // El precio debe estar en centavos
+                        ],
+                        'quantity' => $orderLine->quantity,
+                    ];
+                }
+                // Crea la sesión de pago con Stripe y redirige al usuario para completar el pago.
+                $session = Session::create([
+                    'line_items' => $lineItems,
+                    'mode' => 'payment',
+                    'success_url' => route('cart.success', ['order_id' => $order->id], true),
+                    'cancel_url' => route('cart.cancel', [], true),
+                ]);
+
+                return redirect($session->url);
+            }
+        }
+
+        // Si no se encontró un pedido existente o no se proporcionó un order_id, procesa los items del carrito.
+        if (!$order) {
+            $cartKey = "cart:$userId";
+            $cartItems = Redis::hGetAll($cartKey);
+
+            if (empty($cartItems)) {
+                flash('El carrito está vacío.')->error()->important();
+                return back(); // Redirige al usuario si el carrito está vacío.
+            }
+
+            $totalPrice = 0;
+            $lineItems = [];
+            foreach ($cartItems as $itemJson) {
+                $item = json_decode($itemJson, true);
+                if (is_array($item) && isset($item['quantity']) && isset($item['book_id'])) {
+                    $book = Book::find($item['book_id']);
+
+                    if (!$book || $item['quantity'] > $book->stock) {
+                        flash('No hay suficiente stock para el libro seleccionado.')->error()->important();
+                        return back(); // Redirige si no hay stock suficiente.
+                    }
+
+                    $totalPrice += $item['quantity'] * $book->price;
                     $lineItems[] = [
                         'price_data' => [
                             'currency' => 'eur',
                             'product_data' => [
                                 'name' => $book->name,
                                 'images' => [$book->image],
+                                'metadata' => ['book_id' => $book->id],
                             ],
                             'unit_amount' => $book->price * 100,
                         ],
                         'quantity' => $item['quantity'],
                     ];
                 }
+            }
 
-                //comprobar stock
-                if ($item['quantity'] > $book->stock) {
-                    flash('No hay suficiente stock')->error()->important();
-                    return back();
+            // Crea un nuevo pedido si no existe uno.
+            if (!$order) {
+                $order = new Order([
+                    'user_id' => $userId,
+                    'status' => 'unpaid',
+                    'total_amount' => $totalPrice,
+                    'total_lines' => count($lineItems),
+                    'is_deleted' => false,
+                ]);
+                $order->save();
+                // Debes guardar las líneas del pedido (OrderLine) aquí, usando el objeto $order recién creado.
+                foreach ($lineItems as $lineItem) {
+                    $bookId = $lineItem['price_data']['product_data']['metadata']['book_id'];
+                    $book = Book::find($bookId);
+                    $orderLine = new OrderLine([
+                        'order_id' => $order->id,
+                        'book_id' => $bookId,
+                        'price' => $book->price,
+                        'quantity' => $lineItem['quantity'],
+                        'subtotal' => $book->price * $lineItem['quantity'],
+                        'total' => $totalPrice,
+                        'total_lines' => count($lineItems),
+                        'selected' => true,
+                    ]);
+                    $orderLine->save();
                 }
             }
-        }
 
-        $session = Session::create([
-            'line_items' => $lineItems,
-            'mode' => 'payment',
-            'success_url' => 'https://example.com/success',
-            'cancel_url' => 'https://example.com/cancel',
-        ]);
-        return redirect($session->url);
+            // Crea la sesión de pago con Stripe y redirige al usuario para completar el pago.
+            $session = Session::create([
+                'line_items' => $lineItems,
+                'mode' => 'payment',
+                'success_url' => route('cart.success', ['order_id' => $order->id], true),
+                'cancel_url' => route('cart.cancel', [], true),
+            ]);
+
+            return redirect($session->url);
+        }
+    }
+
+
+    public function success(Request $request)
+    {
+        $orderId = $request->query('order_id');
+
+        $order = Order::find($orderId);
+
+        if (!$order) {
+            return redirect()->route('books.index')->with('error', 'Order not found.');
+        }
+        $order->status = 'paid';
+        $order->finished_at = now();
+        $order->save();
+
+            $userId = $request->user()->id;
+            $cartKey = "cart:$userId";
+            Redis::del($cartKey);
+        flash('Pago realizado con éxito')->success()->important();
+        return view('cart.checkout-success', compact('order'));
+    }
+
+    public function cancel(Request $request)
+    {
+        $userId = $request->user()->id;
+        $cartKey = "cart:$userId";
+        Redis::del($cartKey);
+        flash('Pago cancelado')->error()->important();
+        return view('cart.checkout-cancel');
     }
 
 }

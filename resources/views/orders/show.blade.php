@@ -1,12 +1,12 @@
 @extends('main')
 @section('title', 'Pedidos - NULLERS')
 @section('content')
-    <br/>
-    <h1>Detalle del pedido</h1>
-    <div class="card">
-        <div class="card-header">
-            <h3>Pedido #{{ $order->id }}</h3>
-        </div>
+<br/>
+<h1>Detalle del pedido</h1>
+<div class="card">
+    <div class="card-header">
+        <h3>Pedido #{{ $order->id }}</h3>
+    </div>
         <div class="card-body">
             @if ($order->address)
                 <h2>Dirección</h2>
@@ -114,4 +114,5 @@
         @endif
 
     </div>
+</div>
 @endsection

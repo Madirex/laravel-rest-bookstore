@@ -33,6 +33,8 @@ Route::get('/cart', [CartController::class, 'getCart'])->name('cart.cart')->midd
 Route::delete('/cart', [CartController::class, 'removeFromCart'])->name('cart.remove')->middleware('auth');
 Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout')->middleware('auth');
 Route::post('/cart', [CartController::class, 'handleCart'])->name('cart.handle')->middleware('auth');
+Route::get('/success', [CartController::class, 'success'])->name('cart.success')->middleware('auth');
+Route::get('/cancel', [CartController::class, 'cancel'])->name('cart.cancel')->middleware('auth');
 
 Route::group(['prefix' => 'cartcodes'], function () {
     Route::get('/', [CartCodeController::class, 'index'])->name('cartcodes.index')->middleware(['auth', 'admin']);
