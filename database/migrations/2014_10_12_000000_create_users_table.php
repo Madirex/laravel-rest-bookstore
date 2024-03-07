@@ -17,6 +17,15 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->enum('role', ['admin', 'user'])->default('user');
+            $table->string('surname');
+            $table->string('username')->unique();
+            $table->boolean('isDeleted')->default(false);
+            $table->string('phone')->default('');
+            $table->string('image')->default('images/user.png');
+            $table->string('cart');
+            $table->decimal('money', 8, 2)->default(0);
+            $table->json('orders');
             $table->rememberToken();
             $table->timestamps();
         });
