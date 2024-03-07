@@ -142,7 +142,8 @@ Route::group(['prefix' => 'users/profile/orders', 'middleware' => ['auth']], fun
 
 Route::get('/orders/{id}/email_invoice', [OrdersController::class, 'generateInvoiceToEmail'])->name('orders.email_invoice')->middleware(['auth']);
 Route::get('/orders/{id}/invoice', [OrdersController::class, 'generateInvoice'])->name('orders.invoice')->middleware(['auth']);
-
+Route::get('/cart/success', [CartController::class, 'success'])->name('cart.success')->middleware(['auth']);
+Route::get('/cart/cancel', [CartController::class, 'cancel'])->name('cart.cancel')->middleware(['auth']);
 ///////////////////////
 /* Rutas para ADMINS */
 ///////////////////////
