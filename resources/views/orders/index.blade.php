@@ -11,7 +11,7 @@
     <form action="{{ route('orders.index') }}" class="mb-3" method="get">
         @csrf
         <div class="input-group">
-            <input type="text" class="form-control" id="search" name="search" placeholder="Id, status, total, user_id">
+            <input type="text" class="form-control" id="search" name="search" placeholder="Id">
             <div class="input-group-append">
                 <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i></button>
             </div>
