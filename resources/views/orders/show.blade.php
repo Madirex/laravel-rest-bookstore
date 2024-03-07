@@ -7,16 +7,6 @@
     <div class="card-header">
         <h3>Pedido #{{ $order->id }}</h3>
     </div>
-    <div class="card-body">
-        @if ($order->address)
-        <h2>Dirección</h2>
-        <div class="mb-5">
-            <p>Calle: {{ $order->address->street }}</p>
-            <p>Ciudad: {{ $order->address->city }}</p>
-            <p>Provincia: {{ $order->address->province }}</p>
-            <p>Country: {{ $order->address->country }}</p>
-            <p>CP: {{ $order->address->postal_code }}</p>
-        </div>
         <div class="card-body">
             @if ($order->address)
                 <h2>Dirección</h2>
