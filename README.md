@@ -47,7 +47,7 @@ Por último, si te da fallos de permisos, ejecuta esto para cambiar los permisos
 
 ## Diagrama UML
 <p align="center">
-  <img src="https://i.imgur.com/HbmhQMF.png"/>
+  <img src="https://i.imgur.com/Mligyx8.png"/>
 </p>
 
 ## Diagrama de casos de uso
@@ -76,7 +76,6 @@ Bienvenido a la API REST de NULLERS BOOKS, una tienda de libros en línea que te
 
 ## Autores
 - [Madirex](https://github.com/Madirex/)
-- [Jaimesalcedo1](https://github.com/jaimesalcedo1/)
 - [Danniellgm03](https://github.com/Danniellgm03)
 - [Binweiwang](https://github.com/Binweiwang)
 - [Alexdor11](https://github.com/alexdor11)

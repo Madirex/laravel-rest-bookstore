@@ -18,6 +18,7 @@ return new class extends Migration
             $table->decimal('fixed_discount', 8, 2);
             $table->integer('available_uses');
             $table->date('expiration_date');
+            $table->boolean('is_deleted')->default(false);
             $table->timestamps();
         });
     }

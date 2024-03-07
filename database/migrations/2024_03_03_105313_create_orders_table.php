@@ -16,9 +16,12 @@ return new class extends Migration
             $table->integer('user_id');
             $table->foreign('user_id')->references('id')->on('users');
             $table->string('status');
+            $table->string('subtotal', 8, 2);
             $table->double('total_amount', 8, 2);
             $table->integer('total_lines');
             $table->boolean('is_deleted');
+            $table->uuid('cart_code')->nullable();
+            $table->foreign('cart_code')->references('id')->on('cart_codes');
             $table->dateTime('finished_at')->nullable();
             $table->timestamps();
         });

@@ -17,8 +17,10 @@ class Order extends Model
         'status',
         'order_lines',
         'total_amount',
+        'subtotal',
         'total_lines',
         'is_deleted',
+        'cart_code',
         'finished_at'
     ];
 
@@ -47,6 +49,11 @@ class Order extends Model
     public function orderLines()
     {
         return $this->hasMany(OrderLine::class);
+    }
+
+    public function cartCode()
+    {
+        return $this->belongsTo(CartCode::class, 'cart_code');
     }
 
     public function scopeSearch($query, $search)

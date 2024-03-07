@@ -34,6 +34,10 @@ class CartCodeControllerTest extends TestCase
             ->with('fixed_discount', 2)
             ->andReturnSelf();
 
+        $cartcodeMock->shouldReceive('where')
+            ->with('is_deleted', false)
+            ->andReturnSelf();
+
         $controller = new CartCodeController();
         $response = $controller->index(new Request());
 
@@ -113,6 +117,7 @@ class CartCodeControllerTest extends TestCase
         $cartcodeMock->id = 1;
         $cartcodeMock->name = 'test-cartcode';
         $cartcodeMock->shouldReceive('delete');
+        $cartcodeMock->shouldReceive('save');
 
         $controller = Mockery::mock(CartCodeController::class)->makePartial();
         $controller->shouldReceive('removeCartCodeImage');

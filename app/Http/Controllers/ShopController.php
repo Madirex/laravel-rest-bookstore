@@ -21,55 +21,42 @@ class ShopController extends Controller
      */
     public function index(Request $request)
     {
-        $cacheKey = 'shops_' . md5($request->fullUrl());
-
         // Aquí solo buscamos tiendas por nombre.
         if ($request->expectsJson()) {
-            if (Cache::has($cacheKey)) {
-                $shops = Cache::get($cacheKey);
-            } else {
-                $shops = Shop::where(function ($query) use ($request) {
-                    if ($request->has('search')) {
-                        $query->where('name', 'LIKE', '%' . $request->search . '%');
-                    }
-                })->orderBy('id', 'asc')->paginate(8);
-              //  Cache::put($cacheKey, $shops, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
-            }
-
+            $shops = Shop::where(function ($query) use ($request) {
+                if ($request->has('search')) {
+                    $query->where('name', 'LIKE', '%' . $request->search . '%');
+                }
+            })->orderBy('id', 'asc')->paginate(8);
             return response()->json($shops);
         }
 
-        if (Cache::has($cacheKey)) {
-            $shops = Cache::get($cacheKey);
-        } else {
-            $shops = Shop::where('active', true)
-                ->where(function ($query) use ($request) {
-                    if ($request->has('search')) {
-                        $query->where('name', 'LIKE', '%' . $request->search . '%');
-                    }
-                })
-                ->orderBy('id', 'asc')
-                ->paginate(8);
-           // Cache::put($cacheKey, $shops, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
-        }
+        $shops = Shop::where('active', true)
+            ->where(function ($query) use ($request) {
+                if ($request->has('search')) {
+                    $query->where('name', 'LIKE', '%' . $request->search . '%');
+                }
+            })
+            ->orderBy('id', 'asc')
+            ->paginate(8);
 
         return view('shops.index', compact('shops'));
     }
 
     /**
      * show
-     * @param $id id
+     * @param $id
      * @return mixed view or json
      */
     public function show(Request $request, $id)
     {
         try {
-            $cacheKey = 'shop_' . $id;
+            $cacheKey = 'shops_' . $id;
             if (Cache::has($cacheKey)) {
                 $shop = Cache::get($cacheKey);
             } else {
                 $shop = Shop::findOrFail($id);
-               // Cache::put($cacheKey, $shop, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
+                Cache::put($cacheKey, $shop, 3600); // Almacenar en caché durante 1 hora (3600 segundos)
             }
 
             $query = $shop->books();
@@ -117,6 +104,10 @@ class ShopController extends Controller
 
         $shop = $this->getShopStore($request);
         $shop->active = true;
+        $cacheKey = 'shops_' . $shop->id;
+        if (Cache::has($cacheKey)) {
+            Cache::forget($cacheKey);
+        }
         $shop->save();
 
         if ($request->expectsJson()) {
@@ -155,6 +146,10 @@ class ShopController extends Controller
 
         $shop->name = $request->input('name');
 
+        $cacheKey = 'shops_' . $id;
+        if (Cache::has($cacheKey)) {
+            Cache::forget($cacheKey);
+        }
         $shop->save();
 
         if ($request->expectsJson()) {
@@ -191,7 +186,15 @@ class ShopController extends Controller
         $books = $shop->books;
         foreach ($books as $book) {
             $book->active = false;
+            $cacheKey = 'book_' . $id;
+            if (Cache::has($cacheKey)) {
+                Cache::forget($cacheKey);
+            }
             $book->save();
+        }
+        $cacheKey = 'shops_' . $id;
+        if (Cache::has($cacheKey)) {
+            Cache::forget($cacheKey);
         }
         $shop->save();
 
