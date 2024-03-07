@@ -459,11 +459,11 @@ class OrdersController extends Controller
      * @param $id
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
-    public function destroy($request, $id)
+    public function destroy($id)
     {
         $order = Order::find($id);
         if ($order == null) {
-            if ($request->expectsJson()) {
+            if (request()->expectsJson()) {
                 return response()->json(['message' => 'No se ha encontrado el pedido'], 400);
             }
             flash('No se ha encontrado el pedido')->error();
@@ -472,7 +472,7 @@ class OrdersController extends Controller
         $order->is_deleted = true;
         $order->save();
 
-        if ($request->expectsJson()) {
+        if (request()->expectsJson()) {
             return response()->json(['message' => 'Pedido eliminado correctamente'], 200);
         }
 

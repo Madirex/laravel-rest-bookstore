@@ -237,6 +237,7 @@ class CartController extends Controller
                     'user_id' => $userId,
                     'status' => 'unpaid',
                     'total_amount' => $totalPrice,
+                    'subtotal' => $totalPrice,
                     'total_lines' => count($lineItems),
                     'is_deleted' => false,
                 ]);
